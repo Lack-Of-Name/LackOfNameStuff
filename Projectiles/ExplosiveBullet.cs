@@ -102,7 +102,7 @@ namespace LackOfNameStuff.Projectiles
                 }
             }
 
-            // Damage enemies in explosion radius
+            // Damage ALL entities in explosion radius (NPCs, players, etc.)
             Rectangle explosionRect = new Rectangle(
                 (int)(explosionCenter.X - explosionRadius * 16), 
                 (int)(explosionCenter.Y - explosionRadius * 16),
@@ -110,10 +110,11 @@ namespace LackOfNameStuff.Projectiles
                 explosionRadius * 32
             );
 
+            // Damage NPCs (enemies and friendly NPCs)
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && !npc.friendly && npc.Hitbox.Intersects(explosionRect))
+                if (npc.active && npc.Hitbox.Intersects(explosionRect))
                 {
                     float distance = Vector2.Distance(npc.Center, explosionCenter);
                     if (distance <= explosionRadius * 16)
@@ -123,6 +124,25 @@ namespace LackOfNameStuff.Projectiles
                         damage = Math.Max(damage, Projectile.damage / 4); // Minimum 25% damage
                         
                         npc.SimpleStrikeNPC(damage, 0, false, 0, DamageClass.Ranged);
+                    }
+                }
+            }
+
+            // Damage players (including the user)
+            for (int i = 0; i < Main.maxPlayers; i++)
+            {
+                Player player = Main.player[i];
+                if (player.active && !player.dead && player.Hitbox.Intersects(explosionRect))
+                {
+                    float distance = Vector2.Distance(player.Center, explosionCenter);
+                    if (distance <= explosionRadius * 16)
+                    {
+                        // Calculate damage based on distance (closer = more damage)
+                        int damage = (int)(Projectile.damage * (1f - distance / (explosionRadius * 16)));
+                        damage = Math.Max(damage, Projectile.damage / 4); // Minimum 25% damage
+                        
+                        // Damage the player
+                        player.Hurt(Terraria.DataStructures.PlayerDeathReason.ByProjectile(player.whoAmI, Projectile.whoAmI), damage, 0, false, false, -1, false);
                     }
                 }
             }
