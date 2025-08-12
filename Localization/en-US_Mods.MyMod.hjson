@@ -1,0 +1,47 @@
+Items: {
+	PercentGun: {
+		DisplayName: Percent Gun
+		Tooltip: ""
+	}
+
+	Sacrifire: {
+		DisplayName: Sacrifire
+		Tooltip: ""
+	}
+
+	InfiniteRangedWeapon: {
+		DisplayName: Infinite Ranged Weapon
+		Tooltip: ""
+	}
+
+	PrismaticStaff: {
+		DisplayName: Prismatic Staff
+		Tooltip: ""
+	}
+
+	ChronosWatch: {
+		DisplayName: Chronos Watch
+		Tooltip: ""
+	}
+
+	ExplosiveArrow: {
+		DisplayName: Explosive Arrow
+		Tooltip: ""
+	}
+
+	ExplosiveBullet: {
+		DisplayName: Explosive Bullet
+		Tooltip: ""
+	}
+}
+
+Projectiles: {
+	LaserBeam.DisplayName: Sacrifire Beam
+	PercentBullet.DisplayName: Percent Bullet
+	SacriBullet.DisplayName: Sacri Bullet
+	PrismaticBolt.DisplayName: Prismatic Bolt
+	ExplosiveArrow.DisplayName: Explosive Arrow
+	ExplosiveBullet.DisplayName: Explosive Bullet
+}
+
+"Keybinds.Bullet Time.DisplayName": Bullet  Time
