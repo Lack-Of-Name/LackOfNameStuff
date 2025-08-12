@@ -15,6 +15,11 @@ Mods: {
 
 			StickGun: {
 			}
+
+			ChronosStopper: {
+				DisplayName: Chronos Stopper
+				Tooltip: ""
+			}
 		}
 
 		Projectiles: {
