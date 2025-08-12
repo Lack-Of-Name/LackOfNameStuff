@@ -13,7 +13,7 @@ namespace LackOfNameStuff.Projectiles
         {
             Projectile.width = 4;
             Projectile.height = 4;
-            Projectile.aiStyle = ProjAIStyleID.Arrow; // Changed from ProjAIStyleID.Bullet
+            Projectile.aiStyle = ProjAIStyleID.Arrow; // Use Arrow style but modify gravity for less drop
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.DamageType = DamageClass.Ranged;
@@ -21,6 +21,12 @@ namespace LackOfNameStuff.Projectiles
             Projectile.timeLeft = 600;
             Projectile.ignoreWater = false;
             Projectile.tileCollide = true;
+        }
+
+        public override void AI()
+        {
+            // Reduce gravity for bullets to have less drop than arrows
+            Projectile.velocity.Y += 0.1f; // Much less than the default arrow gravity
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -57,7 +63,7 @@ namespace LackOfNameStuff.Projectiles
                 d.noGravity = true;
             }
 
-            // Damage tiles in explosion radius (smaller than arrow)
+            // Damage tiles in explosion radius using proper bomb mechanics (smaller than arrow)
             int explosionRadius = 2;
             Vector2 explosionCenter = Projectile.Center;
             
@@ -76,11 +82,11 @@ namespace LackOfNameStuff.Projectiles
                         {
                             Tile tile = Framing.GetTileSafely(tileX, tileY);
                             
-                            // Only damage regular tiles, not walls or important tiles
-                            if (tile.HasTile && Main.tileSolid[tile.TileType])
+                            // Use WorldGen.CanKillTile to check if the tile can be destroyed by bombs
+                            // This respects hardmode ore protection and other important tiles
+                            if (tile.HasTile && WorldGen.CanKillTile(tileX, tileY))
                             {
-                                // Don't destroy important tiles like chests, altars, etc.
-                                // Use TileLoader.CanExplode for better compatibility
+                                // Additional check for tile explosion compatibility
                                 if (TileLoader.CanExplode(tileX, tileY))
                                 {
                                     WorldGen.KillTile(tileX, tileY, false, false, false);

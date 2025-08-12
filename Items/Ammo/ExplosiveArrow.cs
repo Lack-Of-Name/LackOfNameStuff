@@ -23,7 +23,7 @@ namespace LackOfNameStuff.Items.Ammo
             Item.DamageType = DamageClass.Ranged;
             Item.width = 14;
             Item.height = 34;
-            Item.maxStack = 999;
+            Item.maxStack = 3996; // Changed to match normal ammo stack size
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.value = Item.buyPrice(copper: 50); // 50 copper per arrow

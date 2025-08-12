@@ -58,7 +58,7 @@ namespace LackOfNameStuff.Projectiles
                 d.noGravity = true;
             }
 
-            // Damage tiles in explosion radius (but not walls)
+            // Damage tiles in explosion radius using proper bomb mechanics
             int explosionRadius = 3;
             Vector2 explosionCenter = Projectile.Center;
             
@@ -77,11 +77,11 @@ namespace LackOfNameStuff.Projectiles
                         {
                             Tile tile = Framing.GetTileSafely(tileX, tileY);
                             
-                            // Only damage regular tiles, not walls or important tiles
-                            if (tile.HasTile && Main.tileSolid[tile.TileType])
+                            // Use WorldGen.CanKillTile to check if the tile can be destroyed by bombs
+                            // This respects hardmode ore protection and other important tiles
+                            if (tile.HasTile && WorldGen.CanKillTile(tileX, tileY))
                             {
-                                // Don't destroy important tiles like chests, altars, etc.
-                                // Use TileLoader.CanExplode for better compatibility
+                                // Additional check for tile explosion compatibility
                                 if (TileLoader.CanExplode(tileX, tileY))
                                 {
                                     WorldGen.KillTile(tileX, tileY, false, false, false);
