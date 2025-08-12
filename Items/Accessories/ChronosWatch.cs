@@ -3,10 +3,10 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
-using MyMod.Players;
-using MyMod.Systems;
+using LackOfNameStuff.Players;
+using LackOfNameStuff.Systems;
 
-namespace MyMod.Items.Accessories
+namespace LackOfNameStuff.Items.Accessories
 {
     public class ChronosWatch : ModItem
     {

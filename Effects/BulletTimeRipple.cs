@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
-using MyMod.Items.Accessories;
+using LackOfNameStuff.Items.Accessories;
 
-namespace MyMod.Effects
+namespace LackOfNameStuff.Effects
 {
     // Visual ripple effect class
     public class BulletTimeRipple

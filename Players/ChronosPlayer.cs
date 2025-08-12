@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using System;
 using System.Collections.Generic;
-using MyMod.Items.Accessories;
-using MyMod.Systems;
-using MyMod.Effects;
+using LackOfNameStuff.Items.Accessories;
+using LackOfNameStuff.Systems;
+using LackOfNameStuff.Effects;
 
-namespace MyMod.Players
+namespace LackOfNameStuff.Players
 {
     public class ChronosPlayer : ModPlayer
     {

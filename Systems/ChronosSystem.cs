@@ -7,10 +7,10 @@ using System;
 using System.Linq;
 using Terraria.GameContent;
 using Terraria.ModLoader;
-using MyMod.Players;
-using MyMod.Effects;
+using LackOfNameStuff.Players;
+using LackOfNameStuff.Effects;
 
-namespace MyMod.Systems
+namespace LackOfNameStuff.Systems
 {
     public class ChronosSystem : ModSystem
     {

@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMod", "MyMod.csproj", "{5A8FD6F1-BFD9-7D83-A668-26AB9D3447DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LackOfNameStuff", "LackOfNameStuff.csproj", "{5A8FD6F1-BFD9-7D83-A668-26AB9D3447DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 using System;
 using System.Collections.Generic;
 
-namespace MyMod.Items.Weapons.Magic
+namespace LackOfNameStuff.Items.Weapons.Magic
 {
     public class PrismaticStaff : ModItem
     {
