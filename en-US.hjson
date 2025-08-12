@@ -1,0 +1,38 @@
+Mods: {
+	LackOfNameStuff: {
+		"Keybinds.Bullet Time.DisplayName": Bullet  Time
+
+		Items: {
+			ChronosWatch: {
+				DisplayName: Chronos Watch
+				Tooltip: ""
+			}
+
+			ExplosiveArrow: {
+				DisplayName: Explosive Arrow
+				Tooltip: ""
+			}
+
+			ExplosiveBullet: {
+				DisplayName: Explosive Bullet
+				Tooltip: ""
+			}
+
+			PrismaticStaff: {
+				DisplayName: Prismatic Staff
+				Tooltip: ""
+			}
+
+			InfiniteRangedWeapon: {
+				DisplayName: Infinite Ranged Weapon
+				Tooltip: ""
+			}
+		}
+
+		Projectiles: {
+			PrismaticBolt.DisplayName: Prismatic Bolt
+			ExplosiveArrow.DisplayName: Explosive Arrow
+			ExplosiveBullet.DisplayName: Explosive Bullet
+		}
+	}
+}

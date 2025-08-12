@@ -11,8 +11,8 @@ namespace LackOfNameStuff.Items.Accessories
     public class ChronosWatch : ModItem
     {
         // === CONFIGURATION ===
-        public static readonly int CooldownDuration = 1200; // 60 = 1 second at 60fps
-        public static readonly int BulletTimeDuration = 36000; // 60 = 1 second at 60fps
+        public static readonly int CooldownDuration = 1800; // 60 = 1 second at 60fps
+        public static readonly int BulletTimeDuration = 300; // 60 = 1 second at 60fps
         public static readonly float TimeSlowFactor = 0.25f; // 0.25f = 25% normal speed
         public static readonly bool SlowPlayerToo = false; // Players remain at normal speed
         public static readonly float RippleMaxRadius = 800f;
