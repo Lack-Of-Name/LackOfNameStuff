@@ -23,8 +23,8 @@ Mods: {
 				Tooltip: ""
 			}
 
-			InfiniteRangedWeapon: {
-				DisplayName: Infinite Ranged Weapon
+			StickGun: {
+				DisplayName: StickGun
 				Tooltip: ""
 			}
 		}

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace LackOfNameStuff.Items.Weapons.Ranged
 {
-    public class InfiniteRangedWeapon : ModItem
+    public class StickGun : ModItem
     {
         // === CUSTOMIZABLE VARIABLES ===
         
@@ -33,7 +33,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         
         // Ammo Save Properties
         private static readonly bool HasAmmoSave = true;
-        private static readonly float AmmoSaveChance = 0.66f; // 66% chance to not consume ammo (adjust as needed)
+        private static readonly float AmmoSaveChance = 0.8f; // 66% chance to not consume ammo (adjust as needed)
         
         // Visual/Audio Properties
         private static readonly SoundStyle UseSound = SoundID.Item11; // Gun sound
@@ -46,7 +46,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         private static readonly int BypassIFrames = 0; // 0 = bypass all I-frames, higher values = ignore fewer I-frames
         
         // Tooltip customization
-        private static readonly string CustomTooltip = "Damage equals critical strike chance\nHigh attack speed with great accuracy\n66% chance to not consume ammo";
+        private static readonly string CustomTooltip = "Bypasses I-frames\nDamage equals critical strike chance\nHigh attack speed with great accuracy\n80% chance to not consume ammo";
 
         public override void SetDefaults()
         {
@@ -84,6 +84,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             if (player?.name == "Hero")
             {
                 tooltips.Add(new TooltipLine(Mod, "ConditionalCraft", "[c/00FF00:Special crafting available for Hero!]"));
+                tooltips.Add(new TooltipLine(Mod, "MoneyAbuseWarning", "[c/FF0000:Don't abuse your crafting privelages for infinite gold!]"));
             }
         }
 
@@ -152,14 +153,14 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             defaultRecipe.AddIngredient(ItemID.SoulofMight, 10);
             defaultRecipe.AddIngredient(ItemID.SoulofSight, 10);
             defaultRecipe.AddTile(TileID.MythrilAnvil);
-            defaultRecipe.AddCondition(new Condition("Not Hero", () => Main.LocalPlayer?.name != "Hero"));
+            defaultRecipe.AddCondition(new Condition("Not World Hero", () => Main.LocalPlayer?.name != "Hero"));
             defaultRecipe.Register();
 
             // Special recipe for Hero
             Recipe heroRecipe = CreateRecipe();
             heroRecipe.AddIngredient(ItemID.Wood, 1);
             heroRecipe.AddTile(TileID.Anvils);
-            heroRecipe.AddCondition(new Condition("Player is Hero", () => Main.LocalPlayer?.name == "Hero"));
+            heroRecipe.AddCondition(new Condition("World Hero?", () => Main.LocalPlayer?.name == "Hero"));
             heroRecipe.Register();
         }
 
@@ -180,7 +181,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
     public class CustomRecipeConditions : ModSystem
     {
         // Example of a custom condition
-        public static Condition PlayerIsHero = new Condition("Player is Hero", () => Main.LocalPlayer?.name == "Hero");
+        public static Condition PlayerIsHero = new Condition("World Hero?", () => Main.LocalPlayer?.name == "Hero");
         
         // Example of a more complex condition
         public static Condition PlayerHasSpecialStatus = new Condition("Player has special status", () => {
