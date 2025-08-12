@@ -6,7 +6,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace MyMod.Items.Weapons.Ranged
+namespace LackOfNameStuff.Items.Weapons.Ranged
 {
     public class InfiniteRangedWeapon : ModItem
     {

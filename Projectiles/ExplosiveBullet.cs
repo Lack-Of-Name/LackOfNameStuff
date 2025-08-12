@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
 
-namespace MyMod.Projectiles
+namespace LackOfNameStuff.Projectiles
 {
     public class ExplosiveBullet : ModProjectile
     {

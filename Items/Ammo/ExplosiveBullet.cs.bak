@@ -3,7 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent.Creative;
 
-namespace MyMod.Items.Ammo
+namespace LackOfNameStuff.Items.Ammo
 {
     public class ExplosiveBullet : ModItem
     {

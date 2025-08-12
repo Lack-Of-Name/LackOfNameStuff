@@ -1,10 +1,10 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using MyMod.Items.Accessories;
-using MyMod.Systems;
+using LackOfNameStuff.Items.Accessories;
+using LackOfNameStuff.Systems;
 
-namespace MyMod.Globals
+namespace LackOfNameStuff.Globals
 {
     // Players' items have slower use time during bullet time for balance
     public class ChronosGlobalItem : GlobalItem
