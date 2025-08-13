@@ -6,7 +6,7 @@ using Terraria.Localization;
 using System.Collections.Generic;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Systems;
-using LackOfNameStuff.Globals;
+using LackOfNameStuff.Worlds;
 
 namespace LackOfNameStuff.Items.Debug
 {
@@ -86,49 +86,40 @@ namespace LackOfNameStuff.Items.Debug
 
         private void EmergencyStopBulletTime()
         {
-            // Method 1: Direct field manipulation using reflection on backing fields
+            // Method 1: Force deactivate through the world system
+            ChronosWorld.DeactivateBulletTime();
+
+            // Method 2: Reset ChronosSystem screen effects
             var chronosSystemType = typeof(ChronosSystem);
-            
-            // Get all static fields and properties, including private backing fields
             var fields = chronosSystemType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             
             foreach (var field in fields)
             {
-                // Reset any field that sounds like bullet time state
-                if (field.Name.Contains("BulletTime") || field.Name.Contains("bulletTime") || 
-                    field.Name.Contains("ScreenEffect") || field.Name.Contains("screenEffect") ||
-                    field.Name.Contains("frozenEnemy") || field.Name.Contains("framesSince"))
+                // Reset screen effect fields
+                if (field.Name.Contains("ScreenEffect") || field.Name.Contains("screenEffect"))
                 {
                     try
                     {
-                        if (field.FieldType == typeof(bool))
-                            field.SetValue(null, false);
-                        else if (field.FieldType == typeof(int))
-                            field.SetValue(null, field.Name.Contains("framesSince") ? 999 : 0); // Set framesSince to high value
-                        else if (field.FieldType == typeof(float))
+                        if (field.FieldType == typeof(float))
                             field.SetValue(null, 0f);
-                        else if (field.FieldType == typeof(Player))
-                            field.SetValue(null, null);
-                        else if (field.FieldType == typeof(Vector2))
-                            field.SetValue(null, Vector2.Zero);
                     }
                     catch { /* Ignore read-only fields */ }
                 }
             }
 
-            // Method 2: Force reset all players' bullet time state completely
+            // Method 3: Reset all players' ChronosPlayer state
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 if (Main.player[i].active)
                 {
                     var chronosPlayer = Main.player[i].GetModPlayer<ChronosPlayer>();
-                    chronosPlayer.bulletTimeActive = false;
-                    chronosPlayer.bulletTimeRemaining = 0;
+                    
+                    // Reset the fields we can access (not the read-only properties)
                     chronosPlayer.bulletTimeCooldown = 0;
                     chronosPlayer.activeRipples.Clear();
                     chronosPlayer.wasGlobalBulletTimeActive = false;
                     
-                    // Also reset any private fields in the player
+                    // Reset any private fields in the player using reflection
                     var playerFields = typeof(ChronosPlayer).GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     foreach (var field in playerFields)
                     {
@@ -150,117 +141,66 @@ namespace LackOfNameStuff.Items.Debug
                 }
             }
 
-            // Method 3: AGGRESSIVELY unfreeze ALL entities and clear their global state
+            // Method 4: Force reset ChronosWorld state using reflection
+            var chronosWorldType = typeof(ChronosWorld);
+            var worldFields = chronosWorldType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            
+            foreach (var field in worldFields)
+            {
+                try
+                {
+                    if (field.Name.Contains("GlobalBulletTime"))
+                    {
+                        if (field.FieldType == typeof(bool))
+                            field.SetValue(null, false);
+                        else if (field.FieldType == typeof(int))
+                            field.SetValue(null, -1); // Reset owner to -1, remaining to 0
+                        else if (field.FieldType == typeof(Vector2))
+                            field.SetValue(null, Vector2.Zero);
+                        else if (field.FieldType == typeof(string))
+                            field.SetValue(null, "");
+                    }
+                }
+                catch { /* Ignore read-only fields */ }
+            }
+
+            // Method 5: Unfreeze any entities that might still be frozen (simplified version)
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (Main.npc[i].active)
+                if (Main.npc[i].active && Main.npc[i].velocity == Vector2.Zero)
                 {
-                    // Force unfreeze the NPC by giving it some velocity if it's stuck
-                    if (Main.npc[i].velocity == Vector2.Zero && Main.npc[i].position == Main.npc[i].oldPosition)
-                    {
-                        // Give it a tiny random velocity to break the frozen state
-                        Main.npc[i].velocity = new Vector2(Main.rand.NextFloat(-0.1f, 0.1f), Main.rand.NextFloat(-0.1f, 0.1f));
-                        Main.npc[i].position += new Vector2(Main.rand.NextFloat(-0.5f, 0.5f), Main.rand.NextFloat(-0.5f, 0.5f));
-                    }
-
-                    // Reset any stored velocity in global NPC
-                    try
-                    {
-                        var globalNPC = Main.npc[i].GetGlobalNPC<ChronosGlobalNPC>();
-                        var globalFields = typeof(ChronosGlobalNPC).GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-                        
-                        foreach (var field in globalFields)
-                        {
-                            if (field.Name.Contains("stored") || field.Name.Contains("Stored") || field.Name.Contains("has"))
-                            {
-                                if (field.FieldType == typeof(Vector2))
-                                    field.SetValue(globalNPC, Vector2.Zero);
-                                else if (field.FieldType == typeof(bool))
-                                    field.SetValue(globalNPC, false);
-                            }
-                        }
-                    }
-                    catch { /* Ignore if global doesn't exist */ }
+                    // Give frozen NPCs a tiny random velocity to break any frozen state
+                    Main.npc[i].velocity = new Vector2(Main.rand.NextFloat(-0.1f, 0.1f), Main.rand.NextFloat(-0.1f, 0.1f));
                 }
             }
 
-            // Method 4: Force restore projectile velocities and unfreeze them
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
-                if (Main.projectile[i].active)
+                if (Main.projectile[i].active && Main.projectile[i].velocity == Vector2.Zero && Main.projectile[i].hostile)
                 {
-                    // If projectile is frozen (zero velocity), give it some movement
-                    if (Main.projectile[i].velocity == Vector2.Zero)
-                    {
-                        Main.projectile[i].velocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
-                    }
-
-                    try
-                    {
-                        var globalProj = Main.projectile[i].GetGlobalProjectile<ChronosGlobalProjectile>();
-                        var globalFields = typeof(ChronosGlobalProjectile).GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-                        
-                        foreach (var field in globalFields)
-                        {
-                            if (field.Name.Contains("stored") || field.Name.Contains("Stored"))
-                            {
-                                if (field.FieldType == typeof(Vector2))
-                                {
-                                    var storedVel = (Vector2)field.GetValue(globalProj);
-                                    if (storedVel != Vector2.Zero)
-                                    {
-                                        Main.projectile[i].velocity = storedVel;
-                                    }
-                                    field.SetValue(globalProj, Vector2.Zero);
-                                }
-                            }
-                            else if (field.Name.Contains("has") && field.FieldType == typeof(bool))
-                            {
-                                field.SetValue(globalProj, false);
-                            }
-                        }
-                    }
-                    catch { /* Ignore if global doesn't exist */ }
+                    // Give frozen hostile projectiles some velocity
+                    Main.projectile[i].velocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
                 }
             }
 
-            // Method 5: Nuclear option - force multiple system updates to break the detection loop
+            // Method 6: Force multiple system updates to break any detection cycles
             try
             {
                 var systemInstance = ModContent.GetInstance<ChronosSystem>();
                 if (systemInstance != null)
                 {
-                    // Force multiple updates to break the detection cycle
-                    for (int cycle = 0; cycle < 10; cycle++)
+                    // Force multiple updates to break any detection cycles
+                    for (int cycle = 0; cycle < 5; cycle++)
                     {
-                        // Reset detection fields each cycle
-                        var frozenField = chronosSystemType.GetField("frozenEnemyCount", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-                        var framesField = chronosSystemType.GetField("framesSinceBulletTimeDetected", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-                        var lastFrameField = chronosSystemType.GetField("lastFrameBulletTimeActive", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-                        
-                        frozenField?.SetValue(null, 0);
-                        framesField?.SetValue(null, 999);
-                        lastFrameField?.SetValue(null, false);
-                        
-                        // Force system update
                         systemInstance.PostUpdateEverything();
                     }
                 }
             }
             catch { /* Ignore if this fails */ }
 
-            // Method 6: Add a temporary "disable detection" flag if possible
-            try
-            {
-                // Try to set a flag that might disable the detection temporarily
-                var disableField = chronosSystemType.GetField("disableDetection", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-                disableField?.SetValue(null, true);
-            }
-            catch { /* Field doesn't exist, that's fine */ }
-
-            // Method 7: Send a chat message so we know it actually ran
-            Main.NewText("AGGRESSIVE emergency stop executed - unfroze all entities", Color.Red);
-            Main.NewText("If effects return, the detection system is re-triggering", Color.Yellow);
+            // Send feedback messages
+            Main.NewText("Emergency stop executed - all bullet time effects cleared", Color.Red);
+            Main.NewText("World state reset, player states cleared, entities unfrozen", Color.Yellow);
         }
 
         public override void SetStaticDefaults()
