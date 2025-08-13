@@ -103,6 +103,30 @@ namespace LackOfNameStuff.Systems
                     SoundEngine.PlaySound(SoundID.Item29.WithVolumeScale(0.4f).WithPitchOffset(-0.3f), position);
                 }
             }
+            else if (messageType == 3) // Activation confirmation/denial
+            {
+                int targetPlayer = reader.ReadInt32();
+                bool wasAccepted = reader.ReadBoolean();
+                
+                mod.Logger.Info($"Received activation response for player {targetPlayer}: {(wasAccepted ? "ACCEPTED" : "DENIED")}");
+                
+                // Only process if this is for the local player
+                if (targetPlayer == Main.LocalPlayer.whoAmI)
+                {
+                    var localPlayer = Main.LocalPlayer.GetModPlayer<ChronosPlayer>();
+                    if (wasAccepted)
+                    {
+                        // Server accepted our request - set cooldown
+                        localPlayer.bulletTimeCooldown = ChronosWatch.CooldownDuration;
+                        mod.Logger.Info($"Client {targetPlayer} setting cooldown after server acceptance");
+                    }
+                    else
+                    {
+                        // Server denied our request - don't set cooldown
+                        mod.Logger.Info($"Client {targetPlayer} request was denied by server");
+                    }
+                }
+            }
         }
         
         private static void ApplyBulletTimeToAllPlayers(Mod mod, int activatingPlayer)
@@ -129,6 +153,17 @@ namespace LackOfNameStuff.Systems
             packet.Send();
             
             mod.Logger.Info("Server sent bullet time sync packet to all clients");
+        }
+        
+        private static void SendActivationConfirmation(Mod mod, int targetPlayer, bool wasAccepted)
+        {
+            ModPacket packet = mod.GetPacket();
+            packet.Write((byte)3); // Message type: Activation confirmation
+            packet.Write(targetPlayer);
+            packet.Write(wasAccepted);
+            packet.Send(targetPlayer); // Send only to the specific player
+            
+            mod.Logger.Info($"Server sent activation {(wasAccepted ? "confirmation" : "denial")} to player {targetPlayer}");
         }
         
         private static void SendVisualEffects(Mod mod, int activatingPlayer, Vector2 position)

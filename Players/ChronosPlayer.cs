@@ -87,28 +87,25 @@ namespace LackOfNameStuff.Players
             // Add debugging
             Mod.Logger.Info($"Player {Player.whoAmI} trying to activate bullet time - InBulletTime: {IsInBulletTime}, Cooldown: {bulletTimeCooldown}");
             
-            // Check if we can activate (not already in bullet time and not on cooldown)
+            // Check if we can activate (not already in bullet time and not on personal cooldown)
             if (IsInBulletTime || bulletTimeCooldown > 0)
             {
-                Mod.Logger.Info($"Player {Player.whoAmI} bullet time activation blocked");
+                Mod.Logger.Info($"Player {Player.whoAmI} bullet time activation blocked - InBulletTime: {IsInBulletTime}, PersonalCooldown: {bulletTimeCooldown}");
                 return;
             }
 
-            Mod.Logger.Info($"Player {Player.whoAmI} activating bullet time");
+            Mod.Logger.Info($"Player {Player.whoAmI} attempting bullet time activation");
 
-            // Set our cooldown immediately so we can't reactivate
-            bulletTimeCooldown = ChronosWatch.CooldownDuration;
-
-            // Create initial ripple effect
+            // Create initial ripple effect (always do this for immediate feedback)
             CreateActivationRipple();
 
-            // Play sound effect
+            // Play sound effect (always do this for immediate feedback)
             SoundEngine.PlaySound(SoundID.Item29.WithVolumeScale(0.8f).WithPitchOffset(-0.3f), Player.Center);
 
             // Send packet to apply bullet time to all players
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                // Client sends request to server
+                // Client sends request to server - DON'T set cooldown yet, let server decide
                 ModPacket packet = Mod.GetPacket();
                 packet.Write((byte)0); // Message type: Request bullet time activation
                 packet.Write(Player.whoAmI);
@@ -117,9 +114,28 @@ namespace LackOfNameStuff.Players
             }
             else
             {
-                // Single player or server - apply directly and sync
-                ApplyBulletTimeToAllPlayers();
-                Mod.Logger.Info($"Server/SinglePlayer {Player.whoAmI} applied bullet time directly");
+                // Single player or server - check global state before applying
+                bool anyPlayerInBulletTime = false;
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    if (Main.player[i].active && Main.player[i].HasBuff(ModContent.BuffType<BulletTimeBuff>()))
+                    {
+                        anyPlayerInBulletTime = true;
+                        break;
+                    }
+                }
+                
+                if (!anyPlayerInBulletTime)
+                {
+                    // Set cooldown only if we're actually going to activate
+                    bulletTimeCooldown = ChronosWatch.CooldownDuration;
+                    ApplyBulletTimeToAllPlayers();
+                    Mod.Logger.Info($"Server/SinglePlayer {Player.whoAmI} applied bullet time directly");
+                }
+                else
+                {
+                    Mod.Logger.Info($"Server/SinglePlayer {Player.whoAmI} - bullet time already active globally");
+                }
             }
         }
 
