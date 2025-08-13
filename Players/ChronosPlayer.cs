@@ -29,6 +29,9 @@ namespace LackOfNameStuff.Players
         private float scanlineOffset = 0f;
         private float chromaticAberrationIntensity = 0f;
         private float noiseIntensity = 0f;
+        
+        // Debug tracking
+        private bool wasInBulletTime = false;
 
         // Convenience properties
         public bool IsInBulletTime => Player.HasBuff<BulletTimeBuff>();
@@ -51,6 +54,19 @@ namespace LackOfNameStuff.Players
             if (bulletTimeCooldown > 0)
             {
                 bulletTimeCooldown--;
+            }
+            
+            // Debug logging for buff state changes
+            bool currentlyInBulletTime = IsInBulletTime;
+            
+            if (currentlyInBulletTime != wasInBulletTime)
+            {
+                Mod.Logger.Info($"Player {Player.whoAmI} bullet time state changed: {wasInBulletTime} -> {currentlyInBulletTime}");
+                if (!currentlyInBulletTime && wasInBulletTime)
+                {
+                    Mod.Logger.Info($"Player {Player.whoAmI} bullet time ended naturally");
+                }
+                wasInBulletTime = currentlyInBulletTime;
             }
             
             // Update visual effects based on buff presence

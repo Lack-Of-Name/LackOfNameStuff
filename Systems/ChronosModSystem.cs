@@ -17,7 +17,7 @@ namespace LackOfNameStuff.Systems
         // We'll implement this in the Mod class instead
     }
     
-    // Add this to your main mod class file
+    // Add this to main mod class file
     public class ChronosNetworkHandler
     {
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
@@ -78,10 +78,18 @@ namespace LackOfNameStuff.Systems
                 {
                     if (Main.player[i].active)
                     {
-                        // Remove existing buff first to prevent stacking issues
+                        // Log before clearing
+                        bool hadBuffBefore = Main.player[i].HasBuff(ModContent.BuffType<BulletTimeBuff>());
+                        
+                        // Clear any existing bullet time buff first
                         Main.player[i].ClearBuff(ModContent.BuffType<BulletTimeBuff>());
                         Main.player[i].AddBuff(ModContent.BuffType<BulletTimeBuff>(), duration);
-                        mod.Logger.Info($"Applied bullet time buff to player {i}");
+                        
+                        // Log after applying
+                        bool hasBuffAfter = Main.player[i].HasBuff(ModContent.BuffType<BulletTimeBuff>());
+                        int buffTimeAfter = hasBuffAfter ? Main.player[i].buffTime[Main.player[i].FindBuffIndex(ModContent.BuffType<BulletTimeBuff>())] : 0;
+                        
+                        mod.Logger.Info($"Applied bullet time buff to player {i} - HadBefore: {hadBuffBefore}, HasAfter: {hasBuffAfter}, BuffTime: {buffTimeAfter}");
                     }
                 }
             }
