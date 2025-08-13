@@ -84,9 +84,17 @@ namespace LackOfNameStuff.Players
 
         private void TryActivateBulletTime()
         {
+            // Add debugging
+            Mod.Logger.Info($"Player {Player.whoAmI} trying to activate bullet time - InBulletTime: {IsInBulletTime}, Cooldown: {bulletTimeCooldown}");
+            
             // Check if we can activate (not already in bullet time and not on cooldown)
             if (IsInBulletTime || bulletTimeCooldown > 0)
+            {
+                Mod.Logger.Info($"Player {Player.whoAmI} bullet time activation blocked");
                 return;
+            }
+
+            Mod.Logger.Info($"Player {Player.whoAmI} activating bullet time");
 
             // Set our cooldown immediately so we can't reactivate
             bulletTimeCooldown = ChronosWatch.CooldownDuration;
@@ -105,11 +113,13 @@ namespace LackOfNameStuff.Players
                 packet.Write((byte)0); // Message type: Request bullet time activation
                 packet.Write(Player.whoAmI);
                 packet.Send();
+                Mod.Logger.Info($"Client {Player.whoAmI} sent bullet time request to server");
             }
             else
             {
                 // Single player or server - apply directly and sync
                 ApplyBulletTimeToAllPlayers();
+                Mod.Logger.Info($"Server/SinglePlayer {Player.whoAmI} applied bullet time directly");
             }
         }
 
