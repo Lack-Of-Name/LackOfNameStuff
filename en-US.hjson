@@ -34,5 +34,12 @@ Mods: {
 			ExplosiveArrow.DisplayName: Explosive Arrow
 			ExplosiveBullet.DisplayName: Explosive Bullet
 		}
+
+		Buffs: {
+			BulletTimeBuff: {
+				Description: Mods.LackOfNameStuff.Buffs.BulletTimeBuff.Description
+				DisplayName: Bullet Time Buff
+			}
+		}
 	}
 }

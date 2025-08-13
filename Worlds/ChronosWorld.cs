@@ -31,8 +31,11 @@ namespace LackOfNameStuff.Worlds
 
         public override void PostUpdateWorld()
         {
-            // Update bullet time state every frame
-            UpdateGlobalBulletTime();
+            // Only update on server or in single player
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                UpdateGlobalBulletTime();
+            }
         }
 
         private void UpdateGlobalBulletTime()
@@ -43,6 +46,12 @@ namespace LackOfNameStuff.Worlds
             {
                 // Countdown the remaining time
                 GlobalBulletTimeRemaining--;
+                
+                // Debug output every second
+                if (GlobalBulletTimeRemaining % 60 == 0)
+                {
+                    Main.NewText($"Bullet Time: {GlobalBulletTimeRemaining / 60}s remaining", Color.Cyan);
+                }
                 
                 if (GlobalBulletTimeRemaining <= 0)
                 {
