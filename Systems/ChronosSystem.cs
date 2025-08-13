@@ -9,6 +9,7 @@ using Terraria.GameContent;
 using Terraria.ModLoader;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Effects;
+using LackOfNameStuff.Worlds;
 
 namespace LackOfNameStuff.Systems
 {
@@ -16,19 +17,14 @@ namespace LackOfNameStuff.Systems
     {
         public ModKeybind BulletTimeKey { get; private set; }
         
-        // Global bullet time state - accessible by all classes
-        public static bool GlobalBulletTimeActive { get; private set; } = false;
-        public static int GlobalBulletTimeRemaining { get; private set; } = 0;
-        public static Player GlobalBulletTimeOwner { get; private set; } = null;
-        public static Vector2 GlobalBulletTimeOrigin { get; private set; } = Vector2.Zero;
+        // Use world-based global state instead of local state
+        public static bool GlobalBulletTimeActive => ChronosWorld.GlobalBulletTimeActive;
+        public static int GlobalBulletTimeRemaining => ChronosWorld.GlobalBulletTimeRemaining;
+        public static Player GlobalBulletTimeOwner => ChronosWorld.GlobalBulletTimeOwner;
+        public static Vector2 GlobalBulletTimeOrigin => ChronosWorld.GlobalBulletTimeOrigin;
         
         // Global screen effect intensity for ALL players
         public static float GlobalScreenEffectIntensity { get; private set; } = 0f;
-
-        // Smart detection variables
-        private static bool lastFrameBulletTimeActive = false;
-        private static int frozenEnemyCount = 0;
-        private static int framesSinceBulletTimeDetected = 0;
 
         public override void PostSetupContent()
         {
@@ -38,112 +34,8 @@ namespace LackOfNameStuff.Systems
         // Update global bullet time state every frame
         public override void PostUpdateEverything()
         {
-            UpdateGlobalBulletTime();
+            // World handles bullet time state updates now
             UpdateGlobalVisualEffects();
-        }
-
-        private void UpdateGlobalBulletTime()
-        {
-            // Method 1: Direct detection from any player with bullet time active
-            Player activePlayer = null;
-            int maxRemaining = 0;
-            
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                if (Main.player[i].active)
-                {
-                    var chronosPlayer = Main.player[i].GetModPlayer<ChronosPlayer>();
-                    if (chronosPlayer.bulletTimeActive && chronosPlayer.bulletTimeRemaining > maxRemaining)
-                    {
-                        activePlayer = Main.player[i];
-                        maxRemaining = chronosPlayer.bulletTimeRemaining;
-                    }
-                }
-            }
-
-            // Method 2: Fallback detection by checking if enemies are frozen (works in multiplayer)
-            if (activePlayer == null)
-            {
-                DetectBulletTimeFromFrozenEnemies();
-            }
-            else
-            {
-                // Reset frozen enemy detection when we have direct detection
-                frozenEnemyCount = 0;
-                framesSinceBulletTimeDetected = 0;
-            }
-
-            // Update global state
-            bool wasActive = GlobalBulletTimeActive;
-            
-            if (activePlayer != null)
-            {
-                // Direct detection from local players
-                GlobalBulletTimeActive = true;
-                GlobalBulletTimeRemaining = maxRemaining;
-                GlobalBulletTimeOwner = activePlayer;
-                if (!wasActive)
-                {
-                    GlobalBulletTimeOrigin = activePlayer.Center;
-                }
-            }
-            else if (frozenEnemyCount > 0 && framesSinceBulletTimeDetected < 10)
-            {
-                // Indirect detection from frozen enemies (multiplayer fallback)
-                GlobalBulletTimeActive = true;
-                // We can't know exact remaining time, so estimate
-                GlobalBulletTimeRemaining = Math.Max(1, GlobalBulletTimeRemaining - 1);
-                // Keep previous owner and origin
-            }
-            else
-            {
-                // No bullet time detected
-                GlobalBulletTimeActive = false;
-                GlobalBulletTimeRemaining = 0;
-                if (wasActive)
-                {
-                    GlobalBulletTimeOwner = null;
-                }
-            }
-
-            lastFrameBulletTimeActive = GlobalBulletTimeActive;
-        }
-
-        private void DetectBulletTimeFromFrozenEnemies()
-        {
-            // Count enemies that should be moving but aren't (indicating bullet time from another player)
-            int currentFrozenCount = 0;
-            
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && !Main.npc[i].friendly && Main.npc[i].life > 0)
-                {
-                    // Check if enemy should be moving but is frozen
-                    if (Main.npc[i].velocity == Vector2.Zero && Main.npc[i].position == Main.npc[i].oldPosition)
-                    {
-                        currentFrozenCount++;
-                    }
-                }
-            }
-
-            // If we have frozen enemies and we're not the ones causing it, assume bullet time is active
-            if (currentFrozenCount > 0)
-            {
-                frozenEnemyCount = currentFrozenCount;
-                framesSinceBulletTimeDetected = 0;
-                
-                // If this is the first frame we detected it and we don't have an origin, estimate it
-                if (!lastFrameBulletTimeActive && GlobalBulletTimeOrigin == Vector2.Zero)
-                {
-                    // Use local player position as a fallback
-                    GlobalBulletTimeOrigin = Main.LocalPlayer.Center;
-                }
-            }
-            else
-            {
-                frozenEnemyCount = 0;
-                framesSinceBulletTimeDetected++;
-            }
         }
 
         private void UpdateGlobalVisualEffects()
@@ -162,7 +54,7 @@ namespace LackOfNameStuff.Systems
         // Handle drawing effects for ALL players during global bullet time
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {
-            // Draw effects for ALL players when global bullet time is active
+            // Draw effects for ALL players when global bullet time is active or effects are fading out
             var localChronosPlayer = Main.LocalPlayer.GetModPlayer<ChronosPlayer>();
             
             // Always draw effects if global bullet time is active or effects are fading out

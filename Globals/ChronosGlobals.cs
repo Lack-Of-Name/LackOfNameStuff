@@ -1,8 +1,9 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using LackOfNameStuff.Items.Accessories;
-using LackOfNameStuff.Systems;
+using LackOfNameStuff.Worlds;
 
 namespace LackOfNameStuff.Globals
 {
@@ -11,20 +12,29 @@ namespace LackOfNameStuff.Globals
     {
         public override float UseTimeMultiplier(Item item, Player player)
         {
-            if (ChronosSystem.GlobalBulletTimeActive)
+            // Check world-based bullet time state
+            bool anyBulletTimeActive = ChronosWorld.GlobalBulletTimeActive;
+            
+            // Debug output to verify this is being called
+            if (Main.netMode == NetmodeID.SinglePlayer && anyBulletTimeActive && item.useTime > 0)
+            {
+                // Uncomment for debugging: Main.NewText($"Slowing item use: {item.Name} from {item.useTime} to {item.useTime / ChronosWatch.TimeSlowFactor}", Color.Yellow);
+            }
+            
+            if (anyBulletTimeActive)
             {
                 // Make items take longer to use (inverse of time slow factor) for balance
-                return 1f / ChronosWatch.TimeSlowFactor;
+                return 1f / ChronosWatch.TimeSlowFactor; // This should be 4.0f if TimeSlowFactor is 0.25f
             }
             return 1f;
         }
 
         public override float UseAnimationMultiplier(Item item, Player player)
         {
-            if (ChronosSystem.GlobalBulletTimeActive)
+            if (ChronosWorld.GlobalBulletTimeActive)
             {
                 // Make use animations slower for balance
-                return 1f / ChronosWatch.TimeSlowFactor;
+                return 1f / ChronosWatch.TimeSlowFactor; // This should be 4.0f if TimeSlowFactor is 0.25f
             }
             return 1f;
         }
@@ -32,7 +42,7 @@ namespace LackOfNameStuff.Globals
         // Handle item movement during bullet time
         public override void PostUpdate(Item item)
         {
-            if (ChronosSystem.GlobalBulletTimeActive)
+            if (ChronosWorld.GlobalBulletTimeActive)
             {
                 // Slow down item velocity (both X and Y)
                 item.velocity *= ChronosWatch.TimeSlowFactor;
@@ -50,7 +60,7 @@ namespace LackOfNameStuff.Globals
 
         public override void PostAI(Projectile projectile)
         {
-            if (ChronosSystem.GlobalBulletTimeActive)
+            if (ChronosWorld.GlobalBulletTimeActive)
             {
                 // Only affect enemy projectiles - freeze them completely
                 if (projectile.hostile && !projectile.friendly)
@@ -88,15 +98,39 @@ namespace LackOfNameStuff.Globals
     // Enemies get completely frozen during bullet time
     public class ChronosGlobalNPC : GlobalNPC
     {
+        public Vector2 storedVelocity = Vector2.Zero;
+        public Vector2 storedPosition = Vector2.Zero;
+        public bool hasStoredState = false;
+
+        public override bool InstancePerEntity => true;
+
         public override void PostAI(NPC npc)
         {
-            if (ChronosSystem.GlobalBulletTimeActive)
+            if (ChronosWorld.GlobalBulletTimeActive)
             {
+                // Store the state before freezing (only once)
+                if (!hasStoredState)
+                {
+                    storedVelocity = npc.velocity;
+                    storedPosition = npc.position;
+                    hasStoredState = true;
+                }
+
                 // Freeze enemies completely - no velocity multiplication issues
                 npc.velocity = Vector2.Zero;
                 
                 // Also freeze their position to prevent any drift
-                npc.position = npc.oldPosition;
+                npc.position = storedPosition;
+            }
+            else
+            {
+                // Bullet time is not active - restore state if we had stored it
+                if (hasStoredState)
+                {
+                    // Don't restore velocity as it might have changed naturally
+                    // Just reset the stored state flag
+                    hasStoredState = false;
+                }
             }
         }
     }
