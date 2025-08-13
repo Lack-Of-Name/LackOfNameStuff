@@ -66,21 +66,6 @@ namespace LackOfNameStuff.Worlds
             }
         }
 
-        // Force world sync in multiplayer
-        private static void SyncWorldData()
-        {
-            if (Main.netMode == NetmodeID.Server)
-            {
-                // On server, sync to all clients
-                NetMessage.SendData(MessageID.WorldData);
-            }
-            else if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                // On client, request sync from server
-                NetMessage.SendData(MessageID.RequestWorldData);
-            }
-        }
-
         // Called by players to activate bullet time
         public static void ActivateBulletTime(Player player)
         {
@@ -92,11 +77,11 @@ namespace LackOfNameStuff.Worlds
             GlobalBulletTimeOrigin = player.Center;
             GlobalBulletTimeOwnerName = player.name;
 
-            // Apply buff to all players
-            ApplyBulletTimeBuffToAllPlayers();
+            // Don't apply buffs for now to avoid issues
+            // ApplyBulletTimeBuffToAllPlayers();
 
-            // Sync in multiplayer
-            SyncWorldData();
+            // Don't sync world data - let the mod system handle state naturally
+            // SyncWorldData();
         }
 
         // Called when bullet time naturally expires or is manually deactivated
@@ -110,35 +95,11 @@ namespace LackOfNameStuff.Worlds
             GlobalBulletTimeOwnerName = "";
             // Keep origin for visual effects
 
-            // Remove buff from all players
-            RemoveBulletTimeBuffFromAllPlayers();
+            // Don't remove buffs for now
+            // RemoveBulletTimeBuffFromAllPlayers();
 
-            // Sync in multiplayer
-            SyncWorldData();
-        }
-
-        private static void ApplyBulletTimeBuffToAllPlayers()
-        {
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                if (Main.player[i].active)
-                {
-                    // Add the bullet time buff - we'll create this buff next
-                    Main.player[i].AddBuff(ModContent.BuffType<Buffs.BulletTimeBuff>(), ChronosWatch.BulletTimeDuration);
-                }
-            }
-        }
-
-        private static void RemoveBulletTimeBuffFromAllPlayers()
-        {
-            for (int i = 0; i < Main.maxPlayers; i++)
-            {
-                if (Main.player[i].active)
-                {
-                    // Remove the bullet time buff
-                    Main.player[i].DelBuff(Main.player[i].FindBuffIndex(ModContent.BuffType<Buffs.BulletTimeBuff>()));
-                }
-            }
+            // Don't force sync
+            // SyncWorldData();
         }
 
         public override void PostSetupContent()
