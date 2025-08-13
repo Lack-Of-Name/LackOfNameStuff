@@ -3,16 +3,23 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using LackOfNameStuff.Items.Accessories;
-using LackOfNameStuff.Worlds;
+using LackOfNameStuff.Buffs;
 
 namespace LackOfNameStuff.Globals
 {
     // Players' items have slower use time during bullet time for balance
     public class ChronosGlobalItem : GlobalItem
     {
+        // Check if ANY player has the bullet time buff (local check only)
+        private bool IsAnyPlayerInBulletTime()
+        {
+            // Only check local player for now to avoid multiplayer complications
+            return Main.LocalPlayer.HasBuff<BulletTimeBuff>();
+        }
+
         public override float UseTimeMultiplier(Item item, Player player)
         {
-            if (ChronosWorld.GlobalBulletTimeActive)
+            if (IsAnyPlayerInBulletTime())
             {
                 // Make items take longer to use (inverse of time slow factor) for balance
                 return 1f / ChronosWatch.TimeSlowFactor; // This should be 4.0f if TimeSlowFactor is 0.25f
@@ -22,7 +29,7 @@ namespace LackOfNameStuff.Globals
 
         public override float UseAnimationMultiplier(Item item, Player player)
         {
-            if (ChronosWorld.GlobalBulletTimeActive)
+            if (IsAnyPlayerInBulletTime())
             {
                 // Make use animations slower for balance
                 return 1f / ChronosWatch.TimeSlowFactor; // This should be 4.0f if TimeSlowFactor is 0.25f
@@ -33,7 +40,7 @@ namespace LackOfNameStuff.Globals
         // Handle item movement during bullet time
         public override void PostUpdate(Item item)
         {
-            if (ChronosWorld.GlobalBulletTimeActive)
+            if (IsAnyPlayerInBulletTime())
             {
                 // Slow down item velocity (both X and Y)
                 item.velocity *= ChronosWatch.TimeSlowFactor;
@@ -49,9 +56,15 @@ namespace LackOfNameStuff.Globals
 
         public override bool InstancePerEntity => true;
 
+        // Check if local player has bullet time buff
+        private bool IsLocalPlayerInBulletTime()
+        {
+            return Main.LocalPlayer.HasBuff<BulletTimeBuff>();
+        }
+
         public override void PostAI(Projectile projectile)
         {
-            if (ChronosWorld.GlobalBulletTimeActive)
+            if (IsLocalPlayerInBulletTime())
             {
                 // Only affect enemy projectiles - freeze them completely
                 if (projectile.hostile && !projectile.friendly)
@@ -95,9 +108,15 @@ namespace LackOfNameStuff.Globals
 
         public override bool InstancePerEntity => true;
 
+        // Check if local player has bullet time buff
+        private bool IsLocalPlayerInBulletTime()
+        {
+            return Main.LocalPlayer.HasBuff<BulletTimeBuff>();
+        }
+
         public override void PostAI(NPC npc)
         {
-            if (ChronosWorld.GlobalBulletTimeActive)
+            if (IsLocalPlayerInBulletTime())
             {
                 // Store the state before freezing (only once)
                 if (!hasStoredState)

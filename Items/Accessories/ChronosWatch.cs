@@ -59,7 +59,7 @@ namespace LackOfNameStuff.Items.Accessories
             string keyName = "V"; // Default fallback
             try
             {
-                var keybind = ModContent.GetInstance<ChronosSystem>().BulletTimeKey;
+                var keybind = ModContent.GetInstance<ChronosKeybindSystem>().BulletTimeKey;
                 if (keybind != null && keybind.GetAssignedKeys().Count > 0)
                 {
                     keyName = keybind.GetAssignedKeys()[0].ToString();

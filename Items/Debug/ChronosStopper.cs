@@ -2,11 +2,10 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Localization;
 using System.Collections.Generic;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Systems;
-using LackOfNameStuff.Worlds;
+using LackOfNameStuff.Buffs;
 
 namespace LackOfNameStuff.Items.Debug
 {
@@ -34,27 +33,41 @@ namespace LackOfNameStuff.Items.Debug
             tooltips.Insert(0, titleLine);
 
             TooltipLine debugLine = new TooltipLine(Mod, "DebugWarning", 
-                "DEBUG ITEM: Emergency stops all bullet time effects");
+                "DEBUG ITEM: Emergency removes bullet time buff from all players");
             debugLine.OverrideColor = Color.Red;
             tooltips.Add(debugLine);
 
+            // Check local player's bullet time status
+            var localPlayer = Main.LocalPlayer.GetModPlayer<ChronosPlayer>();
+            bool hasBulletTimeBuff = Main.LocalPlayer.HasBuff<BulletTimeBuff>();
+            
             TooltipLine statusLine = new TooltipLine(Mod, "CurrentStatus", 
-                $"Current bullet time active: {ChronosSystem.GlobalBulletTimeActive}");
-            statusLine.OverrideColor = ChronosSystem.GlobalBulletTimeActive ? Color.Cyan : Color.Gray;
+                $"Local player has bullet time buff: {hasBulletTimeBuff}");
+            statusLine.OverrideColor = hasBulletTimeBuff ? Color.Cyan : Color.Gray;
             tooltips.Add(statusLine);
 
-            if (ChronosSystem.GlobalBulletTimeActive)
+            if (hasBulletTimeBuff)
             {
-                TooltipLine remainingLine = new TooltipLine(Mod, "TimeRemaining", 
-                    $"Time remaining: {ChronosSystem.GlobalBulletTimeRemaining / 60f:F1}s");
-                remainingLine.OverrideColor = Color.Yellow;
-                tooltips.Add(remainingLine);
+                int buffIndex = Main.LocalPlayer.FindBuffIndex(ModContent.BuffType<BulletTimeBuff>());
+                if (buffIndex >= 0)
+                {
+                    int remainingTime = Main.LocalPlayer.buffTime[buffIndex];
+                    TooltipLine remainingLine = new TooltipLine(Mod, "TimeRemaining", 
+                        $"Time remaining: {remainingTime / 60f:F1}s");
+                    remainingLine.OverrideColor = Color.Yellow;
+                    tooltips.Add(remainingLine);
+                }
             }
 
             TooltipLine intensityLine = new TooltipLine(Mod, "ScreenIntensity", 
-                $"Screen effect intensity: {ChronosSystem.GlobalScreenEffectIntensity * 100f:F0}%");
+                $"Screen effect intensity: {localPlayer.screenEffectIntensity * 100f:F0}%");
             intensityLine.OverrideColor = Color.Orange;
             tooltips.Add(intensityLine);
+
+            TooltipLine cooldownLine = new TooltipLine(Mod, "Cooldown", 
+                $"Bullet time cooldown: {localPlayer.bulletTimeCooldown / 60f:F1}s");
+            cooldownLine.OverrideColor = localPlayer.bulletTimeCooldown > 0 ? Color.Red : Color.Green;
+            tooltips.Add(cooldownLine);
         }
 
         public override bool? UseItem(Player player)
@@ -72,67 +85,51 @@ namespace LackOfNameStuff.Items.Debug
             }
 
             // Chat message for feedback
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                Main.NewText("Bullet time effects forcibly stopped!", Color.Red);
-            }
-            else if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                Main.NewText("Bullet time effects forcibly stopped on client!", Color.Red);
-            }
+            Main.NewText("Bullet time buffs forcibly removed from all players!", Color.Red);
 
             return true;
         }
 
         private void EmergencyStopBulletTime()
         {
-            // Method 1: Force deactivate through the world system
-            ChronosWorld.DeactivateBulletTime();
-
-            // Method 2: Reset ChronosSystem screen effects
-            var chronosSystemType = typeof(ChronosSystem);
-            var fields = chronosSystemType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            // Method 1: Remove bullet time buff from all players
+            int bulletTimeBuffType = ModContent.BuffType<BulletTimeBuff>();
             
-            foreach (var field in fields)
+            for (int i = 0; i < Main.maxPlayers; i++)
             {
-                // Reset screen effect fields
-                if (field.Name.Contains("ScreenEffect") || field.Name.Contains("screenEffect"))
+                if (Main.player[i].active)
                 {
-                    try
+                    // Remove the bullet time buff
+                    int buffIndex = Main.player[i].FindBuffIndex(bulletTimeBuffType);
+                    if (buffIndex >= 0)
                     {
-                        if (field.FieldType == typeof(float))
-                            field.SetValue(null, 0f);
+                        Main.player[i].DelBuff(buffIndex);
+                        Main.NewText($"Removed bullet time buff from {Main.player[i].name}", Color.Orange);
                     }
-                    catch { /* Ignore read-only fields */ }
                 }
             }
 
-            // Method 3: Reset all players' ChronosPlayer state
+            // Method 2: Reset all players' ChronosPlayer state
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 if (Main.player[i].active)
                 {
                     var chronosPlayer = Main.player[i].GetModPlayer<ChronosPlayer>();
                     
-                    // Reset the fields we can access (not the read-only properties)
+                    // Reset the fields we can access
                     chronosPlayer.bulletTimeCooldown = 0;
                     chronosPlayer.activeRipples.Clear();
-                    chronosPlayer.wasGlobalBulletTimeActive = false;
+                    chronosPlayer.screenEffectIntensity = 0f;
                     
                     // Reset any private fields in the player using reflection
-                    var playerFields = typeof(ChronosPlayer).GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    var playerFields = typeof(ChronosPlayer).GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                     foreach (var field in playerFields)
                     {
                         try
                         {
-                            if (field.Name.Contains("bulletTime") || field.Name.Contains("BulletTime") || 
-                                field.Name.Contains("screenEffect") || field.Name.Contains("ScreenEffect"))
+                            if (field.Name.Contains("screenEffect") || field.Name.Contains("ScreenEffect"))
                             {
-                                if (field.FieldType == typeof(bool))
-                                    field.SetValue(chronosPlayer, false);
-                                else if (field.FieldType == typeof(int))
-                                    field.SetValue(chronosPlayer, 0);
-                                else if (field.FieldType == typeof(float))
+                                if (field.FieldType == typeof(float))
                                     field.SetValue(chronosPlayer, 0f);
                             }
                         }
@@ -141,66 +138,60 @@ namespace LackOfNameStuff.Items.Debug
                 }
             }
 
-            // Method 4: Force reset ChronosWorld state using reflection
-            var chronosWorldType = typeof(ChronosWorld);
-            var worldFields = chronosWorldType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            
-            foreach (var field in worldFields)
-            {
-                try
-                {
-                    if (field.Name.Contains("GlobalBulletTime"))
-                    {
-                        if (field.FieldType == typeof(bool))
-                            field.SetValue(null, false);
-                        else if (field.FieldType == typeof(int))
-                            field.SetValue(null, -1); // Reset owner to -1, remaining to 0
-                        else if (field.FieldType == typeof(Vector2))
-                            field.SetValue(null, Vector2.Zero);
-                        else if (field.FieldType == typeof(string))
-                            field.SetValue(null, "");
-                    }
-                }
-                catch { /* Ignore read-only fields */ }
-            }
-
-            // Method 5: Unfreeze any entities that might still be frozen (simplified version)
+            // Method 3: Force unfreeze entities by resetting their global states
+            // Reset NPCs
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (Main.npc[i].active && Main.npc[i].velocity == Vector2.Zero)
+                if (Main.npc[i].active)
                 {
-                    // Give frozen NPCs a tiny random velocity to break any frozen state
-                    Main.npc[i].velocity = new Vector2(Main.rand.NextFloat(-0.1f, 0.1f), Main.rand.NextFloat(-0.1f, 0.1f));
+                    try
+                    {
+                        var globalNPC = Main.npc[i].GetGlobalNPC<Globals.ChronosGlobalNPC>();
+                        globalNPC.hasStoredState = false;
+                        globalNPC.storedVelocity = Vector2.Zero;
+                        globalNPC.storedPosition = Vector2.Zero;
+                        
+                        // Give frozen NPCs a tiny velocity to unstick them
+                        if (Main.npc[i].velocity == Vector2.Zero)
+                        {
+                            Main.npc[i].velocity = new Vector2(Main.rand.NextFloat(-0.1f, 0.1f), Main.rand.NextFloat(-0.1f, 0.1f));
+                        }
+                    }
+                    catch { /* Ignore if global doesn't exist */ }
                 }
             }
 
+            // Reset Projectiles
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
-                if (Main.projectile[i].active && Main.projectile[i].velocity == Vector2.Zero && Main.projectile[i].hostile)
+                if (Main.projectile[i].active)
                 {
-                    // Give frozen hostile projectiles some velocity
-                    Main.projectile[i].velocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
-                }
-            }
-
-            // Method 6: Force multiple system updates to break any detection cycles
-            try
-            {
-                var systemInstance = ModContent.GetInstance<ChronosSystem>();
-                if (systemInstance != null)
-                {
-                    // Force multiple updates to break any detection cycles
-                    for (int cycle = 0; cycle < 5; cycle++)
+                    try
                     {
-                        systemInstance.PostUpdateEverything();
+                        var globalProj = Main.projectile[i].GetGlobalProjectile<Globals.ChronosGlobalProjectile>();
+                        
+                        // Restore stored velocity if it exists
+                        if (globalProj.hasStoredVelocity && globalProj.storedVelocity != Vector2.Zero)
+                        {
+                            Main.projectile[i].velocity = globalProj.storedVelocity;
+                        }
+                        else if (Main.projectile[i].velocity == Vector2.Zero && Main.projectile[i].hostile)
+                        {
+                            // Give frozen hostile projectiles some velocity
+                            Main.projectile[i].velocity = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f));
+                        }
+                        
+                        // Reset the global state
+                        globalProj.hasStoredVelocity = false;
+                        globalProj.storedVelocity = Vector2.Zero;
                     }
+                    catch { /* Ignore if global doesn't exist */ }
                 }
             }
-            catch { /* Ignore if this fails */ }
 
             // Send feedback messages
-            Main.NewText("Emergency stop executed - all bullet time effects cleared", Color.Red);
-            Main.NewText("World state reset, player states cleared, entities unfrozen", Color.Yellow);
+            Main.NewText("Emergency stop executed - all bullet time buffs removed", Color.Red);
+            Main.NewText("Player states reset, entities unfrozen", Color.Yellow);
         }
 
         public override void SetStaticDefaults()

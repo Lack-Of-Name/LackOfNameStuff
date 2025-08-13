@@ -4,12 +4,12 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using System;
+using System.IO;
 using System.Collections.Generic;
 using LackOfNameStuff.Items.Accessories;
 using LackOfNameStuff.Systems;
 using LackOfNameStuff.Effects;
-using LackOfNameStuff.Worlds;
+using LackOfNameStuff.Buffs;
 
 namespace LackOfNameStuff.Players
 {
@@ -18,16 +18,15 @@ namespace LackOfNameStuff.Players
         public bool hasChronosWatch = false;
         public int bulletTimeCooldown = 0;
         
-        // Track global bullet time state for visual effects
-        public bool wasGlobalBulletTimeActive = false;
-        
-        // Visual effects - only ripples are per-player now
+        // Visual effects
         public List<BulletTimeRipple> activeRipples = new List<BulletTimeRipple>();
+        
+        // Screen effect intensity
+        public float screenEffectIntensity = 0f;
 
-        // Convenience methods to check bullet time state
-        public bool IsInBulletTime() => ChronosWorld.GlobalBulletTimeActive;
-        public bool IsOwnBulletTime() => ChronosWorld.GlobalBulletTimeActive && ChronosWorld.GlobalBulletTimeOwner == Player;
-        public int GetBulletTimeRemaining() => ChronosWorld.GlobalBulletTimeActive ? ChronosWorld.GlobalBulletTimeRemaining : 0;
+        // Convenience properties
+        public bool IsInBulletTime => Player.HasBuff<BulletTimeBuff>();
+        public int BulletTimeRemaining => Player.HasBuff<BulletTimeBuff>() ? Player.buffTime[Player.FindBuffIndex(ModContent.BuffType<BulletTimeBuff>())] : 0;
 
         public override void ResetEffects()
         {
@@ -37,7 +36,7 @@ namespace LackOfNameStuff.Players
         public override void PostUpdate()
         {
             // Handle bullet time activation (only for players with the item)
-            if (hasChronosWatch && ModContent.GetInstance<ChronosSystem>().BulletTimeKey.JustPressed)
+            if (hasChronosWatch && ModContent.GetInstance<ChronosKeybindSystem>().BulletTimeKey.JustPressed)
             {
                 TryActivateBulletTime();
             }
@@ -48,79 +47,95 @@ namespace LackOfNameStuff.Players
                 bulletTimeCooldown--;
             }
             
-            // Update visual effects based on GLOBAL bullet time (for ALL players)
-            UpdateGlobalVisualEffects();
+            // Update visual effects based on buff presence
+            UpdateVisualEffects();
             
             // Update ripple effects
             UpdateRippleEffects();
         }
 
-        // Players remain at normal speed during bullet time
-        public override void PostUpdateMiscEffects()
+        private void UpdateVisualEffects()
         {
-            // Players are NOT slowed down - they remain at normal speed
-            // This method is intentionally empty to keep players at normal speed
-        }
-
-        private void UpdateGlobalVisualEffects()
-        {
-            // Check if global bullet time state changed
-            bool isGlobalBulletTimeActive = ChronosWorld.GlobalBulletTimeActive;
-            
-            if (isGlobalBulletTimeActive && !wasGlobalBulletTimeActive)
+            // Update screen effect intensity based on buff
+            if (IsInBulletTime)
             {
-                // Global bullet time just activated
-                // Only create effects if this player DIDN'T activate it themselves
-                Player activatingPlayer = ChronosWorld.GlobalBulletTimeOwner;
-                if (activatingPlayer != null && activatingPlayer != Player)
-                {
-                    // Create visual effects at the activating player's position
-                    activeRipples.Add(new BulletTimeRipple(activatingPlayer.Center, ChronosWatch.RippleLifetime, true));
-                    SoundEngine.PlaySound(SoundID.Item29.WithVolumeScale(0.4f).WithPitchOffset(-0.3f), activatingPlayer.Center);
-                }
+                screenEffectIntensity = System.Math.Min(screenEffectIntensity + 0.05f, 1f);
             }
-            else if (!isGlobalBulletTimeActive && wasGlobalBulletTimeActive)
+            else
             {
-                // Global bullet time just deactivated
-                // Only create effects if this player DIDN'T deactivate it themselves
-                bool thisPlayerJustDeactivated = (bulletTimeCooldown == ChronosWatch.CooldownDuration);
-                
-                if (!thisPlayerJustDeactivated)
-                {
-                    // Create deactivation effects at the origin point
-                    Vector2 origin = ChronosWorld.GlobalBulletTimeOrigin;
-                    if (origin != Vector2.Zero) // Make sure we have a valid origin
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Vector2 offset = Main.rand.NextVector2Circular(30f, 30f);
-                            activeRipples.Add(new BulletTimeRipple(origin + offset, ChronosWatch.RippleLifetime / 3, false));
-                        }
-                        SoundEngine.PlaySound(SoundID.Item25.WithVolumeScale(0.3f), origin);
-                    }
-                }
+                screenEffectIntensity = System.Math.Max(screenEffectIntensity - 0.03f, 0f);
             }
-            
-            wasGlobalBulletTimeActive = isGlobalBulletTimeActive;
         }
 
         private void TryActivateBulletTime()
         {
-            // Check if we can activate (check global state and local cooldown)
-            if (ChronosWorld.GlobalBulletTimeActive || bulletTimeCooldown > 0)
+            // Check if we can activate (not already in bullet time and not on cooldown)
+            if (IsInBulletTime || bulletTimeCooldown > 0)
                 return;
 
-            // Activate global bullet time through the world system
-            ChronosWorld.ActivateBulletTime(Player);
+            // Apply bullet time buff to ALL players
+            ApplyBulletTimeToAllPlayers();
             
             // Set our cooldown immediately so we can't reactivate
             bulletTimeCooldown = ChronosWatch.CooldownDuration;
 
-            // Create initial ripple effect - this player creates their own effects
+            // Create initial ripple effect
             CreateActivationRipple();
 
             // Play sound effect
             SoundEngine.PlaySound(SoundID.Item29.WithVolumeScale(0.8f).WithPitchOffset(-0.3f), Player.Center);
+            
+            // Send activation message to all players for visual effects
+            SendBulletTimeActivationToOtherPlayers();
+        }
+
+        private void ApplyBulletTimeToAllPlayers()
+        {
+            // In multiplayer, we need to send this to all players
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                // Send packet to server to apply buff to all players
+                ModPacket packet = Mod.GetPacket();
+                packet.Write((byte)0); // Message type: Apply bullet time to all players
+                packet.Write(Player.whoAmI);
+                packet.Write(ChronosWatch.BulletTimeDuration);
+                packet.Send();
+            }
+            else
+            {
+                // Single player or server - apply directly
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    if (Main.player[i].active)
+                    {
+                        Main.player[i].AddBuff(ModContent.BuffType<BulletTimeBuff>(), ChronosWatch.BulletTimeDuration);
+                    }
+                }
+                
+                // If we're the server, also send to clients
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    ModPacket packet = Mod.GetPacket();
+                    packet.Write((byte)0); // Message type: Apply bullet time to all players
+                    packet.Write(Player.whoAmI);
+                    packet.Write(ChronosWatch.BulletTimeDuration);
+                    packet.Send();
+                }
+            }
+        }
+
+        private void SendBulletTimeActivationToOtherPlayers()
+        {
+            // Send visual effect trigger to other players
+            if (Main.netMode != NetmodeID.SinglePlayer)
+            {
+                ModPacket packet = Mod.GetPacket();
+                packet.Write((byte)1); // Message type: Visual effects for activation
+                packet.Write(Player.whoAmI);
+                packet.Write(Player.Center.X);
+                packet.Write(Player.Center.Y);
+                packet.Send();
+            }
         }
 
         private void UpdateRippleEffects()
@@ -141,29 +156,38 @@ namespace LackOfNameStuff.Players
             activeRipples.Add(new BulletTimeRipple(Player.Center, ChronosWatch.RippleLifetime, true));
         }
 
-        private void CreateDeactivationEffect()
+        // Handle multiplayer packets
+        public void HandlePacket(BinaryReader reader, int whoAmI)
         {
-            // Create multiple smaller ripples
-            for (int i = 0; i < 5; i++)
+            byte messageType = reader.ReadByte();
+            
+            if (messageType == 0) // Apply bullet time to all players
             {
-                Vector2 offset = Main.rand.NextVector2Circular(50f, 50f);
-                activeRipples.Add(new BulletTimeRipple(Player.Center + offset, ChronosWatch.RippleLifetime / 2, false));
+                int activatingPlayer = reader.ReadInt32();
+                int duration = reader.ReadInt32();
+                
+                // Apply buff to all players
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    if (Main.player[i].active)
+                    {
+                        Main.player[i].AddBuff(ModContent.BuffType<BulletTimeBuff>(), duration);
+                    }
+                }
             }
-        }
-
-        // These methods are kept for backwards compatibility but are mostly unused now
-        public void ReceiveBulletTimeActivation(Vector2 position)
-        {
-            activeRipples.Add(new BulletTimeRipple(position, ChronosWatch.RippleLifetime, true));
-            SoundEngine.PlaySound(SoundID.Item29.WithVolumeScale(0.4f).WithPitchOffset(-0.3f), position);
-        }
-
-        public void ReceiveBulletTimeDeactivation(Vector2 position)
-        {
-            for (int i = 0; i < 3; i++)
+            else if (messageType == 1) // Visual effects for activation
             {
-                Vector2 offset = Main.rand.NextVector2Circular(30f, 30f);
-                activeRipples.Add(new BulletTimeRipple(position + offset, ChronosWatch.RippleLifetime / 3, false));
+                int activatingPlayer = reader.ReadInt32();
+                float x = reader.ReadSingle();
+                float y = reader.ReadSingle();
+                Vector2 position = new Vector2(x, y);
+                
+                // Only create effects if it wasn't this player who activated it
+                if (activatingPlayer != Player.whoAmI)
+                {
+                    activeRipples.Add(new BulletTimeRipple(position, ChronosWatch.RippleLifetime, true));
+                    SoundEngine.PlaySound(SoundID.Item29.WithVolumeScale(0.4f).WithPitchOffset(-0.3f), position);
+                }
             }
         }
 
@@ -178,8 +202,8 @@ namespace LackOfNameStuff.Players
             bulletTimeCooldown = tag.GetInt("bulletTimeCooldown");
         }
 
-        // Backwards compatibility properties for ChronosWatch tooltip
-        public bool bulletTimeActive => IsOwnBulletTime();
-        public int bulletTimeRemaining => GetBulletTimeRemaining();
+        // Properties for ChronosWatch tooltip compatibility
+        public bool bulletTimeActive => IsInBulletTime;
+        public int bulletTimeRemaining => BulletTimeRemaining;
     }
 }
