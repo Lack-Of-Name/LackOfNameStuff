@@ -53,6 +53,9 @@ namespace LackOfNameStuff.Globals
     {
         public Vector2 storedVelocity = Vector2.Zero;
         public bool hasStoredVelocity = false;
+        
+        // Add tracking for clean reset
+        private bool wasInBulletTimePreviously = false;
 
         public override bool InstancePerEntity => true;
 
@@ -64,7 +67,9 @@ namespace LackOfNameStuff.Globals
 
         public override void PostAI(Projectile projectile)
         {
-            if (IsLocalPlayerInBulletTime())
+            bool currentlyInBulletTime = IsLocalPlayerInBulletTime();
+            
+            if (currentlyInBulletTime)
             {
                 // Only affect enemy projectiles - freeze them completely
                 if (projectile.hostile && !projectile.friendly)
@@ -92,10 +97,32 @@ namespace LackOfNameStuff.Globals
                 // Bullet time is not active - restore velocity if we had stored it
                 if (hasStoredVelocity && projectile.hostile && !projectile.friendly)
                 {
-                    projectile.velocity = storedVelocity;
-                    hasStoredVelocity = false; // Reset the flag
+                    // Only restore if we actually have stored velocity and it's not zero
+                    if (storedVelocity != Vector2.Zero)
+                    {
+                        projectile.velocity = storedVelocity;
+                    }
+                }
+                
+                // CRITICAL FIX: Always reset the stored state when bullet time ends
+                if (wasInBulletTimePreviously && !currentlyInBulletTime)
+                {
+                    // Complete state reset
+                    hasStoredVelocity = false;
+                    storedVelocity = Vector2.Zero;
                 }
             }
+            
+            // Track previous state for clean transitions
+            wasInBulletTimePreviously = currentlyInBulletTime;
+        }
+        
+        // Add a method to force reset (for use by stopper tool)
+        public void ForceReset()
+        {
+            hasStoredVelocity = false;
+            storedVelocity = Vector2.Zero;
+            wasInBulletTimePreviously = false;
         }
     }
 
@@ -105,6 +132,9 @@ namespace LackOfNameStuff.Globals
         public Vector2 storedVelocity = Vector2.Zero;
         public Vector2 storedPosition = Vector2.Zero;
         public bool hasStoredState = false;
+        
+        // Add tracking for clean reset
+        private bool wasInBulletTimePreviously = false;
 
         public override bool InstancePerEntity => true;
 
@@ -116,7 +146,9 @@ namespace LackOfNameStuff.Globals
 
         public override void PostAI(NPC npc)
         {
-            if (IsLocalPlayerInBulletTime())
+            bool currentlyInBulletTime = IsLocalPlayerInBulletTime();
+            
+            if (currentlyInBulletTime)
             {
                 // Store the state before freezing (only once)
                 if (!hasStoredState)
@@ -134,14 +166,33 @@ namespace LackOfNameStuff.Globals
             }
             else
             {
-                // Bullet time is not active - restore state if we had stored it
-                if (hasStoredState)
+                // CRITICAL FIX: Always reset stored state when bullet time ends
+                if (wasInBulletTimePreviously && !currentlyInBulletTime)
                 {
-                    // Don't restore velocity as it might have changed naturally
-                    // Just reset the stored state flag
+                    // Complete state reset - don't try to restore velocity as it may have changed
                     hasStoredState = false;
+                    storedVelocity = Vector2.Zero;
+                    storedPosition = Vector2.Zero;
+                    
+                    // Give the NPC a tiny nudge to ensure it starts moving again if needed
+                    if (npc.velocity == Vector2.Zero && npc.aiStyle > 0)
+                    {
+                        npc.velocity = new Vector2(Main.rand.NextFloat(-0.1f, 0.1f), Main.rand.NextFloat(-0.1f, 0.1f));
+                    }
                 }
             }
+            
+            // Track previous state for clean transitions
+            wasInBulletTimePreviously = currentlyInBulletTime;
+        }
+        
+        // Add a method to force reset (for use by stopper tool)
+        public void ForceReset()
+        {
+            hasStoredState = false;
+            storedVelocity = Vector2.Zero;
+            storedPosition = Vector2.Zero;
+            wasInBulletTimePreviously = false;
         }
     }
 }
