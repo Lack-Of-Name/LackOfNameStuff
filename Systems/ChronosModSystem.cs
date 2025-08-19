@@ -8,6 +8,7 @@ using LackOfNameStuff.Players;
 using LackOfNameStuff.Items.Accessories;
 using LackOfNameStuff.Effects;
 using LackOfNameStuff.Buffs;
+using LackOfNameStuff.Players;
 
 namespace LackOfNameStuff.Systems
 {
@@ -29,6 +30,17 @@ namespace LackOfNameStuff.Systems
             // Update server-side global state tracking
             UpdateServerGlobalState();
             
+                // Decrement cooldown for all active players
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    if (Main.player[i].active)
+                    {
+                        var modPlayer = Main.player[i].GetModPlayer<ChronosPlayer>();
+                        if (modPlayer.bulletTimeCooldown > 0)
+                            modPlayer.bulletTimeCooldown--;
+                    }
+                }
+
             cleanupTimer++;
             
             // Every 5 seconds, do a comprehensive cleanup check

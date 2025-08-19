@@ -103,10 +103,10 @@ namespace LackOfNameStuff.Players
             // Add debugging
             Mod.Logger.Info($"Player {Player.whoAmI} trying to activate bullet time - InBulletTime: {IsInBulletTime}, Cooldown: {bulletTimeCooldown}");
             
-            // Check if we can activate (not already in bullet time and not on personal cooldown)
-            if (IsInBulletTime || bulletTimeCooldown > 0)
+            // Check if we can activate (only check if already in bullet time, let server handle cooldown)
+            if (IsInBulletTime)
             {
-                Mod.Logger.Info($"Player {Player.whoAmI} bullet time activation blocked - InBulletTime: {IsInBulletTime}, PersonalCooldown: {bulletTimeCooldown}");
+                Mod.Logger.Info($"Player {Player.whoAmI} bullet time activation blocked - already in bullet time");
                 return;
             }
 
