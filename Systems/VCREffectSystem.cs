@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
 using System;
+using Terraria;
 using Terraria.ModLoader;
 using LackOfNameStuff.Players;
 
@@ -152,11 +152,10 @@ namespace LackOfNameStuff.Systems
                 float alpha = (float)(vignetteSize - i) / vignetteSize * intensity * 0.4f;
                 
                 // Add corruption to edge
-                float corruptionNoise = (float)(Math.Sin(_edgeCorruptionSeed + i * 0.1f) * 5 * intensity);
-                int corruptedSize = (int)(vignetteSize + corruptionNoise);
+                float corruptionNoise = (float)(Math.Sin(_edgeCorruptionSeed + i * 0.1f) * 3 * intensity);
                 
                 Color fadeColor = Color.Black * alpha;
-                Rectangle line = new Rectangle(0, i, screenWidth, Math.Max(1, (int)(1 + Math.Abs(corruptionNoise * 0.1f))));
+                Rectangle line = new Rectangle(0, i, screenWidth, 1);
                 spriteBatch.Draw(pixelTexture, line, fadeColor);
             }
             
@@ -165,27 +164,43 @@ namespace LackOfNameStuff.Systems
             {
                 float alpha = (float)i / vignetteSize * intensity * 0.4f;
                 
-                float corruptionNoise = (float)(Math.Sin(_edgeCorruptionSeed * 1.3f + i * 0.1f) * 5 * intensity);
+                float corruptionNoise = (float)(Math.Sin(_edgeCorruptionSeed * 1.3f + i * 0.1f) * 3 * intensity);
                 
                 Color fadeColor = Color.Black * alpha;
-                Rectangle line = new Rectangle(0, screenHeight - vignetteSize + i, screenWidth, 
-                                             Math.Max(1, (int)(1 + Math.Abs(corruptionNoise * 0.1f))));
+                Rectangle line = new Rectangle(0, screenHeight - vignetteSize + i, screenWidth, 1);
                 spriteBatch.Draw(pixelTexture, line, fadeColor);
             }
             
-            // Left and right vigneites (simplified for performance)
+            // Left vignette with corruption
             for (int i = 0; i < vignetteSize; i++)
             {
                 float alpha = (float)(vignetteSize - i) / vignetteSize * intensity * 0.2f;
+                
+                // Add subtle horizontal corruption
+                float corruptionOffset = (float)(Math.Sin(_edgeCorruptionSeed * 0.7f + i * 0.05f) * 2 * intensity);
+                
                 Color fadeColor = Color.Black * alpha;
+                Rectangle line = new Rectangle(i + (int)corruptionOffset, 0, 1, screenHeight);
+                if (line.X >= 0 && line.X < screenWidth)
+                {
+                    spriteBatch.Draw(pixelTexture, line, fadeColor);
+                }
+            }
+            
+            // Right vignette with corruption
+            for (int i = 0; i < vignetteSize; i++)
+            {
+                float alpha = (float)i / vignetteSize * intensity * 0.2f;
                 
-                // Left
-                Rectangle leftLine = new Rectangle(i, 0, 1, screenHeight);
-                spriteBatch.Draw(pixelTexture, leftLine, fadeColor);
+                // Add subtle horizontal corruption
+                float corruptionOffset = (float)(Math.Sin(_edgeCorruptionSeed * 0.9f + i * 0.05f) * 2 * intensity);
                 
-                // Right
-                Rectangle rightLine = new Rectangle(screenWidth - vignetteSize + i, 0, 1, screenHeight);
-                spriteBatch.Draw(pixelTexture, rightLine, fadeColor);
+                Color fadeColor = Color.Black * alpha;
+                Rectangle line = new Rectangle(screenWidth - vignetteSize + i + (int)corruptionOffset, 0, 1, screenHeight);
+                if (line.X >= 0 && line.X < screenWidth)
+                {
+                    spriteBatch.Draw(pixelTexture, line, fadeColor);
+                }
             }
         }
 
