@@ -155,7 +155,7 @@ namespace LackOfNameStuff.Players
             }
         }
 
-        private void ApplyBulletTimeToAllPlayers()
+        public void ApplyBulletTimeToAllPlayers()
         {
             // Apply buff to all active players
             for (int i = 0; i < Main.maxPlayers; i++)
