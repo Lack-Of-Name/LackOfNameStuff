@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LackOfNameStuff.Items.Materials
 {
@@ -16,7 +17,7 @@ namespace LackOfNameStuff.Items.Materials
             Item.maxStack = 999;
             Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Cyan;
-            
+
             // Add a subtle glow effect
             Item.glowMask = 0; // Set to 0 for no glow, or assign a valid glow mask ID if you have one
         }
@@ -38,6 +39,26 @@ namespace LackOfNameStuff.Items.Materials
                 dust.fadeIn = 1f;
                 dust.noGravity = true;
             }
+        }
+        
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+
+            // Make the dropped item much smaller
+            float customScale = 0.1f;
+
+            Vector2 position = Item.position - Main.screenPosition + new Vector2(Item.width / 2, Item.height - texture.Height * customScale / 2f);
+            spriteBatch.Draw(
+                texture,
+                position,
+                null,
+                lightColor,
+                rotation,
+                texture.Size() * 0.5f, // Use the center as origin
+                customScale,
+                SpriteEffects.None,
+                0f
+            );
         }
     }
 }

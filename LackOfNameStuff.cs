@@ -30,7 +30,7 @@ namespace LackOfNameStuff
         {
             // Record current position every tick
             positionHistory.Enqueue(Player.position);
-            
+
             // Keep only the last 10 seconds
             while (positionHistory.Count > MaxHistoryLength)
             {
@@ -44,10 +44,10 @@ namespace LackOfNameStuff
             {
                 // Get the oldest position (10 seconds ago)
                 Vector2 rewindPosition = positionHistory.Peek();
-                
+
                 // Teleport player
                 Player.Teleport(rewindPosition);
-                
+
                 // Add some visual/audio feedback
                 for (int i = 0; i < 30; i++)
                 {
@@ -56,7 +56,7 @@ namespace LackOfNameStuff
                     dust.velocity = Main.rand.NextVector2Circular(3f, 3f);
                     dust.scale = Main.rand.NextFloat(0.8f, 1.2f);
                 }
-                
+
                 // Play sound
                 Terraria.Audio.SoundEngine.PlaySound(SoundID.Item6, Player.position);
             }
@@ -67,7 +67,7 @@ namespace LackOfNameStuff
         {
             positionHistory.Clear();
         }
-        
+
         public override void OnEnterWorld()
         {
             positionHistory.Clear();
@@ -77,12 +77,27 @@ namespace LackOfNameStuff
     public class TemporalPickaxePlayer : ModPlayer
     {
         public int BlocksMinedWithTemporalPickaxe = 0;
-        private const int MaxBlocks = 5000; // BigNumber for speed calculation
-        
+        private const int MaxBlocks = 10000; // BigNumber for speed calculation
+
         public float GetSpeedBonus()
         {
-            // Calculate speed bonus: (BlocksMined / 5000) * 1000, capped at 1000%
+            // Calculate speed bonus: (BlocksMined / 10000) * 1000, capped at 1000%
             return Math.Min(1000f, (float)BlocksMinedWithTemporalPickaxe / MaxBlocks * 1000f);
+        }
+
+        // Call this method from your TemporalPickaxe ModItem when a block is mined
+        public void OnBlockMinedByPickaxe()
+        {
+            if (Player.HeldItem.ModItem is TemporalPickaxe)
+            {
+                BlocksMinedWithTemporalPickaxe++;
+
+                // Visual feedback every 100 blocks
+                if (BlocksMinedWithTemporalPickaxe % 100 == 0)
+                {
+                    CombatText.NewText(Player.getRect(), Color.Cyan, $"+{GetSpeedBonus():F1}% speed!", true);
+                }
+            }
         }
 
         // Clean method - removed duplicates

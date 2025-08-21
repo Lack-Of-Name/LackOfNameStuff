@@ -42,12 +42,18 @@ Mods: {
 				DisplayName: Temporal Pickaxe
 				Tooltip: ""
 			}
+
+			TemporalOrbLauncher: {
+				DisplayName: Temporal Orb Launcher
+				Tooltip: ""
+			}
 		}
 
 		Projectiles: {
 			PrismaticBolt.DisplayName: Prismatic Bolt
 			ExplosiveArrow.DisplayName: Explosive Arrow
 			ExplosiveBullet.DisplayName: Explosive Bullet
+			TemporalOrb.DisplayName: Temporal Orb
 		}
 
 		Buffs: {

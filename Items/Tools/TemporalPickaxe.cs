@@ -25,21 +25,28 @@ namespace LackOfNameStuff.Items.Tools
             Item.rare = ItemRarityID.Cyan;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            
+
             Item.pick = 225; // Lunar pickaxe power
         }
 
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
+        // This is called every frame while the item is held
+        public override void HoldItem(Player player)
         {
             // Apply speed bonus to mining
             var modPlayer = player.GetModPlayer<TemporalPickaxePlayer>();
             float speedBonus = modPlayer.GetSpeedBonus();
-            
+
             // Convert speed bonus to useTime reduction
             if (speedBonus > 0)
             {
                 Item.useTime = Math.Max(1, (int)(15 / (1 + speedBonus / 100f)));
                 Item.useAnimation = Item.useTime;
+            }
+            else
+            {
+                // Reset to default values if no bonus
+                Item.useTime = 15;
+                Item.useAnimation = 15;
             }
         }
 
@@ -48,22 +55,22 @@ namespace LackOfNameStuff.Items.Tools
             var modPlayer = Main.LocalPlayer.GetModPlayer<TemporalPickaxePlayer>();
             int blocksMined = modPlayer.BlocksMinedWithTemporalPickaxe;
             float speedBonus = modPlayer.GetSpeedBonus();
-            
+
             TooltipLine blocksLine = new TooltipLine(Mod, "BlocksMined", $"Blocks mined: {blocksMined:N0}")
             {
                 OverrideColor = Color.LightBlue
             };
             tooltips.Add(blocksLine);
-            
+
             TooltipLine speedLine = new TooltipLine(Mod, "SpeedBonus", $"Mining speed: +{speedBonus:F1}%")
             {
                 OverrideColor = speedBonus >= 1000 ? Color.Gold : Color.LightGreen
             };
             tooltips.Add(speedLine);
-            
+
             if (speedBonus < 1000)
             {
-                int blocksToMax = 5000 - blocksMined;
+                int blocksToMax = 10000 - blocksMined;
                 TooltipLine progressLine = new TooltipLine(Mod, "Progress", $"{blocksToMax:N0} blocks to maximum speed")
                 {
                     OverrideColor = Color.Gray
@@ -82,8 +89,9 @@ namespace LackOfNameStuff.Items.Tools
 
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Temporal Pickaxe");
-            // Tooltip.SetDefault("Mining speed increases permanently with each block mined\n'Time remembers every swing'");
+            //Item.DisplayName = "Temporal Pickaxe";
+            //Item.Tooltip = "A pickaxe that mines with the speed of time itself\nMines faster as you break more blocks\n'Time is on your side'";
+            Item.ResearchUnlockCount = 1;
         }
 
         public override void AddRecipes()
