@@ -12,6 +12,7 @@ namespace LackOfNameStuff.Items.Materials
         {
             Item.width = 24;
             Item.height = 28;
+            Item.scale = 0.1f;
             Item.maxStack = 999;
             Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Cyan;

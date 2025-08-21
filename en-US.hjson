@@ -27,6 +27,21 @@ Mods: {
 				DisplayName: StickGun
 				Tooltip: ""
 			}
+
+			RewindPotion: {
+				Tooltip: ""
+				DisplayName: Rewind Potion
+			}
+
+			TimeShard: {
+				DisplayName: Time Shard
+				Tooltip: ""
+			}
+
+			TemporalPickaxe: {
+				DisplayName: Temporal Pickaxe
+				Tooltip: ""
+			}
 		}
 
 		Projectiles: {

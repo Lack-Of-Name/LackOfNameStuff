@@ -13,6 +13,7 @@ namespace LackOfNameStuff.Items.Consumables
         {
             Item.width = 20;
             Item.height = 26;
+            Item.scale = 0.1f;
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
             Item.useAnimation = 17;
             Item.useTime = 17;
