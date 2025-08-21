@@ -5,6 +5,8 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Systems;
+// Add the correct using for TimeShard if it exists in another namespace
+using LackOfNameStuff.Items.Materials;
 
 namespace LackOfNameStuff.Items.Accessories
 {
@@ -93,6 +95,7 @@ namespace LackOfNameStuff.Items.Accessories
             recipe.AddIngredient(ItemID.LunarBar, 15);
             recipe.AddIngredient(ItemID.FragmentSolar, 10);
             recipe.AddIngredient(ItemID.GoldWatch, 1);
+            recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 3);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }
