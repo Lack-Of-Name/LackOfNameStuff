@@ -41,10 +41,10 @@ namespace LackOfNameStuff.Items.Materials
             }
         }
         
-        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) {
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            // Make the dropped item much smaller
             float customScale = 0.1f;
 
             Vector2 position = Item.position - Main.screenPosition + new Vector2(Item.width / 2, Item.height - texture.Height * customScale / 2f);
@@ -54,11 +54,13 @@ namespace LackOfNameStuff.Items.Materials
                 null,
                 lightColor,
                 rotation,
-                texture.Size() * 0.5f, // Use the center as origin
+                texture.Size() * 0.5f, // center origin
                 customScale,
                 SpriteEffects.None,
                 0f
             );
+
+            return false; // <- stop Terraria from drawing the default big sprite
         }
     }
 }
