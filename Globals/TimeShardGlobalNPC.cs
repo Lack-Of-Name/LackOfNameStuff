@@ -57,9 +57,9 @@ namespace LackOfNameStuff.Globals
                 if (chronosPlayer != null && chronosPlayer.screenEffectIntensity > 0.1f) // If in chronos time
                 {
                     // Higher chance based on enemy value/difficulty
-                    int dropChance = 4; // 25% base chance
-                    if (npc.lifeMax > 100) dropChance = 3; // 33% for stronger enemies
-                    if (npc.lifeMax > 500) dropChance = 2; // 50% for very strong enemies
+                    int dropChance = 50; // 2% base chance
+                    if (npc.lifeMax > 799) dropChance = (int)16.66f; // 6% for stronger enemies
+                    if (npc.lifeMax > 999) dropChance = 10; // 10% for very strong enemies
                     
                     if (Main.rand.NextBool(dropChance))
                     {

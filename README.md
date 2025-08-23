@@ -9,3 +9,11 @@ TODO/Future Plans:
 -weapons for later-game Calamity Mod (Detect if present)
 -Weapons for pre-hardmode
 -Upgrade for dirt rod
+-Potentially make time shards harder to get
+-An actual ranged weapon
+
+Before This Release:
+-An actual ranged weapon
+-Fix time shard drop rate
+-Fix time shard glow colour
+-Time Shard armour set
