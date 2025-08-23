@@ -4,15 +4,12 @@ Mostly just stuff I always wanted a mod to exist for.
 
 TODO/Future Plans:
 -More items using time shard material
--Armour set using time shards
 -Weapon for summoner & Melee
 -weapons for later-game Calamity Mod (Detect if present)
 -Weapons for pre-hardmode
 -Upgrade for dirt rod
--Potentially make time shards harder to get
--An actual ranged weapon
 
-Before This Release:
+This Release:
 -An actual ranged weapon
 -Fix time shard drop rate
 -Fix time shard glow colour

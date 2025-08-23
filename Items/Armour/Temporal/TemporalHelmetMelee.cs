@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 using LackOfNameStuff.Items.Materials;
 using LackOfNameStuff.Items.Armour.Temporal;
 
-namespace LackOfNameStuff.Items.Armor
+namespace LackOfNameStuff.Items.Armour.Temporal
 {
     [AutoloadEquip(EquipType.Head)]
     public class TemporalHelmetMelee : ModItem

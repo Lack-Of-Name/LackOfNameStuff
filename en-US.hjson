@@ -61,6 +61,11 @@ Mods: {
 				Description: Mods.LackOfNameStuff.Buffs.BulletTimeBuff.Description
 				DisplayName: Bullet Time Buff
 			}
+
+			TemporalSlow: {
+				DisplayName: Temporal Slow
+				Description: Mods.LackOfNameStuff.Buffs.TemporalSlow.Description
+			}
 		}
 	}
 }

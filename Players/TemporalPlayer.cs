@@ -192,9 +192,9 @@ namespace LackOfNameStuff.Players
                                 chronosPlayer.screenEffectIntensity = MathHelper.Min(chronosPlayer.screenEffectIntensity * 1.3f, 1.0f);
                             break;
                         case "Magic":
-                            // Longer bullet time duration
-                            if (chronosPlayer.bulletTimeActive && Main.rand.NextBool(10))
-                                chronosPlayer.bulletTimeRemaining++;
+                            // Faster cooldown recovery
+                            if (chronosPlayer.bulletTimeCooldown > 0 && Main.rand.NextBool(3))
+                                chronosPlayer.bulletTimeCooldown--;
                             break;
                         case "Summoner":
                             // Minions gain bullet time benefits

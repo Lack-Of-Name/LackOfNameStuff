@@ -17,7 +17,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         public override void SetDefaults()
         {
             // Basic weapon stats
-            Item.damage = 85;
+            Item.damage = 185;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 64;
             Item.height = 28;
@@ -30,7 +30,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item61; // Rocket launcher sound
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<TemporalOrb>();
+            Item.shoot = ModContent.ProjectileType<TemporalShot>();
             Item.shootSpeed = 8f;
             Item.useAmmo = ModContent.ItemType<TimeShard>();
             Item.scale = 0.8f;
@@ -46,7 +46,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         {
             // Fire the temporal orb
             Vector2 shootPos = position + Vector2.Normalize(velocity) * 40f;
-            Projectile.NewProjectile(source, shootPos, velocity, ModContent.ProjectileType<TemporalOrb>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, shootPos, velocity, ModContent.ProjectileType<TemporalShot>(), damage, knockback, player.whoAmI);
 
             // Visual effect at barrel
             for (int i = 0; i < 15; i++)
@@ -73,7 +73,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         }
     }
 
-    public class TemporalOrb : ModProjectile
+    public class TemporalShot : ModProjectile
     {
         private bool hasHitGround = false;
         private int rippleTimer = 0;
