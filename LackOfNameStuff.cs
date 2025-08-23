@@ -9,6 +9,8 @@ using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
 using LackOfNameStuff.Items.Tools;
+using LackOfNameStuff.Globals;
+using LackOfNameStuff.Players;
 
 namespace LackOfNameStuff
 {

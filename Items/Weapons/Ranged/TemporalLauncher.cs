@@ -9,11 +9,27 @@ using Terraria.ModLoader;
 using LackOfNameStuff.Items.Materials;
 using Terraria.DataStructures;
 using System.Security.Cryptography.X509Certificates;
+using LackOfNameStuff.Globals;
 
 namespace LackOfNameStuff.Items.Weapons.Ranged
 {
     public class TemporalLauncher : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            // Set temporal weapon properties here
+            var temporalData = Item.GetGlobalItem<TemporalWeaponData>();
+            temporalData.TemporalWeapon = true;
+            temporalData.TemporalBuffDamage = 1.4f;    // 40% more damage
+            temporalData.TemporalBuffSpeed = 1.8f;     // 80% faster
+            temporalData.TemporalBuffCrit = 20f;       // +20% crit chance
+            temporalData.TemporalBuffKnockback = 2.4f; // 140% more knockback
+            // Just other setstaticdefault stuff
+            // DisplayName.SetDefault("Temporal Launcher");
+            // Tooltip.SetDefault("Fires heavy temporal orbs that manipulate time on impact\n'The weight of eternity in every shot'");
+
+        }
+
         public override void SetDefaults()
         {
             // Basic weapon stats
@@ -31,15 +47,9 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             Item.UseSound = SoundID.Item61; // Rocket launcher sound
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<TemporalShot>();
-            Item.shootSpeed = 8f;
+            Item.shootSpeed = 20f;
             Item.useAmmo = ModContent.ItemType<TimeShard>();
             Item.scale = 0.8f;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Temporal Launcher");
-            // Tooltip.SetDefault("Fires heavy temporal orbs that manipulate time on impact\n'The weight of eternity in every shot'");
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -132,7 +142,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             CreateTemporalExplosion();
-            
+
             // Apply temporal slow debuff to the hit enemy
             target.AddBuff(ModContent.BuffType<Buffs.TemporalSlow>(), 300); // 5 seconds
         }
@@ -147,12 +157,12 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             {
                 int numDust = 20 + (ring * 10);
                 float ringRadius = 30f + (ring * 40f);
-                
+
                 for (int i = 0; i < numDust; i++)
                 {
                     float angle = (float)i / numDust * MathHelper.TwoPi;
                     Vector2 dustPos = Projectile.Center + new Vector2(MathF.Cos(angle), MathF.Sin(angle)) * ringRadius;
-                    
+
                     Dust dust = Dust.NewDustDirect(dustPos, 0, 0, DustID.Electric);
                     dust.velocity = Vector2.Zero;
                     dust.scale = 1.5f - (ring * 0.3f);
@@ -163,16 +173,28 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
                 }
             }
 
-            // Slow nearby enemies
+            // Slow + AOE damage
             float explosionRadius = 120f;
+            int aoeDamage = (int)(Projectile.damage * 0.75f);
+            float knockback = 4f;
+
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && !npc.friendly && Vector2.Distance(npc.Center, Projectile.Center) < explosionRadius)
+                if (npc.active && !npc.friendly && !npc.dontTakeDamage && !npc.immortal &&
+                    Vector2.Distance(npc.Center, Projectile.Center) < explosionRadius)
                 {
-                    npc.AddBuff(ModContent.BuffType<Buffs.TemporalSlow>(), 240); // 4 seconds
-                    
-                    // Visual feedback on affected enemies
+                    // Apply debuff
+                    npc.AddBuff(ModContent.BuffType<Buffs.TemporalSlow>(), 240);
+
+                    // Deal damage (handles MP sync automatically)
+                    int hitDir = npc.Center.X > Projectile.Center.X ? 1 : -1;
+
+                    // Call this on the server/host to avoid double hits from clients
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        npc.SimpleStrikeNPC(aoeDamage, hitDir, crit: false, knockBack: knockback, damageType: Projectile.DamageType);
+
+                    // Visual feedback
                     for (int j = 0; j < 8; j++)
                     {
                         Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric);
@@ -183,24 +205,6 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
                     }
                 }
             }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            
-            // Draw with a glowing effect
-            Color glowColor = Color.Lerp(Color.Orange, Color.Yellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 8) * 0.5f + 0.5f);
-            glowColor.A = 0; // Make it additive
-            
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, glowColor, 
-                Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-            
-            // Draw the main sprite
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, 
-                Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
-            
-            return false;
         }
     }
 }

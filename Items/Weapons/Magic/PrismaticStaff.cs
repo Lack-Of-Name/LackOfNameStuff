@@ -14,10 +14,10 @@ namespace LackOfNameStuff.Items.Weapons.Magic
     public class PrismaticStaff : ModItem
     {
         // === WEAPON CONFIGURATION ===
-        public static readonly int WeaponDamage = 105;
-        public static readonly int WeaponMana = 3;
-        public static readonly int WeaponUseTime = 10;
-        public static readonly int WeaponUseAnimation = 10;
+        public static readonly int WeaponDamage = 85;
+        public static readonly int WeaponMana = 30;
+        public static readonly int WeaponUseTime = 40;
+        public static readonly int WeaponUseAnimation = 40;
         public static readonly float WeaponKnockback = 4f;
         public static readonly int WeaponCrit = 20;
         public static readonly int WeaponValue = Item.sellPrice(gold: 12);
@@ -30,10 +30,10 @@ namespace LackOfNameStuff.Items.Weapons.Magic
         public static readonly float ProjectileSpawnOffset = 0f; // Distance from player center to spawn projectiles
         
         // === DAYTIME ENHANCEMENT CONFIGURATION ===
-        public static readonly float DaytimeDamageMultiplier = 1.5f; // 50% more damage during day
+        public static readonly float DaytimeDamageMultiplier = 1.2f; // 20% more damage during day
         public static readonly int DaytimeProjectileCount = 10; // More projectiles (vs 7 at night)
         public static readonly float DaytimeProjectileSpeed = 4.5f; // Faster projectiles
-        public static readonly int DaytimeManaReduction = 2; // Less mana cost (vs 3)
+        public static readonly int DaytimeManaReduction = 25; // Less mana cost (vs 30)
         public static readonly float DaytimeKnockbackBonus = 2f; // Extra knockback
 
         public override void SetDefaults()

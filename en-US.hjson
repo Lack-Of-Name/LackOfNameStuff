@@ -47,6 +47,7 @@ Mods: {
 				DisplayName: Temporal Orb Launcher
 				Tooltip: ""
 			}
+
 		}
 
 		Projectiles: {

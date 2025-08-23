@@ -4,11 +4,25 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Projectiles;
+using LackOfNameStuff.Globals;
 
 namespace LackOfNameStuff.Items.Weapons.Magic
 {
     public class TemporalOrbLauncher : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            // Set temporal weapon properties here
+            var temporalData = Item.GetGlobalItem<TemporalWeaponData>();
+            temporalData.TemporalWeapon = true;
+            temporalData.TemporalBuffDamage = 1.5f;    // 50% more damage
+            temporalData.TemporalBuffSpeed = 1.3f;     // 30% faster
+            temporalData.TemporalBuffCrit = 20f;       // +20% crit chance
+            temporalData.TemporalBuffKnockback = 1.4f; // 40% more knockback
+            // Just other setstaticdefault stuff
+            Item.ResearchUnlockCount = 1;
+            Item.SetNameOverride("Temporal Orb Launcher");
+        }
         public override void SetDefaults()
         {
             Item.damage = 45;
@@ -35,12 +49,6 @@ namespace LackOfNameStuff.Items.Weapons.Magic
             // Can only be used during Chronos time
             var chronosPlayer = player.GetModPlayer<ChronosPlayer>();
             return chronosPlayer.screenEffectIntensity > 0.1f;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 1;
-            Item.SetNameOverride("Temporal Orb Launcher");
         }
 
         public override void ModifyTooltips(System.Collections.Generic.List<TooltipLine> tooltips)

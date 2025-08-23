@@ -47,6 +47,12 @@ namespace LackOfNameStuff.Players
             // Handle bullet time activation (only for players with the item)
             if (hasChronosWatch && ModContent.GetInstance<ChronosKeybindSystem>().BulletTimeKey.JustPressed)
             {
+                // Prevent activation if still on cooldown or already active
+                if (bulletTimeCooldown > 0 || bulletTimeActive)
+                {
+                    return;
+                }
+
                 TryActivateBulletTime();
             }
 

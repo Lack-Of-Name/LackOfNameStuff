@@ -1,4 +1,4 @@
-// TemporalHelmet.cs
+// TemporalHelmetRanged.cs
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
