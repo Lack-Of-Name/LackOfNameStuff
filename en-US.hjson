@@ -23,12 +23,12 @@ Mods: {
 
 			PrismaticStaff: {
 				DisplayName: Prismatic Staff
-				Tooltip: "Shoots magical (And pretty) bolts"
+				Tooltip: Shoots magical (And pretty) bolts
 			}
 
 			StickGun: {
 				DisplayName: StickGun
-				Tooltip: "A gun... Made of a stick... Stick Gun!"
+				Tooltip: A gun... Made of a stick... Stick Gun!
 			}
 
 			RewindPotion: {
@@ -52,7 +52,7 @@ Mods: {
 
 			TemporalPickaxe: {
 				DisplayName: Temporal Pickaxe
-				Tooltip: "Gets faster the more blocks you mine"
+				Tooltip: Gets faster the more blocks you mine
 			}
 
 			TemporalOrbLauncher: {

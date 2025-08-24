@@ -1,173 +1,71 @@
 Mods: {
 	LackOfNameStuff: {
 		Keybinds: {
-			"Bullet Time.DisplayName": Bullet  Time
-			BulletTime.DisplayName: Bullet Time
 		}
 
 		Items: {
 			ChronosWatch: {
-				DisplayName: Chronos Watch
-				Tooltip: ""
 			}
 
 			ExplosiveArrow: {
-				DisplayName: Explosive Arrow
-				Tooltip: It's an arrow... That explodes!
 			}
 
 			ExplosiveBullet: {
-				DisplayName: Explosive Bullet
-				Tooltip: It's a bullet... That explodes!
 			}
 
 			PrismaticStaff: {
-				DisplayName: Prismatic Staff
-				Tooltip: ""
 			}
 
 			StickGun: {
-				DisplayName: StickGun
-				Tooltip: ""
 			}
 
 			RewindPotion: {
-				Tooltip: Rewind to where you were 10 seconds ago
-				DisplayName: Rewind Potion
 			}
 
 			ChronosStopper: {
-				DisplayName: Chronos Stopper
-				Tooltip: If you aren't a dev, then stop hacking.
 			}
 
 			TimeShard: {
-				DisplayName: Time Shard
-				Tooltip:
-					'''
-					It pulses with Temporal energy
-					You feel like you could craft some cool sh*t with this
-					'''
 			}
 
 			TemporalPickaxe: {
-				DisplayName: Temporal Pickaxe
-				Tooltip: ""
 			}
 
 			TemporalOrbLauncher: {
-				DisplayName: Temporal Orb Launcher
-				Tooltip:
-					'''
-					It launches temporal Orbs...
-					Temporal Orbs home in on enemies after bullet time ends
-					Can only be used during bullet time
-					'''
 			}
 
 			TemporalLauncher: {
-				DisplayName: Temporal Launcher
-				Tooltip:
-					'''
-					Fires heavy temporal shots that manipulate time on impact
-					Creates temporal explosions that slow nearby enemies
-					Uses Time Shards as ammunition
-					Doesn't use up Time Shards
-					'The weight of eternity in every shot'
-					'''
 			}
 
 			MemoryCrystal: {
-				DisplayName: Memory Crystal
-				Tooltip: Stores damage dealt during bullet time, and deals double that once bullet time ends
 			}
 
 			ChronosWhip: {
-				DisplayName: Chronos Whip
-				Tooltip:
-					'''
-					Returns enemies to their previous locations
-					'Get back to work!'
-					'''
 			}
 
 			TemporalCleaver: {
-				DisplayName: Temporal Cleaver
-				Tooltip: Stores damage dealt during bullet time and releases it in an explosive burst
 			}
 
 			// Ranged Helmet
 			TemporalHelmetRanged: {
-				DisplayName: Temporal Headgear
-				Tooltip:
-					'''
-					Provides temporal awareness and ranged prowess
-					15% increased ranged damage
-					18% increased ranged critical strike chance
-					'Locks onto targets across time'
-					'''
 			}
 
 			// Melee Helmet
 			TemporalHelmetMelee: {
-				DisplayName: Temporal Helm
-				Tooltip:
-					'''
-					Provides temporal awareness and melee expertise
-					18% increased melee damage
-					10% increased melee critical strike chance
-					Increased melee weapon size
-					'Strikes echo through eternity'
-					'''
 			}
 
 			// Magic Helmet
 			TemporalHelmetMagic: {
-				DisplayName: Temporal Crown
-				Tooltip:
-					'''
-					Provides temporal awareness and magical resonance
-					20% increased magic damage
-					12% increased magic critical strike chance
-					+60 maximum mana, 10% reduced mana usage
-					'Channels the arcane flow of time'
-					'''
 			}
 
 			// Summoner Helmet
 			TemporalHelmetSummoner: {
-				DisplayName: Temporal Diadem
-				Tooltip:
-					'''
-					Provides temporal awareness and minion mastery
-					25% increased summon damage
-					+2 max minions, +1 max turret
-					'Commands legions across dimensions'
-					'''
 			}
 
 			TemporalChestplate: {
-				DisplayName: Temporal Chestplate
-				Tooltip:
-					'''
-					Channels temporal energy through the wearer
-					Provides class-specific bonuses
-					+15% general damage
-					+10% crit chance
-					'The heart of temporal power'
-					'''
 			}
 
 			TemporalLeggings: {
-				DisplayName: Temporal Leggings
-				Tooltip:
-					'''
-					Allows for swift temporal manipulation
-					15% increased movement speed
-					10% increased ranged attack speed
-					Enhanced jump height
-					'Step between moments'
-					'''
 			}
 		}
 
@@ -175,58 +73,20 @@ Mods: {
 		}
 
 		Projectiles: {
-			PrismaticBolt.DisplayName: Prismatic Bolt
-			ExplosiveArrow.DisplayName: Explosive Arrow
-			ExplosiveBullet.DisplayName: Explosive Bullet
-			TemporalOrb.DisplayName: Temporal Orb
-			TemporalShot.DisplayName: Temporal Shot
-			ChronosWhipProjectile.DisplayName: Chronos Whip Projectile
-			TemporalEcho.DisplayName: Temporal Echo
 		}
 
 		Buffs: {
 			BulletTimeBuff: {
-				Description: Mods.LackOfNameStuff.Buffs.BulletTimeBuff.Description
-				DisplayName: Bullet Time Buff
 			}
 
 			TemporalSlow: {
-				DisplayName: Temporal Slow
-				Description: Mods.LackOfNameStuff.Buffs.TemporalSlow.Description
 			}
 
 			TemporalEchoBuff: {
-				DisplayName: Temporal Echo Buff
-				Description: Mods.LackOfNameStuff.Buffs.TemporalEchoBuff.Description
 			}
 		}
 
 		SetBonus: {
-			TemporalRanged:
-				'''
-				Temporal Marksman: Ranged attacks slow enemies and consume less ammo
-				Reduces cooldown for ChronosWatch
-				20% chance to not consume ammo
-				'''
-			TemporalMelee:
-				'''
-				Temporal Warrior: Melee attacks create temporal shockwaves
-				Makes Chronos Watch effects look cooler
-				... I guess...
-				Attacks have increased knockback and speed
-				'''
-			TemporalMagic:
-				'''
-				Temporal Sage: Magic attacks pierce through time
-				Reduces cooldown for Chronos Watch
-				Spells have chance to not consume mana
-				'''
-			TemporalSummoner:
-				'''
-				Temporal Commander: Minions gain temporal abilities
-				Buffs to minions when in Chronos Time
-				Minions occasionally slow enemies
-				'''
 		}
 
 		NPCs: {
@@ -238,17 +98,6 @@ Mods: {
 
 		// Common text used throughout the mod
 		Common: {
-			TemporalEnergy: Pulses with temporal energy
-			TimeFragment: A fragment of crystallized time
-			TemporalResonance: Resonates with temporal forces
-			ChronosEnhanced: Enhanced by Chronos Watch
-			// Status messages
-			BulletTimeActive: BULLET TIME ACTIVE: {0}s remaining
-			BulletTimeCooldown: Cooldown: {0}s
-			BulletTimeReady: Ready to use
-			// Combat text
-			TimeShardDrop: TIME SHARD!
-			TemporalProc: TEMPORAL!
 		}
 	}
 }
