@@ -17,16 +17,6 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            // Set temporal weapon properties here
-            var temporalData = Item.GetGlobalItem<TemporalWeaponData>();
-            temporalData.TemporalWeapon = true;
-            temporalData.TemporalBuffDamage = 1.4f;    // 40% more damage
-            temporalData.TemporalBuffSpeed = 1.8f;     // 80% faster
-            temporalData.TemporalBuffCrit = 20f;       // +20% crit chance
-            temporalData.TemporalBuffKnockback = 2.4f; // 140% more knockback
-            // Just other setstaticdefault stuff
-            // DisplayName.SetDefault("Temporal Launcher");
-            // Tooltip.SetDefault("Fires heavy temporal orbs that manipulate time on impact\n'The weight of eternity in every shot'");
 
         }
 
@@ -50,6 +40,14 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             Item.shootSpeed = 20f;
             Item.useAmmo = ModContent.ItemType<TimeShard>();
             Item.scale = 0.8f;
+
+            var temporalData = Item.GetGlobalItem<TemporalWeaponData>();
+            temporalData.TemporalWeapon = true;
+
+            // Set the temporal buff values here
+            temporalData.TemporalBuffDamage = 1.2f;
+            temporalData.TemporalBuffSpeed = 2f;
+            temporalData.TemporalBuffCrit = 15f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

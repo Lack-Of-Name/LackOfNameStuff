@@ -17,14 +17,19 @@ This Release:
 
 TODO/Next Release:
 -Add sprites for following:
-    -MemoryCrystal.cs []
-    -ChronosWhip.cs []
-    -ChronosWhipProjectile.cs []
-    -EchoStaff.cs []
+    -MemoryCrystal.cs [x]
+    -ChronosWhip.cs [x]
+    -ChronosWhipProjectile.cs [x]
+    -TemporalCleaver.cs [x]
 
 Known Bugs:
 -No tooltip for TemporalHelmetRanged - fixed? []
 -Cooldown on chronos time disregarded - fixed? [x]
+-TemporalEchoStaff Just totally broken [x] - Removed
+-ChronosWhip texture & size []
+    -Upside down Texture []
+    -too thick? []
+-Check TemporalBuffs - ensure not always active [x]
 
 Future Balance Changes:
 -More velocity for temporal Launcher [x]

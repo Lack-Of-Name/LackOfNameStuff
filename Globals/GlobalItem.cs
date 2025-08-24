@@ -12,11 +12,11 @@ namespace LackOfNameStuff.Globals
     {
         // Temporal weapon properties
         public bool TemporalWeapon = false;
-        public float TemporalBuffDamage = 1.0f;     // Multiplier (1.3f = 30% more damage)
-        public float TemporalBuffSpeed = 1.0f;      // Multiplier (1.4f = 40% faster)
-        public float TemporalBuffCrit = 0f;         // Additive (15f = +15% crit chance)
-        public float TemporalBuffKnockback = 1.0f;  // Multiplier (1.2f = 20% more knockback)
-        public int TemporalBuffMana = 0;            // Additive mana cost reduction (-10 = 10 less mana)
+        public float TemporalBuffDamage = 1.6f;     // Multiplier (1.3f = 30% more damage)
+        public float TemporalBuffSpeed = 3f;      // Multiplier (1.8f = 80% faster)
+        public float TemporalBuffCrit = 15f;         // Additive (15f = +15% crit chance)
+        public float TemporalBuffKnockback = 1.2f;  // Multiplier (1.2f = 20% more knockback)
+        public int TemporalBuffMana = -10;            // Additive mana cost reduction (-10 = 10 less mana)
 
         public override bool InstancePerEntity => true;
 
@@ -38,7 +38,7 @@ namespace LackOfNameStuff.Globals
             if (TemporalWeapon)
             {
                 var temporalPlayer = player.GetModPlayer<TemporalPlayer>();
-                if (temporalPlayer.hasTemporalSet && TemporalBuffDamage != 1.0f)
+                if (temporalPlayer.hasTemporalSet)
                 {
                     damage *= TemporalBuffDamage;
                 }

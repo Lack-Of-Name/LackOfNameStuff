@@ -12,16 +12,7 @@ namespace LackOfNameStuff.Items.Weapons.Magic
     {
         public override void SetStaticDefaults()
         {
-            // Set temporal weapon properties here
-            var temporalData = Item.GetGlobalItem<TemporalWeaponData>();
-            temporalData.TemporalWeapon = true;
-            temporalData.TemporalBuffDamage = 1.5f;    // 50% more damage
-            temporalData.TemporalBuffSpeed = 1.3f;     // 30% faster
-            temporalData.TemporalBuffCrit = 20f;       // +20% crit chance
-            temporalData.TemporalBuffKnockback = 1.4f; // 40% more knockback
-            // Just other setstaticdefault stuff
-            Item.ResearchUnlockCount = 1;
-            Item.SetNameOverride("Temporal Orb Launcher");
+
         }
         public override void SetDefaults()
         {
@@ -42,6 +33,14 @@ namespace LackOfNameStuff.Items.Weapons.Magic
             Item.shootSpeed = 8f;
             Item.mana = 15;
             Item.autoReuse = true;
+
+            var temporalData = Item.GetGlobalItem<TemporalWeaponData>();
+            temporalData.TemporalWeapon = true;
+
+            // Set the temporal buff values here
+            temporalData.TemporalBuffDamage = 1.6f;
+            temporalData.TemporalBuffSpeed = 1.4f;
+            temporalData.TemporalBuffCrit = 15f;
         }
 
         public override bool CanUseItem(Player player)

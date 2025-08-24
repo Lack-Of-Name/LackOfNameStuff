@@ -48,6 +48,25 @@ Mods: {
 				Tooltip: ""
 			}
 
+			MemoryCrystal: {
+				DisplayName: Memory Crystal
+				Tooltip: ""
+			}
+
+			ChronosWhip: {
+				DisplayName: Chronos Whip
+				Tooltip: ""
+			}
+
+			TemporalCleaver: {
+				DisplayName: Temporal Cleaver
+				Tooltip: ""
+			}
+
+			TemporalEchoStaff: {
+				DisplayName: Temporal Echo Staff
+				Tooltip: ""
+			}
 		}
 
 		Projectiles: {
@@ -55,6 +74,8 @@ Mods: {
 			ExplosiveArrow.DisplayName: Explosive Arrow
 			ExplosiveBullet.DisplayName: Explosive Bullet
 			TemporalOrb.DisplayName: Temporal Orb
+			ChronosWhipProjectile.DisplayName: Chronos Whip Projectile
+			TemporalEcho.DisplayName: Temporal Echo
 		}
 
 		Buffs: {
@@ -66,6 +87,11 @@ Mods: {
 			TemporalSlow: {
 				DisplayName: Temporal Slow
 				Description: Mods.LackOfNameStuff.Buffs.TemporalSlow.Description
+			}
+
+			TemporalEchoBuff: {
+				DisplayName: Temporal Echo Buff
+				Description: Mods.LackOfNameStuff.Buffs.TemporalEchoBuff.Description
 			}
 		}
 	}
