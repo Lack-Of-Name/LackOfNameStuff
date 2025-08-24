@@ -32,7 +32,7 @@ namespace LackOfNameStuff.Items.Accessories
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 10);
             recipe.AddIngredient(ItemID.FragmentVortex, 12);
-            recipe.AddIngredient(ModContent.ItemType<Items.Materials.TimeShard>(), 10);
+            recipe.AddIngredient(ModContent.ItemType<Items.Materials.TimeShard>(), 8);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }

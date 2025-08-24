@@ -13,7 +13,7 @@ namespace LackOfNameStuff.Items.Tools
     {
         public override void SetDefaults()
         {
-            Item.damage = 80;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Melee;
             Item.width = 40;
             Item.height = 40;
@@ -99,8 +99,8 @@ namespace LackOfNameStuff.Items.Tools
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 12);
             recipe.AddIngredient(ItemID.FragmentNebula, 8);
-            recipe.AddIngredient(ItemID.FragmentSolar, 8);
-            recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 1);
+            recipe.AddIngredient(ItemID.FragmentVortex, 8);
+            recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 2);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }

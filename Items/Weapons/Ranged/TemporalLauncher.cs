@@ -15,10 +15,6 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
 {
     public class TemporalLauncher : ModItem
     {
-        public override void SetStaticDefaults()
-        {
-
-        }
 
         public override void SetDefaults()
         {
@@ -45,8 +41,8 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             temporalData.TemporalWeapon = true;
 
             // Set the temporal buff values here
-            temporalData.TemporalBuffDamage = 1.2f;
-            temporalData.TemporalBuffSpeed = 2f;
+            temporalData.TemporalBuffDamage = 0.65f; // Yes - it goes down
+            temporalData.TemporalBuffSpeed = 4.3f; // Yes - it goes up
             temporalData.TemporalBuffCrit = 15f;
         }
 
@@ -73,9 +69,9 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 12);
-            recipe.AddIngredient(ItemID.FragmentSolar, 8);
+            recipe.AddIngredient(ItemID.FragmentVortex, 8);
             recipe.AddIngredient(ItemID.RocketLauncher, 1);
-            recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 8);
+            recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 6); // Internal debate: 6 or 7 time shards... hmmm...
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }
@@ -96,7 +92,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             Projectile.hostile = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 300; // 300 = 5 seconds @ 60FPS IDFK
             Projectile.scale = 1.2f;
             Projectile.tileCollide = true;
         }

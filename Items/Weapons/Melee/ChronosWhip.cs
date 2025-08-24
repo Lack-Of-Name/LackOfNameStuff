@@ -15,7 +15,7 @@ namespace LackOfNameStuff.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Item.damage = 65;
+            Item.damage = 75;
             Item.DamageType = DamageClass.MeleeNoSpeed; // Whips use MeleeNoSpeed
             Item.width = 40;
             Item.height = 40;

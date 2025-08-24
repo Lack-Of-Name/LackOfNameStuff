@@ -26,7 +26,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         private static readonly int UseStyleValue = ItemUseStyleID.Shoot;
         
         // Projectile Properties
-        private static readonly int ProjectileType = ProjectileID.Bullet; // Change this to your custom projectile
+        private static readonly int ProjectileType = ProjectileID.Bullet; // Can't be arsed making my own
         private static readonly float ShootSpeed = 16f;
         private static readonly bool ConsumeAmmo = true; // Now actually uses ammo
         private static readonly int AmmoType = AmmoID.Bullet;
@@ -84,7 +84,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             if (player?.name == "Hero")
             {
                 tooltips.Add(new TooltipLine(Mod, "ConditionalCraft", "[c/00FF00:Special crafting available for Hero!]"));
-                tooltips.Add(new TooltipLine(Mod, "MoneyAbuseWarning", "[c/FF0000:Don't abuse your crafting privelages for infinite gold!]"));
+                tooltips.Add(new TooltipLine(Mod, "MoneyAbuseWarning", "[c/FF0000:Don't abuse your crafting privelages for infinite gold! (Wink)]"));
             }
         }
 
@@ -149,9 +149,9 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
             // Default recipe for everyone else
             Recipe defaultRecipe = CreateRecipe();
             defaultRecipe.AddIngredient(ItemID.IllegalGunParts, 1);
-            defaultRecipe.AddIngredient(ItemID.SoulofFright, 10);
-            defaultRecipe.AddIngredient(ItemID.SoulofMight, 10);
-            defaultRecipe.AddIngredient(ItemID.SoulofSight, 10);
+            defaultRecipe.AddIngredient(ItemID.SoulofFright, 15);
+            defaultRecipe.AddIngredient(ItemID.SoulofMight, 15);
+            defaultRecipe.AddIngredient(ItemID.SoulofSight, 15);
             defaultRecipe.AddTile(TileID.MythrilAnvil);
             defaultRecipe.AddCondition(new Condition("Not World Hero", () => Main.LocalPlayer?.name != "Hero"));
             defaultRecipe.Register();
@@ -177,7 +177,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
         }
     }
 
-    // Custom Recipe Conditions (if you need more complex conditions)
+    // Custom Recipe Conditions (I love tutorial code)
     public class CustomRecipeConditions : ModSystem
     {
         // Example of a custom condition
@@ -191,7 +191,7 @@ namespace LackOfNameStuff.Items.Weapons.Ranged
 
         public override void PostSetupContent()
         {
-            // You can register custom conditions here if needed
+            // You can register custom conditions here if needed (Thanks tutorial man)
         }
     }
 }

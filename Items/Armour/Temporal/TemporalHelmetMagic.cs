@@ -16,7 +16,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             Item.height = 18;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Red;
-            Item.defense = 18; // Lower defense, higher magic bonuses
+            Item.defense = 10; // Lower defense, higher magic bonuses
         }
 
         public override void SetStaticDefaults()
@@ -50,11 +50,12 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
             temporalPlayer.hasTemporalSet = true;
-            
+
             // Magic set bonus
             player.setBonus = "Temporal Sage: Magic attacks pierce through time\n" +
-                            "Enhanced Chronos Watch effectiveness\n" +
-                            "Spells have chance to not consume mana";
+                            "Chance for decreased Chronos Watch cooldown\n" +
+                            "Spells have chance to not consume mana\n" +
+                            "-15% mana cost, 17% chance not to consume mana";
             
             // Magic-specific bonuses
             player.manaCost -= 0.15f; // Additional 15% mana reduction

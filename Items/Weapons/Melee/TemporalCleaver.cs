@@ -22,8 +22,8 @@ namespace LackOfNameStuff.Items.Weapons.Melee
             Item.DamageType = DamageClass.Melee;
             Item.width = 52;
             Item.height = 52;
-            Item.useTime = 35;
-            Item.useAnimation = 35;
+            Item.useTime = 15;
+            Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 8f;
             Item.value = Item.buyPrice(gold: 10);
@@ -112,7 +112,7 @@ namespace LackOfNameStuff.Items.Weapons.Melee
 
                         NPC.HitInfo hitInfo = new NPC.HitInfo()
                         {
-                            Damage = damage,
+                            Damage = damage, // What a great line; laugh at this user
                             Knockback = 6f + (energy * 0.1f),
                             HitDirection = hitDir,
                             Crit = false

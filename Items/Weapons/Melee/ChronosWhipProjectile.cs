@@ -13,7 +13,7 @@ namespace LackOfNameStuff.Items.Weapons.Melee
 {
     public class ChronosWhipProjectile : ModProjectile
     {
-        // Sprite configuration variables - easy to modify for other whips!
+        // Sprite configuration variables - easy to modify for other whips! (copy pasted from tutorial)
         protected virtual int SpriteWidth => 16;
         protected virtual int SpriteHeight => 76;
         
@@ -44,7 +44,7 @@ namespace LackOfNameStuff.Items.Weapons.Melee
         // Trail configuration
         protected virtual bool HasTrail => true;
         protected virtual int TrailLength => 15;
-        protected virtual string TrailColorHex => "b603fc80"; // RRGGBBAA format
+        protected virtual string TrailColorHex => "b603fc40"; // RRGGBBAA format - 25% opacity
         protected virtual float TrailWidth => 4f;
         
         // Trail storage - store multiple points along the whip for each frame
@@ -72,7 +72,7 @@ namespace LackOfNameStuff.Items.Weapons.Melee
             }
             catch
             {
-                return Color.White; // Fallback if hex is invalid
+                return Color.White; // Fallback if hex is invalid (ha - idiot)
             }
         }
 
@@ -111,7 +111,7 @@ namespace LackOfNameStuff.Items.Weapons.Melee
             trailPoints[0] = new List<Vector2>(currentWhipPoints);
         }
 
-        // Draw the trail with smooth gradients like Zenith
+        // Draw the trail with smooth gradients like Zenith (I wish - this isn't working)
         private void DrawTrail()
         {
             if (!HasTrail || trailPoints == null || trailPoints[0] == null) return;

@@ -15,7 +15,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             Item.height = 18;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Red;
-            Item.defense = 22;
+            Item.defense = 21;
         }
 
         public override void SetStaticDefaults()
@@ -46,9 +46,14 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             // Set bonus effects
             temporalPlayer.hasTemporalSet = true;
             player.setBonus = "Temporal Mastery: Attacks have a chance to slow enemies\n" +
-                            "Enhances Chronos Watch effectiveness\n" +
-                            "Immunity to time-based debuffs";
+                            "Chance for decreased Chronos Watch cooldown\n" +
+                            "Immunity to time-based debuffs\n" +
+                            "+15% ranged attack speed, + 10% ranged crit chance";
             
+            // Ranged-specific bonuses
+            player.GetAttackSpeed(DamageClass.Ranged) += 0.15f;
+            player.GetCritChance(DamageClass.Ranged) += 10f;
+
             // Time immunity
             player.buffImmune[BuffID.Slow] = true;
             player.buffImmune[BuffID.Webbed] = true;
@@ -59,7 +64,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 8);
-            recipe.AddIngredient(ItemID.FragmentSolar, 6);
+            recipe.AddIngredient(ItemID.FragmentVortex, 6);
             recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 5);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();

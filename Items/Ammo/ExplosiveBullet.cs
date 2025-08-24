@@ -29,7 +29,7 @@ namespace LackOfNameStuff.Items.Ammo
             Item.value = Item.buyPrice(copper: 25); // 25 copper per bullet (cheaper than arrows)
             Item.rare = ItemRarityID.Orange; // Orange rarity
             Item.shoot = ModContent.ProjectileType<Projectiles.ExplosiveBullet>();
-            Item.shootSpeed = 4f;
+            Item.shootSpeed = 7f;
             Item.ammo = AmmoID.Bullet; // This is bullet ammo
         }
 
@@ -51,14 +51,14 @@ namespace LackOfNameStuff.Items.Ammo
             // Higher tier recipe with grenades (post-hardmode)
             Recipe recipe3 = CreateRecipe(200); // Makes 200 bullets per craft
             recipe3.AddIngredient(ItemID.SilverBullet, 200);
-            recipe3.AddIngredient(ItemID.Grenade, 1);
+            recipe3.AddIngredient(ItemID.Bomb, 1);
             recipe3.AddTile(TileID.MythrilAnvil);
             recipe3.Register();
 
             // Meteor shot variant
             Recipe recipe4 = CreateRecipe(150); // Makes 150 bullets per craft
             recipe4.AddIngredient(ItemID.MeteorShot, 150);
-            recipe4.AddIngredient(ItemID.Grenade, 1);
+            recipe4.AddIngredient(ItemID.Bomb, 1);
             recipe4.AddTile(TileID.Anvils);
             recipe4.Register();
         }

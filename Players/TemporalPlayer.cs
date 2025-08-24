@@ -187,7 +187,7 @@ namespace LackOfNameStuff.Players
                                 chronosPlayer.bulletTimeCooldown--;
                             break;
                         case "Melee":
-                            // Stronger bullet time effect
+                            // Stronger bullet time effect (L melee effect - boring class)
                             if (chronosPlayer.bulletTimeActive)
                                 chronosPlayer.screenEffectIntensity = MathHelper.Min(chronosPlayer.screenEffectIntensity * 1.3f, 1.0f);
                             break;

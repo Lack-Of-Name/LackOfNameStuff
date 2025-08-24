@@ -1,19 +1,39 @@
 Mods: {
 	LackOfNameStuff: {
+		Keybinds: {
+			"Bullet Time.DisplayName": Bullet  Time
+			BulletTime.DisplayName: Bullet Time
+		}
+
 		Items: {
 			ChronosWatch: {
+				DisplayName: Chronos Watch
+				Tooltip: ""
 			}
 
 			ExplosiveArrow: {
+				DisplayName: Explosive Arrow
+				Tooltip: It's an arrow... That explodes!
 			}
 
 			ExplosiveBullet: {
+				DisplayName: Explosive Bullet
+				Tooltip: It's a bullet... That explodes!
 			}
 
 			PrismaticStaff: {
+				DisplayName: Prismatic Staff
+				Tooltip: ""
 			}
 
 			StickGun: {
+				DisplayName: StickGun
+				Tooltip: ""
+			}
+
+			RewindPotion: {
+				Tooltip: Rewind to where you were 10 seconds ago
+				DisplayName: Rewind Potion
 			}
 
 			ChronosStopper: {
@@ -22,17 +42,58 @@ Mods: {
 			}
 
 			TimeShard: {
+				DisplayName: Time Shard
+				Tooltip:
+					'''
+					It pulses with Temporal energy
+					You feel like you could craft some cool sh*t with this
+					'''
+			}
+
+			TemporalPickaxe: {
+				DisplayName: Temporal Pickaxe
+				Tooltip: ""
+			}
+
+			TemporalOrbLauncher: {
+				DisplayName: Temporal Orb Launcher
+				Tooltip:
+					'''
+					It launches temporal Orbs...
+					Temporal Orbs home in on enemies after bullet time ends
+					Can only be used during bullet time
+					'''
 			}
 
 			TemporalLauncher: {
 				DisplayName: Temporal Launcher
 				Tooltip:
 					'''
-					Fires heavy temporal orbs that manipulate time on impact
+					Fires heavy temporal shots that manipulate time on impact
 					Creates temporal explosions that slow nearby enemies
 					Uses Time Shards as ammunition
+					Doesn't use up Time Shards
 					'The weight of eternity in every shot'
 					'''
+			}
+
+			MemoryCrystal: {
+				DisplayName: Memory Crystal
+				Tooltip: Stores damage dealt during bullet time, and deals double that once bullet time ends
+			}
+
+			ChronosWhip: {
+				DisplayName: Chronos Whip
+				Tooltip:
+					'''
+					Returns enemies to their previous locations
+					'Get back to work!'
+					'''
+			}
+
+			TemporalCleaver: {
+				DisplayName: Temporal Cleaver
+				Tooltip: Stores damage dealt during bullet time and releases it in an explosive burst
 			}
 
 			// Ranged Helmet
@@ -91,7 +152,8 @@ Mods: {
 					'''
 					Channels temporal energy through the wearer
 					Provides class-specific bonuses
-					20% reduced ammo consumption
+					+15% general damage
+					+10% crit chance
 					'The heart of temporal power'
 					'''
 			}
@@ -112,13 +174,30 @@ Mods: {
 		TemporalOrb: {
 		}
 
-		Projectiles.TemporalShot.DisplayName: Temporal Shot
+		Projectiles: {
+			PrismaticBolt.DisplayName: Prismatic Bolt
+			ExplosiveArrow.DisplayName: Explosive Arrow
+			ExplosiveBullet.DisplayName: Explosive Bullet
+			TemporalOrb.DisplayName: Temporal Orb
+			TemporalShot.DisplayName: Temporal Shot
+			ChronosWhipProjectile.DisplayName: Chronos Whip Projectile
+			TemporalEcho.DisplayName: Temporal Echo
+		}
 
 		Buffs: {
 			BulletTimeBuff: {
+				Description: Mods.LackOfNameStuff.Buffs.BulletTimeBuff.Description
+				DisplayName: Bullet Time Buff
 			}
 
 			TemporalSlow: {
+				DisplayName: Temporal Slow
+				Description: Mods.LackOfNameStuff.Buffs.TemporalSlow.Description
+			}
+
+			TemporalEchoBuff: {
+				DisplayName: Temporal Echo Buff
+				Description: Mods.LackOfNameStuff.Buffs.TemporalEchoBuff.Description
 			}
 		}
 
@@ -152,8 +231,6 @@ Mods: {
 
 		NPCs: {
 		}
-
-		Keybinds.BulletTime.DisplayName: Bullet Time
 
 		// Config options if you have any
 		Configs: {

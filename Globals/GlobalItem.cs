@@ -12,8 +12,8 @@ namespace LackOfNameStuff.Globals
     {
         // Temporal weapon properties
         public bool TemporalWeapon = false;
-        public float TemporalBuffDamage = 1.6f;     // Multiplier (1.3f = 30% more damage)
-        public float TemporalBuffSpeed = 3f;      // Multiplier (1.8f = 80% faster)
+        public float TemporalBuffDamage = 1.6f;     // Multiplier (1.6f = 60% more damage)
+        public float TemporalBuffSpeed = 2f;      // Multiplier (2f = 100% faster)
         public float TemporalBuffCrit = 15f;         // Additive (15f = +15% crit chance)
         public float TemporalBuffKnockback = 1.2f;  // Multiplier (1.2f = 20% more knockback)
         public int TemporalBuffMana = -10;            // Additive mana cost reduction (-10 = 10 less mana)

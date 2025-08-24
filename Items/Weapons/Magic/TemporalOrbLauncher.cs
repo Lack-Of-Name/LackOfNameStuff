@@ -16,7 +16,7 @@ namespace LackOfNameStuff.Items.Weapons.Magic
         }
         public override void SetDefaults()
         {
-            Item.damage = 45;
+            Item.damage = 55;
             Item.DamageType = DamageClass.Magic;
             Item.width = 40;
             Item.height = 40;
@@ -39,7 +39,7 @@ namespace LackOfNameStuff.Items.Weapons.Magic
 
             // Set the temporal buff values here
             temporalData.TemporalBuffDamage = 1.6f;
-            temporalData.TemporalBuffSpeed = 1.4f;
+            temporalData.TemporalBuffSpeed = 1.6f;
             temporalData.TemporalBuffCrit = 15f;
         }
 
@@ -62,7 +62,7 @@ namespace LackOfNameStuff.Items.Weapons.Magic
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 6);
             recipe.AddIngredient(ItemID.FragmentNebula, 12);
-            recipe.AddIngredient(ModContent.ItemType<Items.Materials.TimeShard>(), 8);
+            recipe.AddIngredient(ModContent.ItemType<Items.Materials.TimeShard>(), 4);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();
         }

@@ -16,7 +16,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             Item.height = 18;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Red;
-            Item.defense = 20;
+            Item.defense = 6;
         }
 
         public override void SetStaticDefaults()
@@ -49,11 +49,12 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
             temporalPlayer.hasTemporalSet = true;
-            
+
             // Summoner set bonus
             player.setBonus = "Temporal Commander: Minions gain temporal abilities\n" +
-                            "Enhanced Chronos Watch effectiveness\n" +
-                            "Minions occasionally slow enemies";
+                            "Increased minion damage during bullet-time\n" +
+                            "Minions occasionally slow enemies\n" +
+                            "+1 minion slot, + 10% summon class damage";
             
             // Summoner-specific bonuses
             player.maxMinions += 1; // Additional minion slot

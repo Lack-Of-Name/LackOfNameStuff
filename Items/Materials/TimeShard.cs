@@ -17,7 +17,7 @@ namespace LackOfNameStuff.Items.Materials
             Item.scale = 0.1f;
             Item.maxStack = 999;
             Item.value = Item.buyPrice(gold: 1);
-            Item.rare = ItemRarityID.Cyan;
+            Item.rare = ItemRarityID.Orange;
             Item.ammo = Item.type; // Makes it usable as ammo for the Temporal Launcher
         }
 
@@ -29,7 +29,7 @@ namespace LackOfNameStuff.Items.Materials
 
         public override void PostUpdate()
         {
-            // Enhanced visual effects with orange/yellow theme
+            // Visual effects with orange/yellow theme
             if (Main.rand.NextBool(8))
             {
                 Dust dust = Dust.NewDustDirect(Item.position, Item.width, Item.height, DustID.Electric);

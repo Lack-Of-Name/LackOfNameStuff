@@ -93,7 +93,10 @@ namespace LackOfNameStuff.Items.Accessories
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 15);
-            recipe.AddIngredient(ItemID.FragmentSolar, 10);
+            recipe.AddIngredient(ItemID.FragmentSolar, 3);
+            recipe.AddIngredient(ItemID.FragmentVortex, 3);
+            recipe.AddIngredient(ItemID.FragmentNebula, 3);
+            recipe.AddIngredient(ItemID.FragmentStardust, 3);
             recipe.AddIngredient(ItemID.GoldWatch, 1);
             recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 3);
             recipe.AddTile(TileID.LunarCraftingStation);

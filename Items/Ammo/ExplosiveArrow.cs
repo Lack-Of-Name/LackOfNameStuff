@@ -29,7 +29,7 @@ namespace LackOfNameStuff.Items.Ammo
             Item.value = Item.buyPrice(copper: 50); // 50 copper per arrow
             Item.rare = ItemRarityID.Orange; // Orange rarity
             Item.shoot = ModContent.ProjectileType<Projectiles.ExplosiveArrow>();
-            Item.shootSpeed = 3f;
+            Item.shootSpeed = 4f;
             Item.ammo = AmmoID.Arrow; // This is arrow ammo
         }
 
@@ -51,7 +51,7 @@ namespace LackOfNameStuff.Items.Ammo
             // Higher tier recipe with grenades (post-hardmode)
             Recipe recipe3 = CreateRecipe(100); // Makes 100 arrows per craft
             recipe3.AddIngredient(ItemID.JestersArrow, 100);
-            recipe3.AddIngredient(ItemID.Grenade, 1);
+            recipe3.AddIngredient(ItemID.Bomb, 1);
             recipe3.AddTile(TileID.MythrilAnvil);
             recipe3.Register();
         }

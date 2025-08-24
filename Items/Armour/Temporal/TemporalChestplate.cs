@@ -15,7 +15,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             Item.height = 18;
             Item.value = Item.sellPrice(gold: 8);
             Item.rare = ItemRarityID.Red;
-            Item.defense = 28;
+            Item.defense = 37;
         }
 
         public override void SetStaticDefaults()
@@ -26,19 +26,19 @@ namespace LackOfNameStuff.Items.Armour.Temporal
 
         public override void UpdateEquip(Player player)
         {
-            // 20% increased ranged damage and crit
-            player.GetDamage(DamageClass.Ranged) += 0.20f;
-            player.GetCritChance(DamageClass.Ranged) += 10;
-            
-            // Reduced ammo consumption
-            player.ammoCost80 = true;
+            // Increase damage and crit for all class damage
+            player.GetDamage(DamageClass.Generic) += 0.15f;
+            player.GetCritChance(DamageClass.Generic) += 10;
         }
 
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.LunarBar, 12);
-            recipe.AddIngredient(ItemID.FragmentSolar, 10);
+            recipe.AddIngredient(ItemID.FragmentSolar, 3);
+            recipe.AddIngredient(ItemID.FragmentVortex, 3);
+            recipe.AddIngredient(ItemID.FragmentNebula, 3);
+            recipe.AddIngredient(ItemID.FragmentStardust, 3);
             recipe.AddIngredient(ModContent.ItemType<TimeShard>(), 8);
             recipe.AddTile(TileID.LunarCraftingStation);
             recipe.Register();

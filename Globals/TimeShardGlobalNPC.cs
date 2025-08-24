@@ -16,19 +16,19 @@ namespace LackOfNameStuff.Globals
             // Moon Lord drops - GUARANTEED
             if (npc.type == NPCID.MoonLordCore)
             {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 1, 8, 12)); // 100% chance, 8-12 shards
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 1, 2, 5)); // 100% chance, 2-5 shards
             }
             
             // Lunatic Cultist drops - GUARANTEED  
             if (npc.type == NPCID.CultistBoss)
             {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 1, 3, 5)); // 100% chance, 3-5 shards
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 1, 1, 3)); // 100% chance, 1-3 shards
             }
             
             // Dungeon Guardian drops - GUARANTEED
             if (npc.type == NPCID.DungeonGuardian)
             {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 1, 2, 4)); // 100% chance, 2-4 shards
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 2, 1, 2)); // 50% chance, 1-2 shards
             }
             
             // Solar Pillar enemies - RARE drops
@@ -36,7 +36,7 @@ namespace LackOfNameStuff.Globals
                 npc.type == NPCID.SolarDrakomire || npc.type == NPCID.SolarSroller ||
                 npc.type == NPCID.SolarSpearman)
             {
-                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 10, 1, 1)); // 10% chance, 1 shard
+                npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<TimeShard>(), 20, 1, 1)); // 5% chance, 1 shard
             }
         }
 
@@ -82,14 +82,6 @@ namespace LackOfNameStuff.Globals
                     }
                 }
             }
-        }
-        
-        // Debug method - you can remove this later
-        public override void SetStaticDefaults()
-        {
-            // This will help us debug - check console for Moon Lord ID
-            Main.NewText($"Moon Lord Core ID: {NPCID.MoonLordCore}");
-            Main.NewText($"Cultist Boss ID: {NPCID.CultistBoss}");
         }
     }
 }

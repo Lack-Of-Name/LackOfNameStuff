@@ -16,8 +16,8 @@ namespace LackOfNameStuff.Players
         public override void PostUpdateMiscEffects()
         {
             // Cap stored energy and add decay if not in bullet time
-            if (storedEnergy > 100) 
-                storedEnergy = 100;
+            if (storedEnergy > 5000) // Increased cap for more awesome
+                storedEnergy = 5000;
             
             var chronosPlayer = Player.GetModPlayer<ChronosPlayer>();
             if (!chronosPlayer.bulletTimeActive && storedEnergy > 0)

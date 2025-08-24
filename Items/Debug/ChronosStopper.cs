@@ -196,7 +196,7 @@ namespace LackOfNameStuff.Items.Debug
 
         public override void SetStaticDefaults()
         {
-            // Modern tModLoader 1.4+ syntax
+            // Modern tModLoader 1.4+ syntax... kill me.
         }
     }
 }

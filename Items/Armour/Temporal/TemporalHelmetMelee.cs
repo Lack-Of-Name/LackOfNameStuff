@@ -16,7 +16,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             Item.height = 18;
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Red;
-            Item.defense = 25; // Higher defense for melee
+            Item.defense = 33; // Higher defense for melee
         }
 
         public override void SetStaticDefaults()
@@ -49,11 +49,12 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
             temporalPlayer.hasTemporalSet = true;
-            
+
             // Melee set bonus
             player.setBonus = "Temporal Warrior: Melee attacks create temporal shockwaves\n" +
-                            "Enhanced Chronos Watch effectiveness\n" +
-                            "Attacks have increased knockback and speed";
+                            "Enhanced Chronos Watch effect\n" +
+                            "Attacks have increased knockback and speed\n" +
+                            "+15% melee damage, +2 knockback";
             
             // Melee-specific bonuses
             player.GetAttackSpeed(DamageClass.Melee) += 0.15f;
