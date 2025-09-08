@@ -1,0 +1,8 @@
+displayName = Lack Of Name Stuff
+author = YourName
+version = 1.0.0
+modReferences = CalamityMod
+buildIgnore = *.csproj, *.user, *.vs, *.vscode, bin/, obj/, .git/
+includeSource = true
+homepage = 
+description = A temporal progression mod that integrates with Calamity Mod, adding Time-based materials and equipment for post-game content.
