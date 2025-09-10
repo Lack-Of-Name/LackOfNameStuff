@@ -18,6 +18,8 @@ namespace LackOfNameStuff.Players
     {
         public bool hasChronosWatch = false;
         public int bulletTimeCooldown = 0;
+
+        // REMOVED: bulletTimeDuration field - duration is controlled by the actual buff
         
         // Visual effects
         public List<BulletTimeRipple> activeRipples = new List<BulletTimeRipple>();
@@ -183,6 +185,29 @@ namespace LackOfNameStuff.Players
             }
         }
 
+        // NEW METHOD: Extend current bullet time duration (for temporal armor)
+        public void ExtendBulletTime(int additionalTicks)
+        {
+            if (IsInBulletTime)
+            {
+                int buffIndex = Player.FindBuffIndex(ModContent.BuffType<BulletTimeBuff>());
+                if (buffIndex != -1)
+                {
+                    Player.buffTime[buffIndex] = System.Math.Min(Player.buffTime[buffIndex] + additionalTicks, 600); // Max 10 seconds
+                    
+                    // If we're the server, sync this to all clients
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        ModPacket packet = Mod.GetPacket();
+                        packet.Write((byte)2); // Message type: Extend bullet time
+                        packet.Write(Player.whoAmI);
+                        packet.Write(additionalTicks);
+                        packet.Send();
+                    }
+                }
+            }
+        }
+
         private void UpdateRippleEffects()
         {
             // Update ripples
@@ -234,8 +259,22 @@ namespace LackOfNameStuff.Players
             bulletTimeCooldown = tag.GetInt("bulletTimeCooldown");
         }
 
-        // Properties for ChronosWatch tooltip compatibility
+        // Properties for ChronosWatch tooltip compatibility and temporal armor
         public bool bulletTimeActive => IsInBulletTime;
         public int bulletTimeRemaining => BulletTimeRemaining;
+        
+        // ADDED: Property for temporal armor to get current duration
+        public int bulletTimeDuration 
+        { 
+            get => BulletTimeRemaining; 
+            set 
+            {
+                // When temporal armor tries to set duration, extend the buff instead
+                if (value > BulletTimeRemaining)
+                {
+                    ExtendBulletTime(value - BulletTimeRemaining);
+                }
+            } 
+        }
     }
 }

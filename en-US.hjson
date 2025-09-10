@@ -101,7 +101,7 @@ Mods: {
 				DisplayName: Temporal Headgear
 				Tooltip:
 					'''
-					Provides temporal awareness and ranged prowess
+					Provides ranged prowess
 					15% increased ranged damage
 					18% increased ranged critical strike chance
 					'Locks onto targets across time'
@@ -113,7 +113,7 @@ Mods: {
 				DisplayName: Temporal Helm
 				Tooltip:
 					'''
-					Provides temporal awareness and melee expertise
+					Provides melee expertise
 					18% increased melee damage
 					10% increased melee critical strike chance
 					Increased melee weapon size
@@ -126,7 +126,7 @@ Mods: {
 				DisplayName: Temporal Crown
 				Tooltip:
 					'''
-					Provides temporal awareness and magical resonance
+					Provides magical resonance
 					20% increased magic damage
 					12% increased magic critical strike chance
 					+60 maximum mana, 10% reduced mana usage
@@ -139,7 +139,7 @@ Mods: {
 				DisplayName: Temporal Diadem
 				Tooltip:
 					'''
-					Provides temporal awareness and minion mastery
+					Provides minion mastery
 					25% increased summon damage
 					+2 max minions, +1 max turret
 					'Commands legions across dimensions'

@@ -67,12 +67,29 @@ Mods: {
 
 			TemporalLeggings: {
 			}
+
+			EternalGem: {
+				DisplayName: Eternal Gem
+				Tooltip: ""
+			}
+
+			EternalShard: {
+				DisplayName: Eternal Shard
+				Tooltip: ""
+			}
+
+			TimeGem: {
+				DisplayName: Time Gem
+				Tooltip: ""
+			}
 		}
 
 		TemporalOrb: {
 		}
 
 		Projectiles: {
+			TemporalMissile.DisplayName: Temporal Missile
+			TemporalSubMissile.DisplayName: Temporal Sub Missile
 		}
 
 		Buffs: {
@@ -83,6 +100,16 @@ Mods: {
 			}
 
 			TemporalEchoBuff: {
+			}
+
+			TemporalCasting: {
+				DisplayName: Temporal Casting
+				Description: Mods.LackOfNameStuff.Buffs.TemporalCasting.Description
+			}
+
+			TemporalMinions: {
+				DisplayName: Temporal Minions
+				Description: Mods.LackOfNameStuff.Buffs.TemporalMinions.Description
 			}
 		}
 

@@ -22,7 +22,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Temporal Crown");
-            // Tooltip.SetDefault("Provides temporal awareness and magical resonance");
+            // Tooltip.SetDefault("Provides magical resonance");
             
             ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
         }
@@ -34,9 +34,8 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             player.GetCritChance(DamageClass.Magic) += 12;
             player.statManaMax2 += 60;
             player.manaCost -= 0.10f; // 10% reduced mana cost
-            
-            // Temporal awareness
-            player.GetModPlayer<Players.TemporalPlayer>().temporalAwareness = true;
+
+            // Set helmet type
             player.GetModPlayer<Players.TemporalPlayer>().helmetType = "Magic";
         }
 

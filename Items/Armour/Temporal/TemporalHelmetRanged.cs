@@ -21,16 +21,13 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Temporal Helmet");
-            // Tooltip.SetDefault("Provides temporal awareness");
+            // Tooltip.SetDefault("Provides ranger prowess");
         }
 
         public override void UpdateEquip(Player player)
         {
             // 15% increased ranged damage
             player.GetDamage(DamageClass.Ranged) += 0.15f;
-            
-            // Temporal awareness - see enemy health bars and show temporal effects
-            player.GetModPlayer<Players.TemporalPlayer>().temporalAwareness = true;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

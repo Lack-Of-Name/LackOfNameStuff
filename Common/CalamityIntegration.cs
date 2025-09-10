@@ -1,7 +1,8 @@
-// CalamityIntegration.cs - Helper class for Calamity Mod integration
+// CalamityIntegration.cs - Fixed version with proper reflection handling
 using Terraria;
 using Terraria.ModLoader;
 using System;
+using System.Reflection;
 
 namespace LackOfNameStuff.Common
 {
@@ -10,7 +11,7 @@ namespace LackOfNameStuff.Common
         public static Mod CalamityMod => ModLoader.GetMod("CalamityMod");
         public static bool CalamityLoaded => CalamityMod != null;
 
-        // Boss defeat tracking (you'll need to adjust these based on Calamity's actual system)
+        // Boss defeat tracking
         public static bool DownedProvidence
         {
             get
@@ -25,9 +26,9 @@ namespace LackOfNameStuff.Common
                     if (CalamityMod.TryFind("CalamityWorld", out ModSystem calamityWorld))
                     {
                         // Use reflection to get the boss defeat status
-                        var field = calamityWorld.GetType().GetField("downedProvidence");
-                        if (field != null)
-                            return (bool)field.GetValue(calamityWorld);
+                        var fieldInfo = calamityWorld.GetType().GetField("downedProvidence");
+                        if (fieldInfo != null)
+                            return (bool)fieldInfo.GetValue(calamityWorld);
                     }
                 }
                 catch (Exception)
@@ -49,9 +50,9 @@ namespace LackOfNameStuff.Common
                 {
                     if (CalamityMod.TryFind("CalamityWorld", out ModSystem calamityWorld))
                     {
-                        var field = calamityWorld.GetType().GetField("downedPolterghast");
-                        if (field != null)
-                            return (bool)field.GetValue(calamityWorld);
+                        var fieldInfo = calamityWorld.GetType().GetField("downedPolterghast");
+                        if (fieldInfo != null)
+                            return (bool)fieldInfo.GetValue(calamityWorld);
                     }
                 }
                 catch (Exception)
@@ -73,9 +74,9 @@ namespace LackOfNameStuff.Common
                 {
                     if (CalamityMod.TryFind("CalamityWorld", out ModSystem calamityWorld))
                     {
-                        var field = calamityWorld.GetType().GetField("downedDoG");
-                        if (field != null)
-                            return (bool)field.GetValue(calamityWorld);
+                        var fieldInfo = calamityWorld.GetType().GetField("downedDoG");
+                        if (fieldInfo != null)
+                            return (bool)fieldInfo.GetValue(calamityWorld);
                     }
                 }
                 catch (Exception)
@@ -97,9 +98,9 @@ namespace LackOfNameStuff.Common
                 {
                     if (CalamityMod.TryFind("CalamityWorld", out ModSystem calamityWorld))
                     {
-                        var field = calamityWorld.GetType().GetField("downedYharon");
-                        if (field != null)
-                            return (bool)field.GetValue(calamityWorld);
+                        var fieldInfo = calamityWorld.GetType().GetField("downedYharon");
+                        if (fieldInfo != null)
+                            return (bool)fieldInfo.GetValue(calamityWorld);
                     }
                 }
                 catch (Exception)
@@ -121,9 +122,9 @@ namespace LackOfNameStuff.Common
                 {
                     if (CalamityMod.TryFind("CalamityWorld", out ModSystem calamityWorld))
                     {
-                        var field = calamityWorld.GetType().GetField("downedCalamitas");
-                        if (field != null)
-                            return (bool)field.GetValue(calamityWorld);
+                        var fieldInfo = calamityWorld.GetType().GetField("downedCalamitas");
+                        if (fieldInfo != null)
+                            return (bool)fieldInfo.GetValue(calamityWorld);
                     }
                 }
                 catch (Exception)

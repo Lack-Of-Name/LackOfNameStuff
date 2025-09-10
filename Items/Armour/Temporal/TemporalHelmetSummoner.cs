@@ -22,7 +22,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Temporal Diadem");
-            // Tooltip.SetDefault("Provides temporal awareness and minion mastery");
+            // Tooltip.SetDefault("Provides minion mastery");
             
             ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
         }
@@ -33,9 +33,8 @@ namespace LackOfNameStuff.Items.Armour.Temporal
             player.GetDamage(DamageClass.Summon) += 0.25f;
             player.maxMinions += 2;
             player.maxTurrets += 1;
-            
-            // Temporal awareness
-            player.GetModPlayer<Players.TemporalPlayer>().temporalAwareness = true;
+
+            // Set helmet type
             player.GetModPlayer<Players.TemporalPlayer>().helmetType = "Summoner";
         }
 
