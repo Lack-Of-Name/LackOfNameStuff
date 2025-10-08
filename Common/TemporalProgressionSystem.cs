@@ -103,12 +103,12 @@ namespace LackOfNameStuff.Common
                 if (calamityMod.TryFind("CosmiliteBar", out ModItem cosmiliteBar))
                     eternalGemRecipe.AddIngredient(cosmiliteBar.Type, 3);
                 else
-                    eternalGemRecipe.AddIngredient(ItemID.LunarBar, 1500); // Fallback
+                    eternalGemRecipe.AddIngredient(ItemID.LunarBar, 15); // Fallback: use a sane amount comparable to post-ML
                 
                 if (calamityMod.TryFind("AuricTeslaBar", out ModItem auricTesla))
                     eternalGemRecipe.AddIngredient(auricTesla.Type, 3);
                 else
-                    eternalGemRecipe.AddIngredient(ItemID.FragmentSolar, 1000); // Fallback
+                    eternalGemRecipe.AddIngredient(ItemID.FragmentSolar, 10); // Fallback: fragments as substitute
                 
                 if (calamityMod.TryFind("ExoPrism", out ModItem exoPrism))
                     eternalGemRecipe.AddIngredient(exoPrism.Type, 1);

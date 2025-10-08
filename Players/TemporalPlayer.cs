@@ -18,6 +18,8 @@ namespace LackOfNameStuff.Players
         public bool hasTemporalSet = false;
         public string helmetType = "None";
         private int missileCooldown = 0;
+        // When true, suppress auto-unlocks from inventory/pickups/crafting (useful for testing downgrades)
+        public bool debugLockTier = false;
         
         // Progression system - these are permanent unlocks per player
         public int unlockedTier = 1; // Highest tier this player has unlocked (starts at 1)
@@ -56,6 +58,7 @@ namespace LackOfNameStuff.Players
 
         private void CheckForMaterialsInInventory()
         {
+            if (debugLockTier) return;
             bool tierChanged = false;
             
             // Check for Eternal Shard (Tier 2)
@@ -201,6 +204,7 @@ namespace LackOfNameStuff.Players
         // Hook into the crafting system
         public void PostItemCraft(Recipe recipe, Item item)
         {
+            if (debugLockTier) return;
             // Check if the crafted item is one of our progression materials
             CheckCraftedItem(item);
         }
@@ -208,12 +212,14 @@ namespace LackOfNameStuff.Players
         // Also check when items are picked up
         public override bool OnPickup(Item item)
         {
+            if (debugLockTier) return base.OnPickup(item);
             CheckCraftedItem(item);
             return base.OnPickup(item);
         }
 
         private void CheckCraftedItem(Item item)
         {
+            if (debugLockTier) return;
             if (item == null || item.IsAir) return;
 
             // Check for tier upgrades immediately when materials are obtained
@@ -243,19 +249,37 @@ namespace LackOfNameStuff.Players
         // Method to force unlock a tier (for admin commands, cheats, etc.)
         public void ForceUnlockTier(int tier)
         {
-            if (tier >= 2) hasUnlockedEternalShard = true;
-            if (tier >= 3) hasUnlockedTimeGem = true;
-            if (tier >= 4) hasUnlockedEternalGem = true;
-            unlockedTier = Math.Max(unlockedTier, tier);
-            
-            CreateTierUpgradeEffect();
+            // Backwards-compatible: now delegates to SetTier to allow lowering and proper flag sync
+            SetTier(tier, showEffects: true);
         }
 
-        // FIXED: Only trigger from direct player attacks, not projectile hits
+        // Set the temporal tier exactly (1-4), syncing all unlock flags. Only shows effects on upgrades.
+        public void SetTier(int tier, bool showEffects = false)
+        {
+            int oldTier = unlockedTier;
+            tier = Math.Clamp(tier, 1, 4);
+
+            // Sync boolean unlocks to match the exact tier
+            hasUnlockedEternalShard = tier >= 2;
+            hasUnlockedTimeGem = tier >= 3;
+            hasUnlockedEternalGem = tier >= 4;
+            unlockedTier = tier;
+
+            // Only play upgrade visuals when actually increasing tier
+            if (showEffects && tier > oldTier)
+            {
+                CreateTierUpgradeEffect();
+            }
+        }
+
+        // Only trigger from direct player attacks (item/melee swing), not projectile hits
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Only trigger if player has temporal armor set equipped
             if (!hasTemporalSet || missileCooldown > 0) return;
+
+            // Ignore target dummies entirely
+            if (target.type == NPCID.TargetDummy) return;
 
             // Apply class-specific effect first
             ApplyClassSpecificEffect(target, hit, damageDone);
@@ -264,9 +288,12 @@ namespace LackOfNameStuff.Players
             TriggerTemporalMissiles(target);
         }
 
-        // FIXED: Override OnHitNPCWithProj to prevent missiles triggering more missiles
+        // Prevent missiles triggering more missiles; allow other projectiles to trigger
         public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            // Ignore target dummies entirely
+            if (target.type == NPCID.TargetDummy) return;
+
             // Check if this projectile is one of our temporal missiles
             if (proj.type == ModContent.ProjectileType<TemporalMissile>() || 
                 proj.type == ModContent.ProjectileType<TemporalSubMissile>())
@@ -331,8 +358,11 @@ namespace LackOfNameStuff.Players
 
         private void TriggerTemporalMissiles(NPC target)
         {
-            // Set cooldown based on tier (higher tier = shorter cooldown)
-            int[] cooldowns = { 0, 120, 90, 60, 45 }; // Index 0 unused, tiers 1-4
+            if (target == null || !target.active || target.friendly || target.type == NPCID.TargetDummy)
+                return;
+
+            // Set cooldown based on tier (higher tier = shorter cooldown for quick succession)
+            int[] cooldowns = { 0, 60, 45, 30, 15 }; // Index 0 unused, tiers 1-4: 1s, 0.75s, 0.5s, 0.25s
             missileCooldown = cooldowns[Math.Min(currentTier, 4)];
 
             // Launch missiles from behind and above player with initial velocity
@@ -438,6 +468,7 @@ namespace LackOfNameStuff.Players
             tag["hasUnlockedEternalShard"] = hasUnlockedEternalShard;
             tag["hasUnlockedTimeGem"] = hasUnlockedTimeGem;
             tag["hasUnlockedEternalGem"] = hasUnlockedEternalGem;
+            tag["debugLockTier"] = debugLockTier;
         }
 
         public override void LoadData(TagCompound tag)
@@ -446,6 +477,7 @@ namespace LackOfNameStuff.Players
             hasUnlockedEternalShard = tag.GetBool("hasUnlockedEternalShard");
             hasUnlockedTimeGem = tag.GetBool("hasUnlockedTimeGem");
             hasUnlockedEternalGem = tag.GetBool("hasUnlockedEternalGem");
+            debugLockTier = tag.ContainsKey("debugLockTier") && tag.GetBool("debugLockTier");
             
             // Fallback: if no save data, start at tier 1
             if (unlockedTier == 0) unlockedTier = 1;

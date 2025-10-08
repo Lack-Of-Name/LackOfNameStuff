@@ -6,6 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using LackOfNameStuff.Items.Materials;
+using LackOfNameStuff.Players;
 
 namespace LackOfNameStuff.Items.Tools
 {
@@ -26,7 +27,7 @@ namespace LackOfNameStuff.Items.Tools
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.pick = 225; // Lunar pickaxe power
+            Item.pick = 225; // Base pickaxe power (tier 1)
         }
 
         // This is called every frame while the item is held
@@ -34,6 +35,7 @@ namespace LackOfNameStuff.Items.Tools
         {
             // Apply speed bonus to mining
             var modPlayer = player.GetModPlayer<TemporalPickaxePlayer>();
+            var temporalPlayer = player.GetModPlayer<TemporalPlayer>();
             float speedBonus = modPlayer.GetSpeedBonus();
 
             // Convert speed bonus to useTime reduction
@@ -48,6 +50,17 @@ namespace LackOfNameStuff.Items.Tools
                 Item.useTime = 15;
                 Item.useAnimation = 15;
             }
+
+            // Tier-based pick power scaling (reflects unlocked temporal tier)
+            // Tier 1: 225, Tier 2: 235, Tier 3: 245, Tier 4: 260
+            int tier = Math.Clamp(temporalPlayer.unlockedTier, 1, 4);
+            Item.pick = tier switch
+            {
+                2 => 235,
+                3 => 245,
+                4 => 260,
+                _ => 225
+            };
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -67,6 +80,15 @@ namespace LackOfNameStuff.Items.Tools
                 OverrideColor = speedBonus >= 1000 ? Color.Gold : Color.LightGreen
             };
             tooltips.Add(speedLine);
+
+            var temporalPlayer = Main.LocalPlayer.GetModPlayer<TemporalPlayer>();
+            int tier = Math.Clamp(temporalPlayer.unlockedTier, 1, 4);
+            int pickPower = tier switch { 2 => 235, 3 => 245, 4 => 260, _ => 225 };
+            TooltipLine tierLine = new TooltipLine(Mod, "TierInfo", $"Temporal tier: {tier}  |  Pick power: {pickPower}")
+            {
+                OverrideColor = tier >= 4 ? Color.Cyan : Color.LightBlue
+            };
+            tooltips.Add(tierLine);
 
             if (speedBonus < 1000)
             {

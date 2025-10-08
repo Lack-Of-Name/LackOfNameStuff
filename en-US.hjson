@@ -169,6 +169,11 @@ Mods: {
 					'Step between moments'
 					'''
 			}
+
+			PresenceShatterer: {
+				DisplayName: Presence Shatterer
+				Tooltip: ""
+			}
 		}
 
 		TemporalOrb: {
@@ -182,6 +187,7 @@ Mods: {
 			TemporalShot.DisplayName: Temporal Shot
 			ChronosWhipProjectile.DisplayName: Chronos Whip Projectile
 			TemporalEcho.DisplayName: Temporal Echo
+			TemporalBolt.DisplayName: Temporal Bolt
 		}
 
 		Buffs: {
@@ -198,6 +204,11 @@ Mods: {
 			TemporalEchoBuff: {
 				DisplayName: Temporal Echo Buff
 				Description: Mods.LackOfNameStuff.Buffs.TemporalEchoBuff.Description
+			}
+
+			PresenceShattererCooldown: {
+				DisplayName: Presence Shatterer Cooldown
+				Description: Mods.LackOfNameStuff.Buffs.PresenceShattererCooldown.Description
 			}
 		}
 

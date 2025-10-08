@@ -5,14 +5,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ID;
 using Terraria.Audio;
+using Terraria.GameContent;
 using System;
 
 namespace LackOfNameStuff.Projectiles
 {
     public class TemporalSubMissile : ModProjectile
     {
-        private int armorTier = 1;
-        private int lifeTimer = 0;
+        private int armorTier = 1; // from ai[1]
+
+        // Tunables
+        private const float BaseSpeed = 8f;
+        private const float HomingBase = 0.04f;
+        private const float HomingPerTier = 0.01f;
+        private const float SearchRadius = 240f;
 
         public override void SetDefaults()
         {
@@ -31,24 +37,25 @@ namespace LackOfNameStuff.Projectiles
         {
             // Shorter trail for sub-missiles but still visible
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            // Use standard position caching to avoid jitter
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
         public override void AI()
         {
-            armorTier = (int)Projectile.ai[1];
-            lifeTimer++;
+            armorTier = (int)MathHelper.Clamp(Projectile.ai[1], 1, 4);
 
-            // Slight homing behavior
-            NPC target = FindNearestEnemy();
+            // Slight homing behavior toward closest valid target
+            NPC target = AcquireTarget();
             if (target != null)
             {
-                Vector2 direction = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                float homingStrength = 0.04f + (armorTier * 0.01f);
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, direction * 8f, homingStrength);
+                Vector2 desiredVel = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * BaseSpeed;
+                float homingStrength = HomingBase + armorTier * HomingPerTier;
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, desiredVel, MathHelper.Clamp(homingStrength, 0f, 0.35f));
             }
 
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            if (Projectile.velocity.LengthSquared() > 0.001f)
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             // Enhanced trail dust for sub-missiles
             CreateSubMissileTrailDust();
@@ -123,15 +130,14 @@ namespace LackOfNameStuff.Projectiles
             SoundEngine.PlaySound(SoundID.Item10.WithVolumeScale(0.4f), Projectile.Center);
         }
 
-        private NPC FindNearestEnemy()
+        private NPC AcquireTarget()
         {
             NPC closest = null;
-            float closestDistance = 200f;
-            
+            float closestDistance = SearchRadius;
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
-                if (npc.active && !npc.friendly && npc.lifeMax > 5)
+                if (npc.CanBeChasedBy(this) && npc.type != NPCID.TargetDummy)
                 {
                     float distance = Vector2.Distance(Projectile.Center, npc.Center);
                     if (distance < closestDistance)
@@ -141,7 +147,6 @@ namespace LackOfNameStuff.Projectiles
                     }
                 }
             }
-            
             return closest;
         }
 
@@ -161,12 +166,13 @@ namespace LackOfNameStuff.Projectiles
         {
             // Draw sub-missile trail
             DrawSubMissileTrail();
-            return true;
+            // Prevent default draw to avoid double-rendering with glow layers
+            return false;
         }
 
         private void DrawSubMissileTrail()
         {
-            var texture = ModContent.Request<Texture2D>("Terraria/Images/Projectile_" + Projectile.type).Value;
+            var texture = TextureAssets.Projectile[Projectile.type].Value;
             var origin = texture.Size() * 0.5f;
 
             // Draw trail with glow effect
@@ -235,6 +241,13 @@ namespace LackOfNameStuff.Projectiles
                 SpriteEffects.None,
                 0
             );
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (target.type == NPCID.TargetDummy)
+                return false;
+            return null;
         }
     }
 }
