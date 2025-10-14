@@ -228,7 +228,7 @@ namespace LackOfNameStuff.Systems
 
         private void DrawDynamicTintOverlay(SpriteBatch spriteBatch, Texture2D pixelTexture, int screenWidth, int screenHeight, float intensity)
         {
-            // Dynamic color tint - shifts from cyan to red/orange based on intensity and time
+            // Dynamic color tint - blend temporal tier color with existing intensity-based tint
             Color baseColor;
             
             if (intensity < 0.4f)
@@ -250,7 +250,23 @@ namespace LackOfNameStuff.Systems
                 baseColor = dangerColor * pulseIntensity;
             }
             
-            Color tintColor = baseColor * (intensity * 0.08f);
+            // Blend with player's temporal tier color for subtle flavoring
+            var temporalPlayer = Main.LocalPlayer?.GetModPlayer<TemporalPlayer>();
+            Color tierColor = Color.Transparent;
+            if (temporalPlayer != null)
+            {
+                tierColor = temporalPlayer.currentTier switch
+                {
+                    1 => Color.Orange,
+                    2 => Color.Purple,
+                    3 => Color.Cyan,
+                    4 => Color.White,
+                    _ => Color.Cyan
+                };
+            }
+
+            Color mixed = Color.Lerp(baseColor, tierColor, 0.35f);
+            Color tintColor = mixed * (intensity * 0.08f);
             Rectangle fullScreen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(pixelTexture, fullScreen, tintColor);
             

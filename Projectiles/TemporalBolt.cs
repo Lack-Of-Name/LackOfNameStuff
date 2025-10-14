@@ -7,6 +7,7 @@ using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using LackOfNameStuff.Buffs;
+using LackOfNameStuff.Players;
 
 namespace LackOfNameStuff.Projectiles
 {
@@ -41,12 +42,26 @@ namespace LackOfNameStuff.Projectiles
 			if (Projectile.velocity.LengthSquared() > 0.1f)
 				Projectile.rotation = Projectile.velocity.ToRotation();
 
-			// Light and dust for a temporal feel
-			Lighting.AddLight(Projectile.Center, 0.2f, 0.3f, 0.5f);
+			// Light and dust for a temporal feel, tinted by current temporal tier
+			int owner = Projectile.owner;
+			Color tierColor = Color.Cyan;
+			if (owner >= 0 && owner < Main.maxPlayers && Main.player[owner]?.active == true)
+			{
+				int tier = Math.Clamp(Main.player[owner].GetModPlayer<TemporalPlayer>().unlockedTier, 1, 4);
+				tierColor = tier switch
+				{
+					1 => Color.Orange,
+					2 => Color.Purple,
+					3 => Color.Cyan,
+					4 => Color.White,
+					_ => Color.Cyan
+				};
+			}
+			Lighting.AddLight(Projectile.Center, tierColor.ToVector3() * 0.4f);
 			if (Main.rand.NextBool(3))
 			{
 				var d = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Electric,
-					-Projectile.velocity.X * 0.1f, -Projectile.velocity.Y * 0.1f, 150, Color.Cyan, 1.1f);
+					-Projectile.velocity.X * 0.1f, -Projectile.velocity.Y * 0.1f, 150, tierColor, 1.1f);
 				d.noGravity = true;
 			}
 		}
@@ -92,11 +107,27 @@ namespace LackOfNameStuff.Projectiles
 			// Soft glow trail using a simple rectangle texture
 			Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
 			Vector2 origin = tex.Size() * 0.5f;
+			// Determine owner tier color for trail
+			int owner = Projectile.owner;
+			Color tierColor = Color.Cyan;
+			if (owner >= 0 && owner < Main.maxPlayers && Main.player[owner]?.active == true)
+			{
+				int tier = Math.Clamp(Main.player[owner].GetModPlayer<TemporalPlayer>().unlockedTier, 1, 4);
+				tierColor = tier switch
+				{
+					1 => Color.Orange,
+					2 => Color.Purple,
+					3 => Color.Cyan,
+					4 => Color.White,
+					_ => Color.Cyan
+				};
+			}
 			for (int i = 1; i < Projectile.oldPos.Length; i++)
 			{
 				if (Projectile.oldPos[i] == Vector2.Zero || Projectile.oldPos[i - 1] == Vector2.Zero) continue;
 				float progress = 1f - i / (float)Projectile.oldPos.Length;
-				Color col = new Color(80, 200, 255, 0) * (0.3f + 0.4f * progress);
+				Color col = tierColor * (0.3f + 0.4f * progress);
+				col.A = 0;
 				Vector2 drawPos = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
 				Main.EntitySpriteDraw(tex, drawPos, null, col, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 			}

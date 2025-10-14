@@ -47,6 +47,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void UpdateArmorSet(Player player)
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
+            int tier = temporalPlayer.currentTier;
             temporalPlayer.hasTemporalSet = true;
 
             // Melee set bonus
@@ -55,9 +56,11 @@ namespace LackOfNameStuff.Items.Armour.Temporal
                             "Attacks have increased knockback and speed\n" +
                             "+15% melee damage, +2 knockback";
             
-            // Melee-specific bonuses
-            player.GetAttackSpeed(DamageClass.Melee) += 0.15f;
-            player.GetKnockback(DamageClass.Melee) += 2f;
+            // Melee-specific bonuses (scale slightly by tier)
+            float extraAS = 0.03f * (tier - 1);
+            float extraKB = 0.4f * (tier - 1);
+            player.GetAttackSpeed(DamageClass.Melee) += 0.15f + extraAS;
+            player.GetKnockback(DamageClass.Melee) += 2f + extraKB;
             
             // Time immunity
             player.buffImmune[BuffID.Slow] = true;

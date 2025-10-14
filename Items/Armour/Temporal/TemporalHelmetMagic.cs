@@ -48,6 +48,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void UpdateArmorSet(Player player)
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
+            int tier = temporalPlayer.currentTier;
             temporalPlayer.hasTemporalSet = true;
 
             // Magic set bonus
@@ -56,9 +57,13 @@ namespace LackOfNameStuff.Items.Armour.Temporal
                             "Spells have chance to not consume mana\n" +
                             "-15% mana cost, 17% chance not to consume mana";
             
-            // Magic-specific bonuses
-            player.manaCost -= 0.15f; // Additional 15% mana reduction
-            if (Main.rand.NextBool(6)) // ~17% chance to not consume mana
+            // Magic-specific bonuses (scale slightly by tier)
+            float extraManaRed = 0.03f * (tier - 1);
+            player.manaCost -= 0.15f + extraManaRed; // Additional mana reduction per tier
+            // Increase free-cast chance slightly with tier (17% base -> ~23% at T4)
+            int freeCastChance = 6 - (tier - 1); // 6,5,4,3 -> 16.7%, 20%, 25%, 33% (approx)
+            freeCastChance = System.Math.Clamp(freeCastChance, 3, 6);
+            if (Main.rand.NextBool(freeCastChance))
                 player.manaFlower = true;
             
             // Time immunity

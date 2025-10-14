@@ -47,6 +47,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void UpdateArmorSet(Player player)
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
+            int tier = temporalPlayer.currentTier;
             temporalPlayer.hasTemporalSet = true;
 
             // Summoner set bonus
@@ -55,9 +56,11 @@ namespace LackOfNameStuff.Items.Armour.Temporal
                             "Minions occasionally slow enemies\n" +
                             "+1 minion slot, + 10% summon class damage";
             
-            // Summoner-specific bonuses
-            player.maxMinions += 1; // Additional minion slot
-            player.GetDamage(DamageClass.Summon) += 0.10f; // Additional damage
+            // Summoner-specific bonuses (scale slightly by tier)
+            int extraSlots = (tier >= 3) ? 1 : 0; // +1 more slot at tier 3+
+            float extraDamage = 0.04f * (tier - 1);
+            player.maxMinions += 1 + extraSlots; // Additional minion slots
+            player.GetDamage(DamageClass.Summon) += 0.10f + extraDamage; // Additional damage
             
             // Time immunity
             player.buffImmune[BuffID.Slow] = true;

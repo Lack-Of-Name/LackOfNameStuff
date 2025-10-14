@@ -28,6 +28,8 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         {
             // 15% increased ranged damage
             player.GetDamage(DamageClass.Ranged) += 0.15f;
+            // Mark helmet type for class-specific effects
+            player.GetModPlayer<Players.TemporalPlayer>().helmetType = "Ranged";
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -39,6 +41,7 @@ namespace LackOfNameStuff.Items.Armour.Temporal
         public override void UpdateArmorSet(Player player)
         {
             var temporalPlayer = player.GetModPlayer<Players.TemporalPlayer>();
+            int tier = temporalPlayer.currentTier;
             
             // Set bonus effects
             temporalPlayer.hasTemporalSet = true;
@@ -48,8 +51,10 @@ namespace LackOfNameStuff.Items.Armour.Temporal
                             "+15% ranged attack speed, + 10% ranged crit chance";
             
             // Ranged-specific bonuses
-            player.GetAttackSpeed(DamageClass.Ranged) += 0.15f;
-            player.GetCritChance(DamageClass.Ranged) += 10f;
+            float extraAS = 0.03f * (tier - 1); // small per-tier bump
+            float extraCrit = 2f * (tier - 1);
+            player.GetAttackSpeed(DamageClass.Ranged) += 0.15f + extraAS;
+            player.GetCritChance(DamageClass.Ranged) += 10f + extraCrit;
 
             // Time immunity
             player.buffImmune[BuffID.Slow] = true;

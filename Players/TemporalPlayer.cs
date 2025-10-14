@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.Audio;
 using Terraria.ModLoader.IO;
 using LackOfNameStuff.Projectiles;
+using Terraria.Localization;
 
 namespace LackOfNameStuff.Players
 {
@@ -153,8 +154,9 @@ namespace LackOfNameStuff.Players
             
             unlockedTier = Math.Max(unlockedTier, tier);
             
-            // Send congratulations message
-            Main.NewText($"Temporal powers enhanced! {materialName} unlocks Tier {tier} abilities!", GetTierColor(tier));
+            // Send congratulations message (localized)
+            string upgradeText = Language.GetTextValue("Mods.LackOfNameStuff.Common.Progression.TierUpgrade", materialName, tier);
+            Main.NewText(upgradeText, GetTierColor(tier));
             
             // Play upgrade sound
             SoundEngine.PlaySound(SoundID.Item4.WithVolumeScale(0.8f).WithPitchOffset(0.2f), Player.Center);
@@ -226,17 +228,20 @@ namespace LackOfNameStuff.Players
             if (!hasUnlockedEternalShard && item.Name.Contains("Eternal Shard"))
             {
                 UnlockTier(2, "Eternal Shard");
-                Main.NewText("You feel temporal energy coursing through you...", Color.Purple);
+                string msg = Language.GetTextValue("Mods.LackOfNameStuff.Common.Progression.Tier2Hint");
+                Main.NewText(msg, Color.Purple);
             }
             else if (!hasUnlockedTimeGem && item.Name.Contains("Time Gem"))
             {
                 UnlockTier(3, "Time Gem");
-                Main.NewText("Time itself bends to your will...", Color.Cyan);
+                string msg = Language.GetTextValue("Mods.LackOfNameStuff.Common.Progression.Tier3Hint");
+                Main.NewText(msg, Color.Cyan);
             }
             else if (!hasUnlockedEternalGem && item.Name.Contains("Eternal Gem"))
             {
                 UnlockTier(4, "Eternal Gem");
-                Main.NewText("You have mastered the flow of eternity!", Color.White);
+                string msg = Language.GetTextValue("Mods.LackOfNameStuff.Common.Progression.Tier4Hint");
+                Main.NewText(msg, Color.White);
             }
         }
 
@@ -317,6 +322,7 @@ namespace LackOfNameStuff.Players
         {
             var chronosPlayer = Player.GetModPlayer<ChronosPlayer>();
             bool hasChronosWatch = chronosPlayer?.hasChronosWatch == true;
+            int tier = currentTier;
             
             switch (helmetType)
             {
@@ -324,8 +330,9 @@ namespace LackOfNameStuff.Players
                     // Ranged: Critical hits extend bullet time duration
                     if (hit.Crit && hasChronosWatch && chronosPlayer.bulletTimeActive)
                     {
-                        // Use the new ExtendBulletTime method instead of trying to set duration directly
-                        chronosPlayer.ExtendBulletTime(30); // +0.5sec, capped at 10sec in the method
+                        // Extend bullet time more at higher tiers
+                        int extra = 30 + 6 * (tier - 1); // 0.5s base -> +0.1s per tier
+                        chronosPlayer.ExtendBulletTime(extra);
                         CreateClassEffect(target, Color.Cyan);
                     }
                     break;
@@ -334,7 +341,8 @@ namespace LackOfNameStuff.Players
                     // Melee: Kills reduce bullet time cooldown
                     if (target.life <= 0 && hasChronosWatch)
                     {
-                        chronosPlayer.bulletTimeCooldown = Math.Max(chronosPlayer.bulletTimeCooldown - 60, 0); // -1 second
+                        int reduce = 60 + 12 * (tier - 1); // -1.0s base, +0.2s per tier
+                        chronosPlayer.bulletTimeCooldown = Math.Max(chronosPlayer.bulletTimeCooldown - reduce, 0);
                         CreateClassEffect(target, Color.Orange);
                     }
                     break;
@@ -343,14 +351,16 @@ namespace LackOfNameStuff.Players
                     // Magic: High damage hits reduce mana costs temporarily
                     if (damageDone > target.lifeMax * 0.1f) // If hit deals 10%+ of enemy max HP
                     {
-                        Player.AddBuff(ModContent.BuffType<Buffs.TemporalCasting>(), 300); // 5 seconds of reduced mana costs
+                        int duration = 300 + 60 * (tier - 1); // 5s base, +1s per tier
+                        Player.AddBuff(ModContent.BuffType<Buffs.TemporalCasting>(), duration);
                         CreateClassEffect(target, Color.Magenta);
                     }
                     break;
 
                 case "Summoner":
                     // Summoner: Hits grant minions temporary damage boost
-                    Player.AddBuff(ModContent.BuffType<Buffs.TemporalMinions>(), 240); // 4 seconds
+                    int dur = 240 + 60 * (tier - 1); // 4s base, +1s per tier
+                    Player.AddBuff(ModContent.BuffType<Buffs.TemporalMinions>(), dur);
                     CreateClassEffect(target, Color.Purple);
                     break;
             }
@@ -362,50 +372,44 @@ namespace LackOfNameStuff.Players
                 return;
 
             // Set cooldown based on tier (higher tier = shorter cooldown for quick succession)
-            int[] cooldowns = { 0, 60, 45, 30, 15 }; // Index 0 unused, tiers 1-4: 1s, 0.75s, 0.5s, 0.25s
+            int[] cooldowns = { 0, 60, 50, 40, 30 }; // Slightly conservative but faster at higher tiers
             missileCooldown = cooldowns[Math.Min(currentTier, 4)];
 
-            // Launch missiles from behind and above player with initial velocity
-            Vector2 leftLaunchPos = Player.Center + new Vector2(-50, -30);
-            Vector2 rightLaunchPos = Player.Center + new Vector2(50, -30);
-
-            // Calculate initial velocity - upward and backward, then will curve toward target
-            Vector2 baseVelocity = new Vector2(-Player.direction * 3f, -8f); // Upward and away from player direction
-            
             // Calculate base damage based on tier and class
             int baseDamage = GetMissileBaseDamage();
 
-            // Launch left missile with slight leftward bias
-            Vector2 leftVelocity = baseVelocity + new Vector2(-2f, 0);
-            Projectile.NewProjectile(
-                Player.GetSource_Accessory(Player.armor[0]), // Use helmet as source
-                leftLaunchPos,
-                leftVelocity,
-                ModContent.ProjectileType<TemporalMissile>(),
-                baseDamage,
-                3f,
-                Player.whoAmI,
-                ai0: target.whoAmI, // Target the hit enemy
-                ai1: currentTier // Pass tier info
-            );
+            // Determine number of missiles based on tier
+            int missiles = currentTier switch { 1 => 2, 2 => 3, 3 => 4, 4 => 5, _ => 2 };
 
-            // Launch right missile with slight rightward bias
-            Vector2 rightVelocity = baseVelocity + new Vector2(2f, 0);
-            Projectile.NewProjectile(
-                Player.GetSource_Accessory(Player.armor[0]),
-                rightLaunchPos,
-                rightVelocity,
-                ModContent.ProjectileType<TemporalMissile>(),
-                baseDamage,
-                3f,
-                Player.whoAmI,
-                ai0: target.whoAmI,
-                ai1: currentTier
-            );
+            // Launch missiles from an arc above player, fanning out slightly
+            float arcWidth = MathHelper.ToRadians(40f); // total arc angle
+            float startAngle = -MathHelper.PiOver2 - arcWidth / 2f; // centered above
+            float angleStep = missiles > 1 ? arcWidth / (missiles - 1) : 0f;
+            float radius = 40f;
 
-            // Visual effect at launch positions
-            CreateMissileLaunchEffect(leftLaunchPos);
-            CreateMissileLaunchEffect(rightLaunchPos);
+            for (int i = 0; i < missiles; i++)
+            {
+                float angle = startAngle + angleStep * i;
+                Vector2 offset = new Vector2((float)System.Math.Cos(angle), (float)System.Math.Sin(angle)) * radius;
+                Vector2 spawnPos = Player.Center + offset;
+
+                // Initial velocity: outward along the arc plus a bit upward; homing takes over
+                Vector2 initialVel = offset.SafeNormalize(Vector2.UnitY) * -6f + new Vector2(0, -2f);
+
+                Projectile.NewProjectile(
+                    Player.GetSource_Accessory(Player.armor[0]),
+                    spawnPos,
+                    initialVel,
+                    ModContent.ProjectileType<TemporalMissile>(),
+                    baseDamage,
+                    3f,
+                    Player.whoAmI,
+                    ai0: target.whoAmI,
+                    ai1: currentTier
+                );
+
+                CreateMissileLaunchEffect(spawnPos);
+            }
 
             // Audio feedback
             SoundEngine.PlaySound(SoundID.Item61.WithVolumeScale(0.7f), Player.Center);
