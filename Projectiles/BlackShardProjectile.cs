@@ -40,12 +40,14 @@ namespace LackOfNameStuff.Projectiles
             Projectile.localNPCHitCooldown = 12;
             Projectile.aiStyle = 0;
             AIType = 0;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
         }
 
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-            Lighting.AddLight(Projectile.Center, new Vector3(0.05f, 0.1f, 0.35f));
+            Lighting.AddLight(Projectile.Center, new Vector3(0.25f, 0.05f, 0.05f));
 
             if (Projectile.localAI[0] == 0f)
             {
@@ -60,7 +62,7 @@ namespace LackOfNameStuff.Projectiles
 
             if (Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 150, default, 1.15f);
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.CrimsonTorch, 0f, 0f, 40, Color.Red, 1.15f);
                 dust.velocity = Projectile.velocity * 0.2f;
                 dust.noGravity = true;
             }
@@ -70,7 +72,7 @@ namespace LackOfNameStuff.Projectiles
         {
             const float maxSeekDistance = 800f;
             const float homingStrength = 0.12f;
-            const float desiredSpeed = 24f;
+            const float desiredSpeed = 18f;
 
             NPC target = FindHomingTarget(maxSeekDistance);
             if (target == null)

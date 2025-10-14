@@ -11,9 +11,7 @@ namespace LackOfNameStuff.Common
 
         // How effective defense is while an NPC has Temporal Shock.
         // 1.0 = normal defense, 0.65 = 65% as effective (i.e., 35% reduced impact).
-        [LabelKey("Mods.LackOfNameStuff.Config.TemporalShockDefenseEffectiveness.Label")]
-        [TooltipKey("Mods.LackOfNameStuff.Config.TemporalShockDefenseEffectiveness.Tooltip")]
         [Range(0f, 1f)]
-        public float TemporalShockDefenseEffectivenessMultiplier { get; set; } = Buffs.TemporalShock.DefaultDefenseEffectivenessMultiplier;
+        public float TemporalShockDefenseEffectivenessMultiplier { get; set; } = 0.65f;
     }
 }

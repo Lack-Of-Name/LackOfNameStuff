@@ -188,6 +188,8 @@ Mods: {
 			ChronosWhipProjectile.DisplayName: Chronos Whip Projectile
 			TemporalEcho.DisplayName: Temporal Echo
 			TemporalBolt.DisplayName: Temporal Bolt
+			LittleSpongeProjectile.DisplayName: Little Sponge Projectile
+			LittleSpongeShardProjectile.DisplayName: Little Sponge Shard Projectile
 		}
 
 		Buffs: {
@@ -245,6 +247,14 @@ Mods: {
 
 		// Config options if you have any
 		Configs: {
+			BalanceConfig: {
+				DisplayName: Balance Config
+
+				TemporalShockDefenseEffectivenessMultiplier: {
+					Label: Temporal Shock Defense Effectiveness Multiplier
+					Tooltip: ""
+				}
+			}
 		}
 
 		// Common text used throughout the mod

@@ -35,39 +35,18 @@ Mods: {
 			}
 
 			TimeShard: {
-				DisplayName: Time Shard
-				Tooltip:
-					'''
-					It pulses with temporal energy
-					Can be used to craft temporal gear
-					'''
 			}
 
 			TemporalPickaxe: {
-				DisplayName: Temporal Pickaxe
-				Tooltip:
-					'''
-					Mines faster the more blocks you mine
-					Gains additional speed and pick power with higher temporal tier
-					'''
 			}
 
 			TemporalOrbLauncher: {
 			}
 
 			TemporalLauncher: {
-				DisplayName: Temporal Launcher
-				Tooltip:
-					'''
-					Fires heavy temporal shots that manipulate time on impact
-					Creates temporal explosions that slow nearby enemies
-					Uses Time Shards as ammunition (not consumed)
-					'''
 			}
 
 			MemoryCrystal: {
-				DisplayName: Memory Crystal
-				Tooltip: Stores damage dealt during bullet time, and deals double that once bullet time ends
 			}
 
 			ChronosWhip: {
@@ -82,6 +61,7 @@ Mods: {
 					'''
 					Throws a diagonal soulblade that bursts into shards on detonation
 					Rogue-class weapon that excels at punishing clustered foes
+					Stealth Strike: trails extra shards and erupts into a soulstorm
 					'''
 			}
 
@@ -189,22 +169,6 @@ Mods: {
 		}
 
 		NPCs: {
-		}
-
-		// Config options if any
-		Configs: {
-			TemporalShockDefenseEffectiveness: {
-				Label: Temporal Shock Defense Effectiveness
-				Tooltip: Scales how much defense reduces damage while affected by Temporal Shock. 1.0 = normal, 0.65 = 65% as effective.
-			}
-		}
-
-		// Duplicate keys for singular 'Config' path used in attributes
-		Config: {
-			TemporalShockDefenseEffectiveness: {
-				Label: Temporal Shock Defense Effectiveness
-				Tooltip: Scales how much defense reduces damage while affected by Temporal Shock. 1.0 = normal, 0.65 = 65% as effective.
-			}
 		}
 
 		// Common text used throughout the mod

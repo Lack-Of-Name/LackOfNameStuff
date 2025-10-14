@@ -6,7 +6,7 @@ using LackOfNameStuff.Common;
 
 namespace LackOfNameStuff.Projectiles
 {
-    public class KrisbladeShardProjectile : ModProjectile
+    public class LittleSpongeShardProjectile : ModProjectile
     {
         private DamageClass ResolveDamageClass()
         {

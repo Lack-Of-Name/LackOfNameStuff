@@ -7,8 +7,10 @@ using LackOfNameStuff.Common;
 
 namespace LackOfNameStuff.Projectiles
 {
-    public class KrisbladeProjectile : ModProjectile
+    public class LittleSpongeProjectile : ModProjectile
     {
+        private bool IsStealthStrike => Projectile.ai[0] >= 0.5f;
+
         private DamageClass ResolveDamageClass()
         {
             if (CalamityIntegration.CalamityLoaded &&
@@ -71,6 +73,25 @@ namespace LackOfNameStuff.Projectiles
                 dust.noGravity = true;
                 dust.scale = 1.1f;
             }
+
+            if (IsStealthStrike && Projectile.owner == Main.myPlayer)
+            {
+                int timer = (int)(Projectile.ai[1] += 1f);
+
+                if (timer <= 36 && timer % 6 == 0)
+                {
+                    Vector2 shardVelocity = Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.35f, 0.35f)) * 0.85f;
+
+                    Projectile.NewProjectile(
+                        Projectile.GetSource_FromThis(),
+                        Projectile.Center,
+                        shardVelocity,
+                        ModContent.ProjectileType<LittleSpongeShardProjectile>(),
+                        (int)(Projectile.damage * 0.5f),
+                        Projectile.knockBack * 0.4f,
+                        Projectile.owner);
+                }
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -114,21 +135,23 @@ namespace LackOfNameStuff.Projectiles
                 return;
             }
 
-            const int shardCount = 4;
-            const float shardSpeed = 11f;
+            int shardCount = IsStealthStrike ? 12 : 9;
+            float shardSpeed = IsStealthStrike ? 13f : 11f;
+            float shardDamageMultiplier = IsStealthStrike ? 0.75f : 0.6f;
+            float shardKnockbackMultiplier = IsStealthStrike ? 0.65f : 0.5f;
 
             for (int i = 0; i < shardCount; i++)
             {
-                float angle = MathHelper.PiOver2 * i + MathHelper.PiOver4;
+                float angle = MathHelper.TwoPi / shardCount * i + MathHelper.PiOver4;
                 Vector2 velocity = angle.ToRotationVector2() * shardSpeed;
 
                 Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     origin,
                     velocity,
-                    ModContent.ProjectileType<KrisbladeShardProjectile>(),
-                    (int)(Projectile.damage * 0.6f),
-                    Projectile.knockBack * 0.5f,
+                    ModContent.ProjectileType<LittleSpongeShardProjectile>(),
+                    (int)(Projectile.damage * shardDamageMultiplier),
+                    Projectile.knockBack * shardKnockbackMultiplier,
                     Projectile.owner);
             }
         }

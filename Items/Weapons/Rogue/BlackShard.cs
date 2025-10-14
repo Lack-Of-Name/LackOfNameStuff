@@ -29,13 +29,13 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             Item.damage = 198;
             Item.DamageType = ResolveDamageClass();
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 8;
-            Item.useTime = 8;
+            Item.useAnimation = 14;
+            Item.useTime = 14;
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BlackShardProjectile>();
-            Item.shootSpeed = 24f;
+            Item.shootSpeed = 18f;
             Item.rare = ItemRarityID.Purple;
             Item.value = Item.buyPrice(gold: 50);
             Item.crit = 10;
@@ -46,8 +46,18 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 normalizedVelocity = velocity.SafeNormalize(Vector2.UnitX) * Item.shootSpeed;
-            bool flip = player.GetModPlayer<BlackShardPlayer>().ConsumeFlipToggle();
+            BlackShardPlayer shardPlayer = player.GetModPlayer<BlackShardPlayer>();
+            bool flip = shardPlayer.ConsumeFlipToggle();
             bool stealthStrikeTriggered = CalamityIntegration.TryConsumeRogueStealthStrike(player);
+
+            if (stealthStrikeTriggered)
+            {
+                shardPlayer.ResetFallbackStealthProgress();
+            }
+            else
+            {
+                stealthStrikeTriggered = shardPlayer.TryConsumeFallbackStealthStrike();
+            }
 
             if (stealthStrikeTriggered)
             {
