@@ -86,6 +86,11 @@ namespace LackOfNameStuff.Players
                 return 1.8f;
             }
 
+            if (type == ModContent.ItemType<Items.Weapons.Rogue.HammerOfJustice>())
+            {
+                return 2.1f;
+            }
+
             return 0f;
         }
 

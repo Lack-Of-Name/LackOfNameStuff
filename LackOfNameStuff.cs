@@ -18,7 +18,19 @@ namespace LackOfNameStuff
     {
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
-            ChronosNetworkHandler.HandlePacket(this, reader, whoAmI);
+            byte messageType = reader.ReadByte();
+
+            if (HammerOfJusticeNetworkHandler.TryHandlePacket(this, messageType, reader, whoAmI))
+            {
+                return;
+            }
+
+            if (ChronosNetworkHandler.TryHandlePacket(this, messageType, reader, whoAmI))
+            {
+                return;
+            }
+
+            Logger.Warn($"Unknown network message type {messageType} from {whoAmI}");
         }
     }
 

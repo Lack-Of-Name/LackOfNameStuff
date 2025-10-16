@@ -64,64 +64,68 @@ namespace LackOfNameStuff.Systems
     // Simplified network handler
     public class ChronosNetworkHandler
     {
-        public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
+        public static bool TryHandlePacket(Mod mod, byte messageType, BinaryReader reader, int whoAmI)
         {
-            byte messageType = reader.ReadByte();
-            
-            if (messageType == 0 && Main.netMode == NetmodeID.Server) // Request bullet time activation
+            switch (messageType)
             {
-                int requestingPlayer = reader.ReadInt32();
-                
-                if (requestingPlayer >= 0 && requestingPlayer < Main.maxPlayers && Main.player[requestingPlayer].active)
+                case 0 when Main.netMode == NetmodeID.Server:
                 {
-                    var requestingModPlayer = Main.player[requestingPlayer].GetModPlayer<ChronosPlayer>();
-                    
-                    // Simple validation: has watch, not on cooldown, not already in bullet time
-                    bool canActivate = requestingModPlayer.hasChronosWatch && 
-                                     requestingModPlayer.bulletTimeCooldown <= 0 && 
-                                     !requestingModPlayer.IsInBulletTime &&
-                                     !IsAnyPlayerInBulletTime();
-                    
-                    if (canActivate)
+                    int requestingPlayer = reader.ReadInt32();
+
+                    if (requestingPlayer >= 0 && requestingPlayer < Main.maxPlayers && Main.player[requestingPlayer].active)
                     {
-                        // Apply bullet time
-                        requestingModPlayer.ApplyBulletTimeToAllPlayers();
-                        
-                        // Send visual effects to all clients
-                        SendVisualEffects(mod, requestingPlayer, Main.player[requestingPlayer].Center);
-                    }
-                }
-            }
-            else if (messageType == 1) // Sync bullet time activation (clients)
-            {
-                int activatingPlayer = reader.ReadInt32();
-                int duration = reader.ReadInt32();
-                
-                // Apply to all players and set cooldown for activator
-                for (int i = 0; i < Main.maxPlayers; i++)
-                {
-                    if (Main.player[i].active)
-                    {
-                        Main.player[i].AddBuff(ModContent.BuffType<BulletTimeBuff>(), duration);
-                        
-                        // Set cooldown for the activating player
-                        if (i == activatingPlayer)
+                        var requestingModPlayer = Main.player[requestingPlayer].GetModPlayer<ChronosPlayer>();
+
+                        bool canActivate = requestingModPlayer.hasChronosWatch &&
+                                           requestingModPlayer.bulletTimeCooldown <= 0 &&
+                                           !requestingModPlayer.IsInBulletTime &&
+                                           !IsAnyPlayerInBulletTime();
+
+                        if (canActivate)
                         {
-                            Main.player[i].GetModPlayer<ChronosPlayer>().bulletTimeCooldown = ChronosWatch.CooldownDuration;
+                            requestingModPlayer.ApplyBulletTimeToAllPlayers();
+                            SendVisualEffects(mod, requestingPlayer, Main.player[requestingPlayer].Center);
                         }
                     }
+
+                    return true;
+                }
+
+                case 1:
+                {
+                    int activatingPlayer = reader.ReadInt32();
+                    int duration = reader.ReadInt32();
+
+                    for (int i = 0; i < Main.maxPlayers; i++)
+                    {
+                        if (Main.player[i].active)
+                        {
+                            Main.player[i].AddBuff(ModContent.BuffType<BulletTimeBuff>(), duration);
+
+                            if (i == activatingPlayer)
+                            {
+                                Main.player[i].GetModPlayer<ChronosPlayer>().bulletTimeCooldown = ChronosWatch.CooldownDuration;
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+
+                case 2:
+                {
+                    int activatingPlayer = reader.ReadInt32();
+                    float x = reader.ReadSingle();
+                    float y = reader.ReadSingle();
+                    Vector2 position = new Vector2(x, y);
+
+                    var localPlayer = Main.LocalPlayer.GetModPlayer<ChronosPlayer>();
+                    localPlayer.CreateNetworkRipple(position, activatingPlayer);
+                    return true;
                 }
             }
-            else if (messageType == 2) // Visual effects
-            {
-                int activatingPlayer = reader.ReadInt32();
-                float x = reader.ReadSingle();
-                float y = reader.ReadSingle();
-                Vector2 position = new Vector2(x, y);
-                
-                var localPlayer = Main.LocalPlayer.GetModPlayer<ChronosPlayer>();
-                localPlayer.CreateNetworkRipple(position, activatingPlayer);
-            }
+
+            return false;
         }
         
         private static bool IsAnyPlayerInBulletTime()

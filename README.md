@@ -1,102 +1,87 @@
-A Terraria mod created by @LackOfName.
-Focus on minimal sprites but beautiful graphics.
-Mostly just stuff I always wanted a mod to exist for.
 
-TODO:
--[x] Add code for krisblade.png (Items\Weapons\Rogue) and drops for ButterscotchCinnamonPie.png (Items\Consumables)
--[x] Add black shard item - features: Fast attack speed, has function similar to terrablade but for later game, projectile sprite flips vertically each attack. Rogue weapon. Deltarune reference.
+# LackOfNameStuff Terraria Mod
 
-Known Bugs:
-TBD
+Created by @LackOfName
 
-Future additions:
--Collab weapons from Undertale & Deltarune.
--Upgrades to time shard weapons and tools
+## Overview
+This mod adds unique weapons, tools, and progression systems to Terraria, with a focus on minimal sprites, beautiful graphics, and mechanics inspired by Undertale, Deltarune, and time-based gameplay.
 
-Future Balance Changes:
--More velocity for temporal Launcher [x]
--Various crafting changes []
+## Features
+- Rogue weapons with custom stealth strike effects, mobility skills, and Calamity integration
+- Temporal progression system: unlock new tiers and materials as you advance
+- Tiered armor sets and tools with scaling stats and visual effects
+- Custom projectiles, VFX, and synergy between weapon classes
+- Vanilla and Calamity recipe support for all major items
+- Hammer of Justice rogue weapon featuring cursor dash, chained parries, cooldown visuals, and a combo-triggered Hammerfall ultimate
 
-## Temporal progression upgrades TODO
+## Item Creation
+See `DirectivesForItemCreation.txt` for standards and best practices when adding new items.
 
-- Materials (new temporal mats)
-	- [ ] Verify acquisition/progression for: Time Shard, Eternal Shard, Time Gem, Eternal Gem
-	- [x] Add/adjust recipes (fallbacks) to match tier flow when Calamity missing (see `Common/TemporalProgressionSystem.cs`)
-	- [x] Tooltips and localization entries (see `Localization/en-US.hjson`)
+## Current Progress & TODOs
 
-- Tools
-	- [x] Temporal Pickaxe: tier-based pick power and tooltip reflect current tier (`Items/Tools/TemporalPickaxe.cs`)
-	- [ ] Consider additional temporal tools (axe/hammer/drill?) with tier scaling
-	- [ ] Balance mining speed, pick power, special effects per tier
+### Materials & Progression
+- [ ] Verify acquisition/progression for: Time Shard, Eternal Shard, Time Gem, Eternal Gem
+- [x] Add/adjust recipes to match tier flow (see `Common/TemporalProgressionSystem.cs`)
+- [x] Tooltips and localization entries (`Localization/en-US.hjson`)
 
-- Armor (Temporal set)
-	- [x] Implement tiered stat scaling for set and per-helmet class variants (`Items/Armour/Temporal/`)
-	- [ ] Ensure set bonus and `Players/TemporalPlayer.cs` effects scale by tier
-	- [ ] Sprites/variants per tier (palette or trim changes) [Art]
-	- [ ] Update tooltips and set bonus descriptions
+### Tools
+- [x] Temporal Pickaxe: tier-based pick power and tooltip reflect current tier
+- [ ] Additional temporal tools (axe/hammer/drill?)
+- [ ] Balance mining speed, pick power, special effects per tier
 
-- Weapons (per class)
-	- Ranged
-		- [ ] Add upgraded variants or integrate tier scaling into existing temporal ranged weapons (`Items/Weapons/Ranged/`)
-		- [ ] Balance damage, use time, and temporal missile synergy
-	- Melee
-		- [ ] Tiered variants or scaling for temporal melee (`Items/Weapons/Melee/`)
-		- [ ] Consider on-hit temporal procs per tier
-	- Magic
-		- [ ] Tier scaling or new staves/tomes (`Items/Weapons/Magic/`)
-		- [ ] Mana cost interactions with `Buffs/TemporalCasting`
-	- Summon
-		- [ ] Minion damage/behavior scaling and/or new summons (`Items/Weapons/Summon/`)
-		- [ ] Synergy with `Buffs/TemporalMinions`
+### Armor
+- [x] Tiered stat scaling for set and per-helmet class variants
+- [ ] Set bonus and effects scale by tier
+- [ ] Sprites/variants per tier (palette or trim changes)
+- [ ] Update tooltips and set bonus descriptions
 
-- Projectiles & Effects
-	- [ ] Ensure projectile damage/AI scales with tier (`Projectiles/*`, e.g., `TemporalMissile.cs`, `TemporalBolt.cs`)
-	- [x] VFX tint by tier color for missiles and bolt (orange/purple/cyan/white)
-	- [ ] Sweep remaining temporal VFX (ripples, explosions, trails) for tier color consistency
-	- [x] Subtle tier tint added to VCR overlay
+### Weapons
+- [x] Rogue: Krisblade, Black Shard, Little Sponge, Hammer of Justice (stealth, dash, parry kits)
+- [ ] Ranged: Upgraded variants/tier scaling
+- [ ] Melee: Tiered variants/scaling, on-hit procs
+- [ ] Magic: Tier scaling/new staves/tomes
+- [ ] Summon: Minion scaling/new summons
 
-- Crafting & progression
-	- [ ] Crafting trees for each upgraded/variant item gated by tier mats
-	- [ ] Ensure `Players/TemporalPlayer.SetTier` + auto-unlocks and `/temporaltier` testing path are respected
-	- [ ] Balance non-Calamity drop/recipes (Time/Eternal Shard/Gem) for vanilla-only playthrough - [depreciated (Calamity only)]
-	- [ ] Add in-world acquisition notes (e.g., Providence/Polterghast/DoG gating or vanilla equivalents)
+### Projectiles & Effects
+- [x] VFX tint by tier color for missiles and bolt
+- [ ] Tier scaling for projectile damage/AI
+- [ ] Consistent tier color for all temporal VFX
 
-- Localization & Docs
-	- [x] Add/verify item names, tooltips, and progression messages (`Localization/en-US.hjson`)
-	- [x] Replace hardcoded progression texts with localized strings in `Players/TemporalPlayer.cs`
-	- [ ] Document crafting examples for both Calamity and vanilla fallbacks
-	- [ ] README update with crafting examples once finalized
+### Crafting & Progression
+- [ ] Crafting trees for upgraded/variant items gated by tier mats
+- [ ] Ensure progression unlocks and `/temporaltier` testing path
+- [ ] Add in-world acquisition notes for progression
 
-- Testing & balance
-	- [ ] Smoke test each tier with `/temporaltier [1-4]` and optional `lock`
-	- [ ] DPS balance pass per class across tiers
-	- [ ] Multiplayer sync checks for unlocks and visuals
-	- [ ] Temporal Pickaxe mining feel test across tiers (useTime curve, pick power thresholds)
-	- [ ] Confirm projectiles avoid Target Dummies (already blocked for missiles/sub-missiles)
-	- [ ] Validate `/temporaltier` UX: show/lock toggles and multiplayer behavior
-	- [ ] Armor scaling QA: verify per-tier bonuses are “slightly better” than contemporaries without power creep
+### Localization & Docs
+- [x] Item names, tooltips, progression messages
+- [x] Localized progression texts in code
+- [ ] Document crafting examples for Calamity and vanilla
+- [x] Hammer of Justice keybinds, buffs, item, and projectile strings
 
-Notes:
-- Temporal armor set bonuses now scale modestly with temporal tier:
-  - Ranged: extra attack speed and crit chance per tier
-  - Melee: extra attack speed and knockback per tier
-  - Magic: extra mana cost reduction; higher chance to not consume mana as tier rises
-  - Summon: extra minion damage and +1 additional slot at tier 3+
-- Temporal missile system now spawns more missiles per tier (2/3/4/5) in a small arc above the player; cooldown scales with tier.
+### Testing & Balance
+- [ ] Smoke test each tier with `/temporaltier [1-4]`
+- [ ] DPS balance pass per class across tiers
+- [ ] Multiplayer sync checks for unlocks/visuals
+- [ ] Temporal Pickaxe mining feel test
+- [ ] Confirm projectiles avoid Target Dummies
+- [ ] Validate `/temporaltier` UX
+- [ ] Armor scaling QA
+- [ ] Field-test Hammer of Justice dash/parry timings (solo + multiplayer)
+- [ ] Evaluate Hammer of Justice Hammerfall combo timing and damage; tweak dash interval/cooldown if needed
 
-## Bigger fish candidates (next passes)
+## Notes
+- Temporal armor set bonuses scale with tier:
+	- Ranged: attack speed/crit
+	- Melee: attack speed/knockback
+	- Magic: mana cost reduction, chance to not consume mana
+	- Summon: minion damage, +1 slot at tier 3+
+- Temporal missile system spawns more missiles per tier (2/3/4/5); cooldown scales with tier
 
-- Temporal armor tier scaling end-to-end
-	- Scale set bonus intensity and class-specific effects by tier (e.g., missile cooldowns/damage, casting/mana reductions)
-	- Add tier-aware tooltips to armor set pieces and set bonus description
-	- Visual tier accents on armor VFX where possible
-
-- Weapon tier paths per class
-	- Define a minimal weapon per class with tier-scaling stats or variants (Ranged/Melee/Magic/Summon)
-	- Ensure synergy hooks with missiles/bullet time per tier
-	- Add recipes for each tier path (Calamity + vanilla fallbacks when applicable)
-
+## Future Plans
+- Collab weapons from Undertale & Deltarune
+- Upgrades to time shard weapons/tools
 - Full crafting trees and unlock feedback
-	- Establish clear material → tool/weapon/armor paths for tiers 1–4
-	- Provide in-game guidance via localized messages when reaching new tiers
-	- Optional: a simple guide item/NPC dialog for progression hints
+- Visual tier accents on armor VFX
+
+---
+For more details, see code comments and `DirectivesForItemCreation.txt`.

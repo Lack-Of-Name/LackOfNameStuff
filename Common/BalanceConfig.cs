@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
@@ -13,5 +14,9 @@ namespace LackOfNameStuff.Common
         // 1.0 = normal defense, 0.65 = 65% as effective (i.e., 35% reduced impact).
         [Range(0f, 1f)]
         public float TemporalShockDefenseEffectivenessMultiplier { get; set; } = 0.65f;
+
+        [Range(2, 8)]
+        [DefaultValue(3)]
+        public int HammerOfJusticeUltimateDashInterval { get; set; } = 3;
     }
 }

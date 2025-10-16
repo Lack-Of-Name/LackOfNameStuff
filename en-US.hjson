@@ -3,6 +3,8 @@ Mods: {
 		Keybinds: {
 			"Bullet Time.DisplayName": Bullet  Time
 			BulletTime.DisplayName: Bullet Time
+			"Hammer Dash.DisplayName": Hammer  Dash
+			"Hammer Parry.DisplayName": Hammer  Parry
 		}
 
 		Items: {
@@ -252,6 +254,11 @@ Mods: {
 
 				TemporalShockDefenseEffectivenessMultiplier: {
 					Label: Temporal Shock Defense Effectiveness Multiplier
+					Tooltip: ""
+				}
+
+				HammerOfJusticeUltimateDashInterval: {
+					Label: Hammer Of Justice Ultimate Dash Interval
 					Tooltip: ""
 				}
 			}

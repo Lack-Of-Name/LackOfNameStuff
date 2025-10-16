@@ -315,6 +315,64 @@ namespace LackOfNameStuff.Common
             return true;
         }
 
+        public static bool TryGetRogueStealth(Player player, out float current, out float max)
+        {
+            current = 0f;
+            max = 0f;
+
+            if (!TryGetCalamityPlayer(player, out object calamityPlayer) || _rogueStealthField == null || _rogueStealthMaxField == null)
+            {
+                return false;
+            }
+
+            current = Convert.ToSingle(_rogueStealthField.GetValue(calamityPlayer));
+            max = Convert.ToSingle(_rogueStealthMaxField.GetValue(calamityPlayer));
+            return true;
+        }
+
+        public static bool TrySetRogueStealth(Player player, float value)
+        {
+            if (!TryGetCalamityPlayer(player, out object calamityPlayer) || _rogueStealthField == null)
+            {
+                return false;
+            }
+
+            _rogueStealthField.SetValue(calamityPlayer, value);
+            return true;
+        }
+
+        public static bool TrySetRogueStealthCooldown(Player player, float value)
+        {
+            if (!TryGetCalamityPlayer(player, out object calamityPlayer) || _rogueStealthCooldownField == null)
+            {
+                return false;
+            }
+
+            if (_rogueStealthCooldownField.FieldType == typeof(int))
+            {
+                _rogueStealthCooldownField.SetValue(calamityPlayer, (int)value);
+                return true;
+            }
+
+            if (_rogueStealthCooldownField.FieldType == typeof(float))
+            {
+                _rogueStealthCooldownField.SetValue(calamityPlayer, value);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static void DisableRogueStealthStrike(Player player)
+        {
+            if (!TryGetCalamityPlayer(player, out object calamityPlayer) || _stealthStrikeAvailableField == null)
+            {
+                return;
+            }
+
+            _stealthStrikeAvailableField.SetValue(calamityPlayer, false);
+        }
+
         public static bool IsRogueStealthReady(Player player)
         {
             if (!TryGetCalamityPlayer(player, out object calamityPlayer) || _rogueStealthField == null || _rogueStealthMaxField == null)

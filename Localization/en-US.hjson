@@ -1,6 +1,8 @@
 Mods: {
 	LackOfNameStuff: {
 		Keybinds: {
+			HammerDash.DisplayName: Hammer Dash
+			HammerParry.DisplayName: Hammer Parry
 		}
 
 		Items: {
@@ -75,6 +77,17 @@ Mods: {
 					'''
 			}
 
+			HammerOfJustice: {
+				DisplayName: Hammer of Justice
+				Tooltip:
+					'''
+					"The hammer of justice has a long reach!"
+					Dash toward your cursor to slam through foes with temporal authority
+					Tap to parry and reflect nearby projectiles, chaining perfect guards
+					Stack consecutive dashes to detonate an arena-wide Hammerfall
+					'''
+			}
+
 			// Ranged Helmet
 			TemporalHelmetRanged: {
 			}
@@ -132,6 +145,8 @@ Mods: {
 			TemporalMissile.DisplayName: Temporal Missile
 			TemporalSubMissile.DisplayName: Temporal Sub Missile
 			BlackShardProjectile.DisplayName: Inverted Soulbeam
+			HammerOfJusticeDashProjectile.DisplayName: Justice Impact Wave
+			HammerOfJusticeUltimateShockwave.DisplayName: Justice Shockwave
 		}
 
 		Buffs: {
@@ -162,6 +177,16 @@ Mods: {
 			TemporalShock: {
 				DisplayName: Temporal Shock
 				Description: Enemy defense is reduced to 65%
+			}
+
+			HammerOfJusticeDashCooldown: {
+				DisplayName: Justice Dash Exhaustion
+				Description: Regaining the momentum to dash once more
+			}
+
+			HammerOfJusticeParryCooldown: {
+				DisplayName: Justice Guard Fatigue
+				Description: Collecting your resolve before the next parry
 			}
 		}
 

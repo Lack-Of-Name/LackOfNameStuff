@@ -1,0 +1,4 @@
+# Directives for Item Creation
+
+- All items should have easy-to-access fields that can modify various aspects of the item
+- Consider the balance of the weapon through the crafting materials.
