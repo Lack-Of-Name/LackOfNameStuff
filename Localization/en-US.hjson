@@ -19,7 +19,7 @@ Mods: {
 				DisplayName: Butterscotch Cinnamon Pie
 				Tooltip:
 					'''
-					A taste of home that floods you with determination
+					Tastes like Home.
 					Massively boosts combat prowess, stamina, and movement for a short time
 					'''
 			}
@@ -34,9 +34,11 @@ Mods: {
 			}
 
 			ChronosStopper: {
-			}
-
-			TimeShard: {
+				DisplayName: Chronos ChronosStopper
+				Tooltip:
+					'''
+					How did you get this?
+					'''
 			}
 
 			TemporalPickaxe: {
@@ -61,7 +63,7 @@ Mods: {
 				DisplayName: Little Sponge
 				Tooltip:
 					'''
-					Throws a diagonal soulblade that bursts into shards on detonation
+					Proceed.
 					Rogue-class weapon that excels at punishing clustered foes
 					Stealth Strike: trails extra shards and erupts into a soulstorm
 					'''
@@ -71,8 +73,8 @@ Mods: {
 				DisplayName: Black Shard
 				Tooltip:
 					'''
-					A fragment of determination steeped in darkness
-					Rapid swings hurl inverted beams that cleave through foes
+					It's a splinter from a wiffle bat?
+					Fast attack speed. Swoon your foes.
 					Stealth Strike: releases three homing shards of determination
 					'''
 			}
@@ -81,10 +83,10 @@ Mods: {
 				DisplayName: Hammer of Justice
 				Tooltip:
 					'''
-					"The hammer of justice has a long reach!"
-					Dash toward your cursor to slam through foes with temporal authority
-					Tap to parry and reflect nearby projectiles, chaining perfect guards
-					Stack consecutive dashes to detonate an arena-wide Hammerfall
+					"Gyaa ha ha!"
+					Dash toward your cursor
+					Tap to parry and reflect nearby projectiles
+					Stack consecutive dashes for an Ultimate Attack
 					'''
 			}
 
@@ -123,7 +125,7 @@ Mods: {
 				DisplayName: Eternal Shard
 				Tooltip:
 					'''
-					A shard infused with eternal temporal resonance
+					A shard infused with eternal temporal power
 					Used to craft advanced temporal items
 					'''
 			}
@@ -134,6 +136,14 @@ Mods: {
 					'''
 					A crystallized core of time
 					Unlocks new levels of temporal mastery
+					'''
+			}
+
+			TimeShard: {
+				DisplayName: Time Shard
+				Tooltip:
+					'''
+					I can make some cool sh*t with this.
 					'''
 			}
 		}

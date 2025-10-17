@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System;
 
 namespace LackOfNameStuff.Items.Weapons.Rogue
 {
@@ -57,6 +58,15 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             if (Main.LocalPlayer == null)
             {
                 return;
+            }
+
+            TooltipLine nameLine = tooltips.Find(line => line.Name == "ItemName" && line.Mod == "Terraria");
+            if (nameLine != null)
+            {
+                Color pink = new Color(252, 111, 241);
+                Color green = new Color(99, 171, 37);
+                float t = (float)(Math.Sin(Main.GlobalTimeWrappedHourly * 2f) * 0.5 + 0.5);
+                nameLine.OverrideColor = Color.Lerp(pink, green, t);
             }
 
             HammerOfJusticePlayer hammerPlayer = Main.LocalPlayer.GetModPlayer<HammerOfJusticePlayer>();
