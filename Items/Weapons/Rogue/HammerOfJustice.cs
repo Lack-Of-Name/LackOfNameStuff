@@ -30,20 +30,21 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         {
             Item.width = 58;
             Item.height = 58;
-            Item.damage = 670;
+            Item.damage = 820;
             Item.DamageType = ResolveDamageClass();
-            Item.useTime = 29;
-            Item.useAnimation = 29;
+            Item.useTime = 26;
+            Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 11f;
+            Item.knockBack = 12.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.value = Item.sellPrice(platinum: 1, gold: 20);
+            Item.value = Item.sellPrice(platinum: 1, gold: 45);
             Item.rare = ItemRarityID.Red;
-            Item.hammer = 220;
+            Item.hammer = 230;
             Item.scale = 1.25f;
-            Item.crit = 14;
+            Item.crit = 20;
+            Item.ArmorPenetration = 26;
         }
 
         public override void HoldItem(Player player)
@@ -58,7 +59,9 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
 
         public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.Knockback *= 1.25f;
+            modifiers.SourceDamage *= 1.12f;
+            modifiers.Knockback *= 1.3f;
+            modifiers.ArmorPenetration += 18;
         }
 
         public override bool? UseItem(Player player)
@@ -66,6 +69,7 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             if (player.itemAnimation == player.itemAnimationMax - 1 && player.whoAmI == Main.myPlayer)
             {
                 FireAuxiliaryHammers(player);
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, Vector2.Zero, ModContent.ProjectileType<HammerOfJusticeUltimateShockwave>(), (int)(player.GetWeaponDamage(Item) * 0.9f), Item.knockBack, player.whoAmI, 1f);
             }
 
             return base.UseItem(player);
@@ -150,13 +154,13 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             }
 
             aimDirection.Normalize();
-            Vector2 baseVelocity = aimDirection * 18.5f;
-            float knockback = player.GetWeaponKnockback(Item, Item.knockBack) * 0.9f;
-            int damage = (int)(player.GetWeaponDamage(Item) * 0.65f);
+            Vector2 baseVelocity = aimDirection * 20.5f;
+            float knockback = player.GetWeaponKnockback(Item, Item.knockBack) * 0.95f;
+            int damage = (int)(player.GetWeaponDamage(Item) * 0.78f);
             int projectileType = ModContent.ProjectileType<HammerOfJusticeThrownHammer>();
 
-            const int hammerCount = 3;
-            const float spread = 0.22f; // radians
+            const int hammerCount = 4;
+            const float spread = 0.26f; // radians
 
             for (int i = 0; i < hammerCount; i++)
             {
@@ -171,7 +175,7 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
                 }
             }
 
-            SoundEngine.PlaySound(SoundID.Item71 with { Pitch = -0.35f, Volume = 0.6f }, player.Center);
+            SoundEngine.PlaySound(SoundID.Item71 with { Pitch = -0.32f, Volume = 0.75f }, player.Center);
         }
 
         private static string GetKeybindName(ModKeybind keybind, string fallback)

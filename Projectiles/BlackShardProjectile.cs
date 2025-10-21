@@ -13,20 +13,26 @@ namespace LackOfNameStuff.Projectiles
 {
     public class BlackShardProjectile : ModProjectile
     {
-    private const int TrailLength = 22;
-    private const float BaseScale = 1.35f;
-    private const float PulseAmplitude = 0.3f;
-    private const float PulseFrequency = 5.1f;
-    private const float AuraDustInterval = 6f;
-    private const float RiftDustInterval = 9f;
-    private const float RiftRadius = 24f;
-    private const float HomingTrailLerp = 0.4f;
-    private const float NonHomingTrailLerp = 0.22f;
-    private const float HitboxRadius = 48f;
+        private const int TrailLength = 28;
+        private const float BaseScale = 1.45f;
+        private const float PulseAmplitude = 0.34f;
+        private const float PulseFrequency = 5.4f;
+        private const float AuraDustInterval = 5f;
+        private const float RiftDustInterval = 7f;
+        private const float RiftRadius = 26f;
+        private const float HomingTrailLerp = 0.46f;
+        private const float NonHomingTrailLerp = 0.26f;
+        private const float HitboxRadius = 56f;
+        private const int RiftSpawnInterval = 18;
+        private const float RiftDamageFactor = 0.68f;
+        private const float RiftKnockbackFactor = 0.65f;
+        private const int ImpactRiftCount = 2;
+        private const float ImpactRiftOffset = 32f;
+        private const int ImpactDustCount = 20;
 
         private ref float AuraCounter => ref Projectile.localAI[0];
         private ref float RiftCounter => ref Projectile.localAI[1];
-        private ref float SpawnedShards => ref Projectile.localAI[2];
+        private ref float InternalTimer => ref Projectile.localAI[2];
 
         private DamageClass ResolveDamageClass()
         {
@@ -48,28 +54,34 @@ namespace LackOfNameStuff.Projectiles
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.TerraBeam);
-            Projectile.width = 72;
-            Projectile.height = 72;
-            Projectile.penetrate = 5;
-            Projectile.extraUpdates = 1;
+            Projectile.width = 76;
+            Projectile.height = 76;
+            Projectile.penetrate = 6;
+            Projectile.extraUpdates = 2;
             Projectile.DamageType = ResolveDamageClass();
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12;
+            Projectile.localNPCHitCooldown = 10;
             Projectile.aiStyle = 0;
             AIType = 0;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
+            Projectile.ArmorPenetration = 28;
+            Projectile.CritChance = 12;
         }
 
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-            Lighting.AddLight(Projectile.Center, new Vector3(0.35f, 0.05f, 0.15f));
+            Lighting.AddLight(Projectile.Center, new Vector3(0.45f, 0.1f, 0.38f));
 
-            if (SpawnedShards == 0f)
+            if (InternalTimer == 0f)
             {
-                SpawnedShards = 1f;
-                SoundEngine.PlaySound(SoundID.Item60 with { Volume = 0.8f, PitchVariance = 0.2f }, Projectile.Center);
+                InternalTimer = 1f;
+                SoundEngine.PlaySound(SoundID.Item60 with { Volume = 0.9f, PitchVariance = 0.18f }, Projectile.Center);
+            }
+            else if (Projectile.numUpdates == 0)
+            {
+                InternalTimer++;
             }
 
             float pulseTime = (float)(Main.GlobalTimeWrappedHourly * PulseFrequency + Projectile.identity * 0.17f);
@@ -79,6 +91,16 @@ namespace LackOfNameStuff.Projectiles
             if (Projectile.ai[1] >= 0.5f)
             {
                 ApplyHomingBehavior();
+            }
+
+            if (Projectile.owner == Main.myPlayer && Projectile.numUpdates == 0)
+            {
+                int timerFrames = (int)InternalTimer;
+                if (timerFrames > RiftSpawnInterval && timerFrames % RiftSpawnInterval == 0)
+                {
+                    Vector2 retreat = Projectile.velocity.SafeNormalize(Vector2.UnitY) * -28f;
+                    SpawnShadowRift(Projectile.Center + retreat, RiftDamageFactor * 0.7f, RiftKnockbackFactor * 0.8f);
+                }
             }
 
             AuraCounter++;
@@ -102,9 +124,10 @@ namespace LackOfNameStuff.Projectiles
             if (Main.rand.NextBool(3))
             {
                 Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Shadowflame);
-                dust.velocity = Projectile.velocity * 0.18f;
+                dust.velocity = Projectile.velocity * 0.22f + Main.rand.NextVector2Circular(1.8f, 1.8f);
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(1.05f, 1.4f);
+                dust.scale = Main.rand.NextFloat(1.1f, 1.55f);
+                dust.fadeIn = 1.05f;
             }
         }
 
@@ -174,11 +197,20 @@ namespace LackOfNameStuff.Projectiles
             Vector2 origin = texture.Size() * 0.5f;
             SpriteEffects effects = Projectile.ai[0] >= 0.5f ? SpriteEffects.FlipVertically : SpriteEffects.None;
 
-            Color inner = new Color(70, 10, 115);
-            Color middle = new Color(150, 40, 210);
-            Color outer = new Color(255, 110, 220);
+            Color inner = new Color(60, 0, 105);
+            Color middle = new Color(150, 35, 215);
+            Color outer = new Color(255, 130, 250);
 
             float lerpFactor = Projectile.ai[1] >= 0.5f ? HomingTrailLerp : NonHomingTrailLerp;
+
+            Texture2D bloom = TextureAssets.Extra[91].Value;
+            Vector2 center = Projectile.Center - Main.screenPosition;
+            float bloomRotation = Main.GlobalTimeWrappedHourly * 3.1f + Projectile.identity * 0.13f;
+            Color bloomColor = new Color(175, 60, 255) * 0.3f;
+            Color bloomSecondary = new Color(90, 25, 180) * 0.4f;
+
+            Main.EntitySpriteDraw(bloom, center, null, bloomSecondary, bloomRotation, bloom.Size() * 0.5f, Projectile.scale * 1.7f, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(bloom, center, null, bloomColor, -bloomRotation * 0.6f, bloom.Size() * 0.5f, Projectile.scale * 1.25f, SpriteEffects.None, 0f);
 
             for (int i = Projectile.oldPos.Length - 1; i >= 0; i--)
             {
@@ -191,17 +223,16 @@ namespace LackOfNameStuff.Projectiles
                 float progress = i / (float)Projectile.oldPos.Length;
                 float weightedProgress = MathHelper.Lerp(progress, 1f, lerpFactor);
                 Vector2 drawPos = oldPos + Projectile.Size * 0.5f - Main.screenPosition;
-                float scale = Projectile.scale * MathHelper.Lerp(0.45f, 0.9f, 1f - weightedProgress);
-                Color trailColor = Color.Lerp(inner, outer, weightedProgress) * MathHelper.Lerp(0.1f, 0.65f, 1f - weightedProgress);
+                float scale = Projectile.scale * MathHelper.Lerp(0.48f, 0.92f, 1f - weightedProgress);
+                Color trailColor = Color.Lerp(inner, outer, weightedProgress) * MathHelper.Lerp(0.12f, 0.7f, 1f - weightedProgress);
                 trailColor.A = 0;
 
-                Main.EntitySpriteDraw(texture, drawPos, null, trailColor, Projectile.rotation, origin, scale, effects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, trailColor, Projectile.rotation, origin, scale, effects, 0f);
             }
 
-            Vector2 center = Projectile.Center - Main.screenPosition;
-            Main.EntitySpriteDraw(texture, center, null, outer * 0.7f, Projectile.rotation, origin, Projectile.scale * 1.4f, effects, 0);
-            Main.EntitySpriteDraw(texture, center, null, middle, Projectile.rotation, origin, Projectile.scale * 1.1f, effects, 0);
-            Main.EntitySpriteDraw(texture, center, null, lightColor, Projectile.rotation, origin, Projectile.scale, effects, 0);
+            Main.EntitySpriteDraw(texture, center, null, outer * 0.75f, Projectile.rotation, origin, Projectile.scale * 1.45f, effects, 0f);
+            Main.EntitySpriteDraw(texture, center, null, middle, Projectile.rotation, origin, Projectile.scale * 1.12f, effects, 0f);
+            Main.EntitySpriteDraw(texture, center, null, Color.White, Projectile.rotation, origin, Projectile.scale, effects, 0f);
 
             return false;
         }
@@ -225,7 +256,19 @@ namespace LackOfNameStuff.Projectiles
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SpawnShadowRift(target.Center);
+            SpawnShadowRift(target.Center, RiftDamageFactor * 1.05f, RiftKnockbackFactor);
+
+            Vector2 travelDirection = Projectile.velocity.SafeNormalize(Vector2.UnitY);
+            for (int i = 0; i < ImpactRiftCount; i++)
+            {
+                float rotation = (i == 0 ? 1f : -1f) * MathHelper.PiOver2;
+                Vector2 offset = travelDirection.RotatedBy(rotation) * ImpactRiftOffset;
+                SpawnShadowRift(target.Center + offset, RiftDamageFactor * 0.85f, RiftKnockbackFactor);
+            }
+
+            SpawnImpactDust(target.Center);
+            target.AddBuff(BuffID.ShadowFlame, 240);
+            target.AddBuff(BuffID.CursedInferno, 180);
         }
 
         public override void OnKill(int timeLeft)
@@ -233,12 +276,15 @@ namespace LackOfNameStuff.Projectiles
             Vector2 forward = Projectile.velocity.SafeNormalize(Vector2.UnitY);
             Vector2 orth = forward.RotatedBy(MathHelper.PiOver2);
 
-            SpawnShadowRift(Projectile.Center + forward * 22f);
-            SpawnShadowRift(Projectile.Center - forward * 22f);
-            SpawnShadowRift(Projectile.Center + orth * 18f);
+            SpawnShadowRift(Projectile.Center + forward * 28f, RiftDamageFactor, RiftKnockbackFactor);
+            SpawnShadowRift(Projectile.Center - forward * 28f, RiftDamageFactor, RiftKnockbackFactor);
+            SpawnShadowRift(Projectile.Center + orth * 24f, RiftDamageFactor * 0.9f, RiftKnockbackFactor);
+            SpawnShadowRift(Projectile.Center - orth * 24f, RiftDamageFactor * 0.9f, RiftKnockbackFactor);
+
+            SpawnImpactDust(Projectile.Center);
         }
 
-        private void SpawnShadowRift(Vector2 position)
+        private void SpawnShadowRift(Vector2 position, float damageMultiplier = RiftDamageFactor, float knockbackMultiplier = RiftKnockbackFactor)
         {
             if (Projectile.owner != Main.myPlayer)
             {
@@ -246,10 +292,23 @@ namespace LackOfNameStuff.Projectiles
             }
 
             int projType = ModContent.ProjectileType<BlackShardRift>();
-            int damage = (int)(Projectile.damage * 0.55f);
-            float knockback = Projectile.knockBack * 0.6f;
+            int damage = (int)(Projectile.damage * damageMultiplier);
+            float knockback = Projectile.knockBack * knockbackMultiplier;
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, Vector2.Zero, projType, damage, knockback, Projectile.owner, Projectile.ai[1]);
+        }
+
+        private void SpawnImpactDust(Vector2 position)
+        {
+            for (int i = 0; i < ImpactDustCount; i++)
+            {
+                Vector2 velocity = Main.rand.NextVector2Circular(6.5f, 6.5f);
+                Dust dust = Dust.NewDustPerfect(position, DustID.ShadowbeamStaff, velocity);
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(1.1f, 1.7f);
+                dust.fadeIn = 1.1f;
+                dust.alpha = 80;
+            }
         }
         private void SpawnRiftDust()
         {

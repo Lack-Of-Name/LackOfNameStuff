@@ -192,6 +192,8 @@ Mods: {
 			TemporalBolt.DisplayName: Temporal Bolt
 			LittleSpongeProjectile.DisplayName: Little Sponge Projectile
 			LittleSpongeShardProjectile.DisplayName: Little Sponge Shard Projectile
+			HammerOfJusticeThrownHammer.DisplayName: Hammer Of Justice Thrown Hammer
+			BlackShardRift.DisplayName: Black Shard Rift
 		}
 
 		Buffs: {

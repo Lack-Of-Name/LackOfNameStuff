@@ -26,20 +26,22 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 310;
+            Item.damage = 360;
             Item.DamageType = ResolveDamageClass();
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
-            Item.knockBack = 5f;
+            Item.useAnimation = 18;
+            Item.useTime = 18;
+            Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item1;
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<LittleSpongeProjectile>();
-            Item.shootSpeed = 19f;
+            Item.shootSpeed = 21f;
             Item.rare = ItemRarityID.Cyan;
-            Item.value = Item.buyPrice(gold: 15);
+            Item.value = Item.buyPrice(gold: 22);
+            Item.crit = 10;
+            Item.ArmorPenetration = 12;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -95,6 +97,24 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
                     {
                         Main.projectile[shardIndex].DamageType = ResolveDamageClass();
                     }
+                }
+            }
+
+            if (!stealthStrike && player.whoAmI == Main.myPlayer)
+            {
+                Vector2 lateral = velocity.RotatedBy(MathHelper.ToRadians(12f)) * 0.6f;
+                int echoIndex = Projectile.NewProjectile(
+                    source,
+                    position,
+                    lateral,
+                    ModContent.ProjectileType<LittleSpongeShardProjectile>(),
+                    (int)(damage * 0.45f),
+                    knockback * 0.4f,
+                    player.whoAmI);
+
+                if (echoIndex >= 0 && echoIndex < Main.maxProjectiles)
+                {
+                    Main.projectile[echoIndex].DamageType = ResolveDamageClass();
                 }
             }
 

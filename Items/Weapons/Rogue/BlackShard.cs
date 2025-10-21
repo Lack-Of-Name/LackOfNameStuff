@@ -27,19 +27,20 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 248;
+            Item.damage = 360;
             Item.DamageType = ResolveDamageClass();
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
-            Item.knockBack = 6.5f;
+            Item.useAnimation = 8;
+            Item.useTime = 8;
+            Item.knockBack = 7.75f;
             Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BlackShardProjectile>();
-            Item.shootSpeed = 18f;
+            Item.shootSpeed = 22f;
             Item.rare = ItemRarityID.Purple;
-            Item.value = Item.buyPrice(gold: 50);
-            Item.crit = 10;
+            Item.value = Item.sellPrice(gold: 95);
+            Item.crit = 16;
+            Item.ArmorPenetration = 18;
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.scale = 1f;
@@ -75,23 +76,25 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
 
             if (stealthStrikeTriggered)
             {
-                const int projectileCount = 3;
-                const float spreadDegrees = 12f;
+                const int projectileCount = 4;
+                const float spreadDegrees = 14f;
 
                 for (int i = 0; i < projectileCount; i++)
                 {
                     float offset = projectileCount == 1 ? 0f : MathHelper.Lerp(-spreadDegrees, spreadDegrees, i / (float)(projectileCount - 1));
                     Vector2 perturbedVelocity = normalizedVelocity.RotatedBy(MathHelper.ToRadians(offset));
-                    int specialIndex = Projectile.NewProjectile(source, position, perturbedVelocity, ModContent.ProjectileType<BlackShardProjectile>(), (int)(damage * 1.15f), knockback + 1f, player.whoAmI, flip ? 1f : 0f, 1f);
+                    int specialIndex = Projectile.NewProjectile(source, position, perturbedVelocity, ModContent.ProjectileType<BlackShardProjectile>(), (int)(damage * 1.25f), knockback + 1.5f, player.whoAmI, flip ? 1f : 0f, 1f);
 
                     if (specialIndex >= 0 && specialIndex < Main.maxProjectiles)
                     {
                         Main.projectile[specialIndex].DamageType = ResolveDamageClass();
+                        Main.projectile[specialIndex].ArmorPenetration += 12;
                     }
 
                     flip = !flip;
                 }
 
+                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<BlackShardRift>(), (int)(damage * 0.85f), knockback, player.whoAmI, 1f);
                 return false;
             }
 
@@ -100,6 +103,13 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             if (projectileIndex >= 0 && projectileIndex < Main.maxProjectiles)
             {
                 Main.projectile[projectileIndex].DamageType = ResolveDamageClass();
+                Main.projectile[projectileIndex].ArmorPenetration += 8;
+            }
+
+            if (player.whoAmI == Main.myPlayer && Main.rand.NextBool(3))
+            {
+                Vector2 offset = normalizedVelocity.RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-18f, 18f))) * 0.35f;
+                Projectile.NewProjectile(source, position, offset, ModContent.ProjectileType<BlackShardRift>(), (int)(damage * 0.6f), knockback * 0.75f, player.whoAmI, 0f);
             }
 
             return false;
