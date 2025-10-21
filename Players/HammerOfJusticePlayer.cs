@@ -29,6 +29,10 @@ namespace LackOfNameStuff.Players
         private const int UltimateImmunePadding = 36;
         private const int UltimateAftershockDust = 48;
         private const int UltimateShockwaveIntervalFrames = 20;
+        private const int DashTrailParticles = 3;
+        private const int UltimateTrailParticles = 6;
+        private const float DashTrailSpread = 22f;
+        private const float UltimateTrailSpread = 40f;
 
         private const int DashComboTimeoutFrames = 240;
 
@@ -234,12 +238,15 @@ namespace LackOfNameStuff.Players
             Player.immune = true;
             Player.immuneTime = System.Math.Max(Player.immuneTime, dashIsUltimate ? 12 : 6);
 
-            if (dashIsUltimate && Main.netMode != NetmodeID.Server)
+            Player.armorEffectDrawOutlines = true;
+            if (dashIsUltimate)
             {
-                Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GoldFlame);
-                dust.velocity = cachedDashDirection.RotatedByRandom(0.5f) * Main.rand.NextFloat(10f, 16f);
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(1.4f, 1.9f);
+                Player.armorEffectDrawOutlinesForbidden = true;
+            }
+
+            if (Main.netMode != NetmodeID.Server)
+            {
+                SpawnDashTrailDust(dashIsUltimate);
             }
 
             if (dashIsUltimate && DashActiveTimer > currentDashLingerFrames && Main.netMode != NetmodeID.MultiplayerClient)
@@ -307,15 +314,7 @@ namespace LackOfNameStuff.Players
                 return;
             }
 
-            int dustCount = isUltimate ? 32 : 14;
-            for (int i = 0; i < dustCount; i++)
-            {
-                Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.GoldFlame);
-                float speed = isUltimate ? Main.rand.NextFloat(10f, 18f) : Main.rand.NextFloat(8f, 12f);
-                dust.velocity = cachedDashDirection.RotatedByRandom(isUltimate ? 0.55f : 0.4f) * speed;
-                dust.noGravity = true;
-                dust.scale = isUltimate ? Main.rand.NextFloat(1.5f, 2.0f) : Main.rand.NextFloat(1.1f, 1.4f);
-            }
+            SpawnDashEntryBurst(isUltimate);
 
             Vector3 lightColor = isUltimate ? new Vector3(1.2f, 0.95f, 0.35f) : new Vector3(0.8f, 0.6f, 0.2f);
             Lighting.AddLight(Player.Center, lightColor);
@@ -376,6 +375,92 @@ namespace LackOfNameStuff.Players
             }
         }
 
+        private void SpawnDashEntryBurst(bool isUltimate)
+        {
+            int rings = isUltimate ? 2 : 1;
+            int segments = isUltimate ? 22 : 14;
+            float baseRadius = isUltimate ? 34f : 22f;
+            int dustTypeOuter = isUltimate ? DustID.SolarFlare : DustID.GemTopaz;
+
+            for (int ring = 0; ring < rings; ring++)
+            {
+                float radius = baseRadius + ring * 14f;
+                for (int i = 0; i < segments; i++)
+                {
+                    float angle = cachedDashDirection.ToRotation() + MathHelper.TwoPi * (i / (float)segments);
+                    Vector2 offset = angle.ToRotationVector2() * radius;
+                    Vector2 velocity = offset.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(4f, isUltimate ? 12f : 8f);
+                    Dust dust = Dust.NewDustPerfect(Player.Center + offset, dustTypeOuter, velocity);
+                    dust.noGravity = true;
+                    dust.scale = isUltimate ? Main.rand.NextFloat(1.35f, 1.95f) : Main.rand.NextFloat(1.0f, 1.35f);
+                    dust.fadeIn = 1.05f;
+                    dust.alpha = 60;
+                }
+            }
+
+            Vector2 forward = cachedDashDirection.RotatedBy(MathHelper.PiOver2);
+            int ribbonDust = isUltimate ? 12 : 6;
+            for (int i = 0; i < ribbonDust; i++)
+            {
+                float offset = Main.rand.NextFloat(-28f, 28f);
+                Vector2 spawnPos = Player.Center + forward * offset;
+                Vector2 velocity = cachedDashDirection * Main.rand.NextFloat(12f, 18f);
+                Dust ribbon = Dust.NewDustPerfect(spawnPos, DustID.GoldFlame, velocity);
+                ribbon.noGravity = true;
+                ribbon.scale = isUltimate ? Main.rand.NextFloat(1.4f, 1.8f) : Main.rand.NextFloat(1.1f, 1.4f);
+                ribbon.alpha = 30;
+            }
+        }
+
+        private void SpawnDashTrailDust(bool isUltimate)
+        {
+            int count = isUltimate ? UltimateTrailParticles : DashTrailParticles;
+            float spread = isUltimate ? UltimateTrailSpread : DashTrailSpread;
+            int dustType = isUltimate ? DustID.SolarFlare : DustID.GoldFlame;
+            Vector2 lateralDir = cachedDashDirection.RotatedBy(MathHelper.PiOver2);
+
+            for (int i = 0; i < count; i++)
+            {
+                float lateralOffset = Main.rand.NextFloat(-spread, spread);
+                Vector2 spawnPos = Player.Center - cachedDashDirection * Main.rand.NextFloat(8f, 22f) + lateralDir * lateralOffset;
+                Vector2 velocity = -cachedDashDirection * Main.rand.NextFloat(isUltimate ? 9f : 5f) + lateralDir * Main.rand.NextFloat(-2.8f, 2.8f);
+
+                Dust dust = Dust.NewDustPerfect(spawnPos, dustType, velocity);
+                dust.noGravity = true;
+                dust.scale = isUltimate ? Main.rand.NextFloat(1.45f, 1.9f) : Main.rand.NextFloat(1.0f, 1.35f);
+                dust.fadeIn = 1.1f;
+                dust.alpha = isUltimate ? 40 : 70;
+            }
+        }
+
+        private void SpawnUltimateImpactSpirals()
+        {
+            Vector2 lateral = cachedDashDirection.RotatedBy(MathHelper.PiOver2);
+
+            for (int i = 0; i < 6; i++)
+            {
+                float offset = Main.rand.NextFloat(-34f, 34f);
+                Vector2 spawnPos = Player.Center + lateral * offset;
+                Vector2 velocity = cachedDashDirection * Main.rand.NextFloat(18f, 26f) + lateral * Main.rand.NextFloat(-6f, 6f);
+                Dust beam = Dust.NewDustPerfect(spawnPos, DustID.SolarFlare, velocity);
+                beam.noGravity = true;
+                beam.scale = Main.rand.NextFloat(1.6f, 2.1f);
+                beam.fadeIn = 1.2f;
+                beam.alpha = 45;
+            }
+
+            for (int i = 0; i < 12; i++)
+            {
+                float angle = MathHelper.TwoPi * (i / 12f);
+                Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(12f, 24f);
+                Dust spiral = Dust.NewDustPerfect(Player.Center, DustID.GemTopaz, velocity);
+                spiral.noGravity = true;
+                spiral.scale = Main.rand.NextFloat(1.3f, 1.7f);
+                spiral.fadeIn = 1.15f;
+                spiral.alpha = 70;
+            }
+        }
+
         private void CreateUltimateImpact()
         {
             Item held = Player.HeldItem;
@@ -393,6 +478,8 @@ namespace LackOfNameStuff.Players
 
             if (Main.netMode != NetmodeID.Server)
             {
+                SpawnUltimateImpactSpirals();
+
                 for (int i = 0; i < UltimateAftershockDust; i++)
                 {
                     Dust dust = Dust.NewDustDirect(Player.Center - new Vector2(32f), 64, 64, DustID.GoldFlame);

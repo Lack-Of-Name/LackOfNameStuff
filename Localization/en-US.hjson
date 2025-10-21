@@ -34,11 +34,6 @@ Mods: {
 			}
 
 			ChronosStopper: {
-				DisplayName: Chronos ChronosStopper
-				Tooltip:
-					'''
-					How did you get this?
-					'''
 			}
 
 			TemporalPickaxe: {
@@ -140,11 +135,6 @@ Mods: {
 			}
 
 			TimeShard: {
-				DisplayName: Time Shard
-				Tooltip:
-					'''
-					I can make some cool sh*t with this.
-					'''
 			}
 		}
 

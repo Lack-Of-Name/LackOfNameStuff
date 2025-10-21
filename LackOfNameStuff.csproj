@@ -10,7 +10,9 @@
 
 	<!-- References -->
 	<ItemGroup>
-		
+		<Compile Include="Projectiles\BlackShardRift.cs" />
+		<Compile Include="Projectiles\HammerOfJusticeThrownHammer.cs" />
+		<Compile Include="Players\LittleSpongePlayer.cs" />
 	</ItemGroup>
 
 </Project>

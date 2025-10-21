@@ -227,7 +227,22 @@ namespace LackOfNameStuff.Common
 
             _triedInitializeCalamityPlayer = true;
 
-            _calamityPlayerType = CalamityMod.Code.GetType("CalamityMod.CalPlayer");
+            string[] candidateTypeNames = new[]
+            {
+                "CalamityMod.CalPlayer.CalamityPlayer",
+                "CalamityMod.CalPlayer",
+                "CalamityMod.CalamityPlayer"
+            };
+
+            foreach (string typeName in candidateTypeNames)
+            {
+                _calamityPlayerType = CalamityMod.Code.GetType(typeName);
+                if (_calamityPlayerType != null)
+                {
+                    break;
+                }
+            }
+
             if (_calamityPlayerType == null)
             {
                 return false;
@@ -261,7 +276,7 @@ namespace LackOfNameStuff.Common
             _rogueStealthCooldownField = FindField(_calamityPlayerType, "rogueStealthCooldown", "stealthCooldown");
             _stealthStrikeAvailableField = FindField(_calamityPlayerType, "stealthStrikeAvailable", "rogueStealthStrikeAvailable");
 
-            return _getModPlayerGeneric != null;
+            return _getModPlayerGeneric != null && _calamityPlayerType != null;
         }
 
         private static bool TryGetCalamityPlayer(Player player, out object calamityPlayer)
@@ -420,6 +435,21 @@ namespace LackOfNameStuff.Common
             }
 
             return true;
+        }
+
+        public static bool RogueStealthIntegrationAvailable
+        {
+            get
+            {
+                if (!CalamityLoaded)
+                {
+                    return false;
+                }
+
+                return EnsureCalamityPlayerReflection() &&
+                       _rogueStealthField != null &&
+                       _rogueStealthMaxField != null;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using LackOfNameStuff.Common;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Projectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -26,11 +27,11 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 198;
+            Item.damage = 248;
             Item.DamageType = ResolveDamageClass();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 14;
-            Item.useTime = 14;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAnimation = 10;
+            Item.useTime = 10;
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
@@ -39,8 +40,21 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Purple;
             Item.value = Item.buyPrice(gold: 50);
             Item.crit = 10;
-            Item.noUseGraphic = false;
-            Item.noMelee = false;
+            Item.noUseGraphic = true;
+            Item.noMelee = true;
+            Item.scale = 1f;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            scale = 0.2f;
+            return true;
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            scale = 1f;
+            return true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

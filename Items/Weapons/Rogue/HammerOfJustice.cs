@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using LackOfNameStuff.Common;
 using LackOfNameStuff.Players;
+using LackOfNameStuff.Projectiles;
 using LackOfNameStuff.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
@@ -48,9 +51,24 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             player.GetModPlayer<HammerOfJusticePlayer>().HasHammerEquipped = true;
         }
 
+        public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
+        {
+            hitbox.Inflate(24, 24);
+        }
+
         public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.Knockback *= 1.25f;
+        }
+
+        public override bool? UseItem(Player player)
+        {
+            if (player.itemAnimation == player.itemAnimationMax - 1 && player.whoAmI == Main.myPlayer)
+            {
+                FireAuxiliaryHammers(player);
+            }
+
+            return base.UseItem(player);
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -121,6 +139,39 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             TooltipLine stealthLine = new TooltipLine(Mod, "HammerStealthStrike", "Chain dashes to unleash a reality-splitting Hammerfall");
             stealthLine.OverrideColor = new Color(255, 180, 90);
             tooltips.Add(stealthLine);
+        }
+
+        private void FireAuxiliaryHammers(Player player)
+        {
+            Vector2 aimDirection = Main.MouseWorld - player.Center;
+            if (aimDirection.LengthSquared() <= 0.001f)
+            {
+                aimDirection = new Vector2(player.direction, -0.15f);
+            }
+
+            aimDirection.Normalize();
+            Vector2 baseVelocity = aimDirection * 18.5f;
+            float knockback = player.GetWeaponKnockback(Item, Item.knockBack) * 0.9f;
+            int damage = (int)(player.GetWeaponDamage(Item) * 0.65f);
+            int projectileType = ModContent.ProjectileType<HammerOfJusticeThrownHammer>();
+
+            const int hammerCount = 3;
+            const float spread = 0.22f; // radians
+
+            for (int i = 0; i < hammerCount; i++)
+            {
+                float offset = hammerCount == 1 ? 0f : MathHelper.Lerp(-spread, spread, i / (float)(hammerCount - 1));
+                Vector2 velocity = baseVelocity.RotatedBy(offset);
+
+                int projIndex = Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, velocity, projectileType, damage, knockback, player.whoAmI);
+
+                if (projIndex >= 0 && projIndex < Main.maxProjectiles)
+                {
+                    Main.projectile[projIndex].DamageType = ResolveDamageClass();
+                }
+            }
+
+            SoundEngine.PlaySound(SoundID.Item71 with { Pitch = -0.35f, Volume = 0.6f }, player.Center);
         }
 
         private static string GetKeybindName(ModKeybind keybind, string fallback)

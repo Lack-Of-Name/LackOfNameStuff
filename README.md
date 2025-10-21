@@ -19,6 +19,10 @@ See `DirectivesForItemCreation.txt` for standards and best practices when adding
 
 ## Current Progress & TODOs
 
+## Easter Egg Ideas
+- Players named 'Gerson' or 'Gerson Boom' get ...
+- 1/x chance for the 'gyaa ha ha' sound effect to be played on hammer of justice dash
+
 ### Materials & Progression
 - [ ] Verify acquisition/progression for: Time Shard, Eternal Shard, Time Gem, Eternal Gem
 - [x] Add/adjust recipes to match tier flow (see `Common/TemporalProgressionSystem.cs`)

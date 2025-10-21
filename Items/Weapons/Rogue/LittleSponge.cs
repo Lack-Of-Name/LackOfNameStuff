@@ -4,6 +4,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using LackOfNameStuff.Common;
+using LackOfNameStuff.Players;
 using LackOfNameStuff.Projectiles;
 
 namespace LackOfNameStuff.Items.Weapons.Rogue
@@ -25,7 +26,7 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 253;
+            Item.damage = 310;
             Item.DamageType = ResolveDamageClass();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = 20;
@@ -36,7 +37,7 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<LittleSpongeProjectile>();
-            Item.shootSpeed = 16f;
+            Item.shootSpeed = 19f;
             Item.rare = ItemRarityID.Cyan;
             Item.value = Item.buyPrice(gold: 15);
         }
@@ -44,7 +45,17 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 normalizedVelocity = velocity.SafeNormalize(Vector2.UnitX) * Item.shootSpeed;
+            LittleSpongePlayer spongePlayer = player.GetModPlayer<LittleSpongePlayer>();
             bool stealthStrike = CalamityIntegration.TryConsumeRogueStealthStrike(player);
+
+            if (stealthStrike)
+            {
+                spongePlayer.ResetFallbackStealthProgress();
+            }
+            else
+            {
+                stealthStrike = spongePlayer.TryConsumeFallbackStealthStrike();
+            }
 
             int projectileIndex = Projectile.NewProjectile(
                 source,

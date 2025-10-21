@@ -3,17 +3,10 @@ using Terraria.ModLoader;
 
 namespace LackOfNameStuff.Players
 {
-    public class BlackShardPlayer : ModPlayer
+    public class LittleSpongePlayer : ModPlayer
     {
-        private bool flipNext;
         private int fallbackStealthCharge;
-        private const int FallbackStealthChargeRequired = 4;
-
-        public bool ConsumeFlipToggle()
-        {
-            flipNext = !flipNext;
-            return flipNext;
-        }
+        private const int FallbackStealthChargeRequired = 5;
 
         public bool TryConsumeFallbackStealthStrike()
         {
