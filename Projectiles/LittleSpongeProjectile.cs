@@ -280,14 +280,16 @@ namespace LackOfNameStuff.Projectiles
             Color baseColor = new Color(179, 235, 255);
             Color highlightColor = new Color(100, 180, 255);
             Vector2 center = Projectile.Center - Main.screenPosition;
+            Vector2 forward = Projectile.velocity.SafeNormalize(Vector2.UnitX);
+            Vector2 bloomOffset = forward * 20f;
 
             Texture2D bloom = TextureAssets.Extra[91].Value;
             float bloomRotation = Main.GlobalTimeWrappedHourly * 2.3f + Projectile.identity * 0.1f;
             Color bloomColor = new Color(120, 210, 255) * 0.35f;
             Color bloomOuterColor = new Color(80, 140, 255) * 0.25f;
 
-            Main.EntitySpriteDraw(bloom, center, null, bloomColor, bloomRotation, bloom.Size() * 0.5f, Projectile.scale * 1.9f, SpriteEffects.None, 0f);
-            Main.EntitySpriteDraw(bloom, center, null, bloomOuterColor, -bloomRotation * 1.4f, bloom.Size() * 0.5f, Projectile.scale * 1.4f, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(bloom, center + bloomOffset, null, bloomColor, bloomRotation, bloom.Size() * 0.5f, Projectile.scale * 1.9f, SpriteEffects.None, 0f);
+            Main.EntitySpriteDraw(bloom, center - bloomOffset * 0.55f, null, bloomOuterColor, -bloomRotation * 1.4f, bloom.Size() * 0.5f, Projectile.scale * 1.4f, SpriteEffects.None, 0f);
 
             for (int i = Projectile.oldPos.Length - 1; i >= 0; i--)
             {

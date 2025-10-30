@@ -43,8 +43,8 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Red;
             Item.hammer = 230;
             Item.scale = 1.25f;
-            Item.crit = 20;
-            Item.ArmorPenetration = 26;
+            Item.crit = 35;
+            Item.ArmorPenetration = 43;
         }
 
         public override void HoldItem(Player player)
@@ -62,6 +62,35 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             modifiers.SourceDamage *= 1.12f;
             modifiers.Knockback *= 1.3f;
             modifiers.ArmorPenetration += 18;
+        }
+
+        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
+        {
+            if (player.GetModPlayer<GersonPlayer>().HasSupremeGersonBlessing)
+            {
+                damage *= 8f;
+            }
+        }
+
+        public override void ModifyWeaponCrit(Player player, ref float crit)
+        {
+            if (player.GetModPlayer<GersonPlayer>().HasSupremeGersonBlessing)
+            {
+                crit += 50f;
+            }
+        }
+
+        public override void ModifyWeaponKnockback(Player player, ref StatModifier knockback)
+        {
+            if (player.GetModPlayer<GersonPlayer>().HasSupremeGersonBlessing)
+            {
+                knockback *= 3f;
+            }
+        }
+
+        public override float UseTimeMultiplier(Player player)
+        {
+            return player.GetModPlayer<GersonPlayer>().HasSupremeGersonBlessing ? 0.35f : 1f;
         }
 
         public override bool? UseItem(Player player)

@@ -26,7 +26,7 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 360;
+            Item.damage = 495;
             Item.DamageType = ResolveDamageClass();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = 18;

@@ -136,6 +136,50 @@ Mods: {
 
 			TimeShard: {
 			}
+
+			MeldAmalgamate: {
+			}
+
+			Armour: {
+				Meld: {
+					MeldCoif: {
+						DisplayName: Meld Coif
+						Tooltip:
+							'''
+							A hood threaded with cosmic fibres
+							+14% rogue damage and +8% rogue critical strike chance
+							Enhances night vision and hastens stealth recovery
+							'''
+						SetBonus:
+							'''
+							Astral Convergence:
+							- Summons three astral satellites that orbit and fire homing comets
+							- Rogue stealth regenerates 60% faster and grants DR, speed, and crit while below half life
+							- Hitting enemies rains down astral meld comets infused with pillar energy
+							'''
+					}
+
+					MeldCarapace: {
+						DisplayName: Meld Carapace
+						Tooltip:
+							'''
+							Astral hide layered over fused fragments
+							+18% rogue damage, +5% damage reduction, +40 maximum life
+							Grants immunity to intense burning flames
+							'''
+					}
+
+					MeldGreaves: {
+						DisplayName: Meld Greaves
+						Tooltip:
+							'''
+							Stride with stellar momentum
+							+10% rogue damage and +18% movement speed
+							Boosts jump speed and run acceleration
+							'''
+					}
+				}
+			}
 		}
 
 		TemporalOrb: {

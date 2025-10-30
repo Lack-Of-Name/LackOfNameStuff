@@ -18,17 +18,17 @@ namespace LackOfNameStuff.Projectiles
         private const float PulseAmplitude = 0.34f;
         private const float PulseFrequency = 5.4f;
         private const float AuraDustInterval = 5f;
-        private const float RiftDustInterval = 7f;
+        private const float RiftDustInterval = 8f;
         private const float RiftRadius = 26f;
         private const float HomingTrailLerp = 0.46f;
         private const float NonHomingTrailLerp = 0.26f;
-        private const float HitboxRadius = 56f;
-        private const int RiftSpawnInterval = 18;
+        private const float HitboxRadius = 72f;
+        private const int RiftSpawnInterval = 20;
         private const float RiftDamageFactor = 0.68f;
         private const float RiftKnockbackFactor = 0.65f;
         private const int ImpactRiftCount = 2;
         private const float ImpactRiftOffset = 32f;
-        private const int ImpactDustCount = 20;
+        private const int ImpactDustCount = 18;
 
         private ref float AuraCounter => ref Projectile.localAI[0];
         private ref float RiftCounter => ref Projectile.localAI[1];

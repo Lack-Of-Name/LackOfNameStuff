@@ -34,11 +34,11 @@ namespace LackOfNameStuff.Projectiles
 
         public override void SetDefaults()
         {
-            Projectile.width = 44;
-            Projectile.height = 44;
+            Projectile.width = 88;
+            Projectile.height = 88;
             Projectile.friendly = true;
             Projectile.penetrate = 4;
-            Projectile.timeLeft = 75;
+            Projectile.timeLeft = 90;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = ResolveDamageClass();

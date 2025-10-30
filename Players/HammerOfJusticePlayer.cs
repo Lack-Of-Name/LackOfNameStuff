@@ -1,3 +1,4 @@
+using System;
 using LackOfNameStuff.Buffs;
 using LackOfNameStuff.Common;
 using LackOfNameStuff.Projectiles;
@@ -17,14 +18,14 @@ namespace LackOfNameStuff.Players
         private const int DashCooldownFrames = 180;
         private const int DashDurationFrames = 14;
         private const float DashSpeed = 24f;
-        private const float DashDamageMultiplier = 1.35f;
+        private const float DashDamageMultiplier = 2.3f;
         private const float DashKnockbackBonus = 6.5f;
         private const int DashDamageLingeringFrames = 6;
 
         private const int UltimateDashDurationFrames = 32;
         private const int UltimateDashCooldownFrames = 240;
         private const float UltimateDashSpeedMultiplier = 1.7f;
-        private const float UltimateDashDamageMultiplier = 3.1f;
+        private const float UltimateDashDamageMultiplier = 4.6f;
         private const float UltimateDashKnockbackBonus = 14f;
         private const int UltimateImmunePadding = 36;
         private const int UltimateAftershockDust = 48;
@@ -39,8 +40,15 @@ namespace LackOfNameStuff.Players
         private const int ParryCooldownFrames = 150;
         private const int ParryChainCooldownFrames = 45;
         private const int ParryActiveFrames = 18;
-        private const int ParryChainWindowFrames = 30;
+        private const int ParryChainWindowFrames = 60;
         private const float ParryRadius = 160f;
+
+        private static readonly SoundStyle GersonLaughSound = new("LackOfNameStuff/Sounds/GersonLaugh")
+        {
+            Volume = 0.85f,
+            PitchVariance = 0.25f,
+            MaxInstances = 1
+        };
 
         public bool HasHammerEquipped { get; set; }
         public int DashCooldownTimer { get; private set; }
@@ -173,8 +181,15 @@ namespace LackOfNameStuff.Players
             }
 
             bool isUltimate = TryConsumeUltimateDash();
+            bool gersonBlessing = Player.GetModPlayer<GersonPlayer>().HasSupremeGersonBlessing;
             int dashDuration = isUltimate ? UltimateDashDurationFrames : DashDurationFrames;
             int cooldown = isUltimate ? UltimateDashCooldownFrames : DashCooldownFrames;
+
+            if (gersonBlessing)
+            {
+                dashDuration += 18;
+                cooldown = Math.Max(18, (int)(cooldown * 0.35f));
+            }
 
             PerformDash(direction, dashDuration, cooldown, spawnProjectile: Main.netMode != NetmodeID.MultiplayerClient, isUltimate);
 
@@ -199,6 +214,8 @@ namespace LackOfNameStuff.Players
             direction.Normalize();
             cachedDashDirection = direction;
 
+            bool gersonBlessing = Player.GetModPlayer<GersonPlayer>().HasSupremeGersonBlessing;
+
             dashIsUltimate = isUltimate;
             ultimateCrashTriggered = false;
             ultimateHitRegistered = false;
@@ -206,11 +223,24 @@ namespace LackOfNameStuff.Players
             currentDashDamageMultiplier = dashIsUltimate ? DashDamageMultiplier * UltimateDashDamageMultiplier : DashDamageMultiplier;
             currentDashKnockbackBonus = dashIsUltimate ? DashKnockbackBonus + UltimateDashKnockbackBonus : DashKnockbackBonus;
             currentDashImmuneFrames = dashIsUltimate ? dashDuration + UltimateImmunePadding : dashDuration + 10;
+
+            if (gersonBlessing)
+            {
+                currentDashSpeed *= 1.6f;
+                currentDashDamageMultiplier *= 3.5f;
+                currentDashKnockbackBonus += 18f;
+                currentDashImmuneFrames += 120;
+            }
+
             lastDashDuration = dashDuration;
             lastDashCooldown = cooldown;
             dashComboTimer = DashComboTimeoutFrames;
 
             int lingerFrames = dashIsUltimate ? DashDamageLingeringFrames * 2 : DashDamageLingeringFrames;
+            if (gersonBlessing)
+            {
+                lingerFrames = (int)(lingerFrames * 1.6f);
+            }
             currentDashLingerFrames = lingerFrames;
             ultimateShockwaveTimer = dashIsUltimate ? 0 : -1;
             DashActiveTimer = dashDuration + lingerFrames;
@@ -308,6 +338,15 @@ namespace LackOfNameStuff.Players
         private void PlayDashEffects(bool isUltimate)
         {
             SoundEngine.PlaySound((isUltimate ? SoundID.Item117 : SoundID.Item74) with { Pitch = isUltimate ? -0.4f : -0.2f }, Player.Center);
+
+            if (Main.netMode != NetmodeID.Server)
+            {
+                int laughChance = Player.GetModPlayer<GersonPlayer>().HasGersonName ? 6 : 40;
+                if (Main.rand.NextBool(laughChance))
+                {
+                    SoundEngine.PlaySound(GersonLaughSound, Player.Center);
+                }
+            }
 
             if (Main.netMode == NetmodeID.Server)
             {

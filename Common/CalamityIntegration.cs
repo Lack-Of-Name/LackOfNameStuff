@@ -160,6 +160,12 @@ namespace LackOfNameStuff.Common
             return false;
         }
 
+        public static bool TryGetHideOfAstrumDeus(out int itemType)
+        {
+            return TryGetCalamityItem("HideofAstrumDeus", out itemType) ||
+                   TryGetCalamityItem("HideOfAstrumDeus", out itemType);
+        }
+
         public static bool TryGetCalamityTile(string tileName, out int tileType)
         {
             tileType = 0;
