@@ -1,4 +1,4 @@
-// Optional: Add a ModCommand for admin/debug purposes
+// ModCommand for admin/debug purposes
 using Terraria.ModLoader;
 using LackOfNameStuff.Players;
 

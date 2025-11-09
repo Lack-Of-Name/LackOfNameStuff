@@ -15,6 +15,7 @@ namespace LackOfNameStuff.Items.Armour.Meld
             ArmorIDs.Body.Sets.HidesArms[Item.bodySlot] = false;
             ArmorIDs.Body.Sets.HidesHands[Item.bodySlot] = false;
             ArmorIDs.Body.Sets.HidesTopSkin[Item.bodySlot] = true;
+            ArmorIDs.Body.Sets.HidesBottomSkin[Item.bodySlot] = true;
             Item.ResearchUnlockCount = 1;
         }
 

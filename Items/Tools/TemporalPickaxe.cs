@@ -68,6 +68,8 @@ namespace LackOfNameStuff.Items.Tools
             var modPlayer = Main.LocalPlayer.GetModPlayer<TemporalPickaxePlayer>();
             int blocksMined = modPlayer.BlocksMinedWithTemporalPickaxe;
             float speedBonus = modPlayer.GetSpeedBonus();
+            int unlockedMilestones = modPlayer.GetUnlockedMilestoneCount();
+            int totalMilestones = TemporalPickaxePlayer.TotalMilestones;
 
             TooltipLine blocksLine = new TooltipLine(Mod, "BlocksMined", $"Blocks mined: {blocksMined:N0}")
             {
@@ -81,6 +83,12 @@ namespace LackOfNameStuff.Items.Tools
             };
             tooltips.Add(speedLine);
 
+            TooltipLine milestoneLine = new TooltipLine(Mod, "Milestones", $"Boss milestones unlocked: {unlockedMilestones}/{totalMilestones}")
+            {
+                OverrideColor = unlockedMilestones >= totalMilestones ? Color.Cyan : Color.Orange
+            };
+            tooltips.Add(milestoneLine);
+
             var temporalPlayer = Main.LocalPlayer.GetModPlayer<TemporalPlayer>();
             int tier = Math.Clamp(temporalPlayer.unlockedTier, 1, 4);
             int pickPower = tier switch { 2 => 235, 3 => 245, 4 => 260, _ => 225 };
@@ -90,14 +98,38 @@ namespace LackOfNameStuff.Items.Tools
             };
             tooltips.Add(tierLine);
 
-            if (speedBonus < 1000)
+            int blocksRemaining = modPlayer.GetBlocksRemainingToMaxSpeed();
+            if (blocksRemaining > 0)
             {
-                int blocksToMax = 10000 - blocksMined;
-                TooltipLine progressLine = new TooltipLine(Mod, "Progress", $"{blocksToMax:N0} blocks to maximum speed")
+                if (modPlayer.IsBossGateHoldingProgress())
                 {
-                    OverrideColor = Color.Gray
-                };
-                tooltips.Add(progressLine);
+                    TooltipLine bossGateLine = new TooltipLine(Mod, "BossGate", "Defeat another major boss to unlock more speed")
+                    {
+                        OverrideColor = Color.OrangeRed
+                    };
+                    tooltips.Add(bossGateLine);
+                }
+                else
+                {
+                    int blocksToNext = modPlayer.GetBlocksUntilNextMilestone();
+                    if (blocksToNext > 0)
+                    {
+                        TooltipLine progressLine = new TooltipLine(Mod, "Progress", $"{blocksToNext:N0} blocks until next speed unlock")
+                        {
+                            OverrideColor = Color.Gray
+                        };
+                        tooltips.Add(progressLine);
+                    }
+
+                    if (blocksRemaining > blocksToNext)
+                    {
+                        TooltipLine maxProgressLine = new TooltipLine(Mod, "ProgressMax", $"{blocksRemaining:N0} blocks until maximum speed")
+                        {
+                            OverrideColor = Color.Gray
+                        };
+                        tooltips.Add(maxProgressLine);
+                    }
+                }
             }
             else
             {

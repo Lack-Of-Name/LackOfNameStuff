@@ -1,6 +1,7 @@
 using System.IO;
 using Terraria.ModLoader;
 using LackOfNameStuff.Systems;
+using LackOfNameStuff.Common;
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -90,43 +91,89 @@ namespace LackOfNameStuff
 
     public class TemporalPickaxePlayer : ModPlayer
     {
-        public int BlocksMinedWithTemporalPickaxe = 0;
-        private const int MaxBlocks = 10000; // BigNumber for speed calculation
+        private const float MaxSpeedBonusPercent = 1000f;
+        private const float ProgressCurveBase = 6f;
+        internal const int BlocksPerMilestone = 60000;
+
+        private static readonly Func<bool>[] BossMilestoneChecks =
+        {
+            () => TemporalProgressionSystem.HasDefeatedProvidence(),
+            () => TemporalProgressionSystem.HasDefeatedPolterghast(),
+            () => TemporalProgressionSystem.HasDefeatedDoG(),
+            () => CalamityIntegration.DownedYharon,
+            () => CalamityIntegration.DownedSCal
+        };
+
+        private float _lastDisplayedBonus;
+
+        public int BlocksMinedWithTemporalPickaxe { get; private set; }
+
+        internal static int TotalMilestones => BossMilestoneChecks.Length;
 
         public float GetSpeedBonus()
         {
-            // Calculate speed bonus: (BlocksMined / 10000) * 1000, capped at 1000%
-            return Math.Min(1000f, (float)BlocksMinedWithTemporalPickaxe / MaxBlocks * 1000f);
+            float normalizedProgress = GetNormalizedProgress();
+            if (normalizedProgress <= 0f)
+            {
+                return 0f;
+            }
+
+            double curve = (Math.Pow(ProgressCurveBase, normalizedProgress) - 1d) / (ProgressCurveBase - 1d);
+            float scaledBonus = (float)(curve * MaxSpeedBonusPercent);
+            return Math.Min(MaxSpeedBonusPercent, scaledBonus);
         }
 
-        // Call this method from your TemporalPickaxe ModItem when a block is mined
+        public int GetUnlockedMilestoneCount() => CountDefeatedMilestoneBosses();
+
+        public int GetBlocksUntilNextMilestone()
+        {
+            int unlocked = GetUnlockedMilestoneCount();
+            if (unlocked >= TotalMilestones)
+            {
+                return GetBlocksRemainingToMaxSpeed();
+            }
+
+            int nextThreshold = BlocksPerMilestone * (unlocked + 1);
+            return Math.Max(0, nextThreshold - BlocksMinedWithTemporalPickaxe);
+        }
+
+        public int GetBlocksRemainingToMaxSpeed()
+        {
+            int totalRequirement = BlocksPerMilestone * TotalMilestones;
+            return Math.Max(0, totalRequirement - BlocksMinedWithTemporalPickaxe);
+        }
+
+        public bool IsBossGateHoldingProgress()
+        {
+            int unlocked = GetUnlockedMilestoneCount();
+            if (unlocked >= TotalMilestones)
+            {
+                return false;
+            }
+
+            int nextThreshold = BlocksPerMilestone * (unlocked + 1);
+            return BlocksMinedWithTemporalPickaxe >= nextThreshold;
+        }
+
         public void OnBlockMinedByPickaxe()
         {
             if (Player.HeldItem.ModItem is TemporalPickaxe)
             {
-                BlocksMinedWithTemporalPickaxe++;
-
-                // Visual feedback every 100 blocks
-                if (BlocksMinedWithTemporalPickaxe % 100 == 0)
-                {
-                    CombatText.NewText(Player.getRect(), Color.Cyan, $"+{GetSpeedBonus():F1}% speed!", true);
-                }
+                RegisterBlockMined();
             }
         }
 
-        // Clean method - removed duplicates
         public void OnBlockMined()
         {
             if (Player.HeldItem.ModItem is TemporalPickaxe)
             {
-                BlocksMinedWithTemporalPickaxe++;
-
-                // Visual feedback every 100 blocks
-                if (BlocksMinedWithTemporalPickaxe % 100 == 0)
-                {
-                    CombatText.NewText(Player.getRect(), Color.Cyan, $"+{GetSpeedBonus():F1}% speed!", true);
-                }
+                RegisterBlockMined();
             }
+        }
+
+        public override void OnEnterWorld()
+        {
+            _lastDisplayedBonus = GetSpeedBonus();
         }
 
         public override void SaveData(TagCompound tag)
@@ -137,6 +184,64 @@ namespace LackOfNameStuff
         public override void LoadData(TagCompound tag)
         {
             BlocksMinedWithTemporalPickaxe = tag.GetInt("BlocksMinedWithTemporalPickaxe");
+            _lastDisplayedBonus = GetSpeedBonus();
+        }
+
+        private void RegisterBlockMined()
+        {
+            BlocksMinedWithTemporalPickaxe++;
+
+            float currentBonus = GetSpeedBonus();
+            bool increased = currentBonus - _lastDisplayedBonus > 0.01f;
+
+            if (BlocksMinedWithTemporalPickaxe % 100 == 0 && increased)
+            {
+                CombatText.NewText(Player.getRect(), Color.Cyan, $"+{currentBonus:F1}% speed!", true);
+            }
+
+            if (increased)
+            {
+                _lastDisplayedBonus = currentBonus;
+            }
+        }
+
+        private float GetNormalizedProgress()
+        {
+            if (TotalMilestones == 0)
+            {
+                return 0f;
+            }
+
+            float totalRequirement = BlocksPerMilestone * TotalMilestones;
+            if (totalRequirement <= 0f)
+            {
+                return 0f;
+            }
+
+            float rawProgress = BlocksMinedWithTemporalPickaxe / totalRequirement;
+            float bossCap = GetBossMilestoneCap();
+            float normalized = Math.Min(rawProgress, bossCap);
+            return Math.Max(0f, Math.Min(1f, normalized));
+        }
+
+        private float GetBossMilestoneCap()
+        {
+            int unlocked = CountDefeatedMilestoneBosses();
+            return unlocked / (float)TotalMilestones;
+        }
+
+        private int CountDefeatedMilestoneBosses()
+        {
+            int count = 0;
+            foreach (Func<bool> check in BossMilestoneChecks)
+            {
+                if (check())
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
     }
 }
