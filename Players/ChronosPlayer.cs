@@ -9,6 +9,7 @@ using System.IO;
 using System.Collections.Generic;
 using LackOfNameStuff.Items.Accessories;
 using LackOfNameStuff.Systems;
+using LackOfNameStuff.Common;
 using LackOfNameStuff.Effects;
 using LackOfNameStuff.Buffs;
 
@@ -47,15 +48,21 @@ namespace LackOfNameStuff.Players
         public override void PostUpdate()
         {
             // Handle bullet time activation (only for players with the item)
-            if (hasChronosWatch && ModContent.GetInstance<ChronosKeybindSystem>().BulletTimeKey.JustPressed)
+            if (hasChronosWatch)
             {
-                // Prevent activation if still on cooldown or already active
-                if (bulletTimeCooldown > 0 || bulletTimeActive)
-                {
-                    return;
-                }
+                var bulletTimeKey = LackOfNameKeybinds.BulletTime;
+                KeybindHelper.EnsureBound(bulletTimeKey, Player);
 
-                TryActivateBulletTime();
+                if (KeybindHelper.JustPressed(bulletTimeKey))
+                {
+                    // Prevent activation if still on cooldown or already active
+                    if (bulletTimeCooldown > 0 || bulletTimeActive)
+                    {
+                        return;
+                    }
+
+                    TryActivateBulletTime();
+                }
             }
 
             // Update cooldown

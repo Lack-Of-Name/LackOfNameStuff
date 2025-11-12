@@ -3,9 +3,9 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
+using LackOfNameStuff.Common;
 using LackOfNameStuff.Players;
 using LackOfNameStuff.Systems;
-// Add the correct using for TimeShard if it exists in another namespace
 using LackOfNameStuff.Items.Materials;
 
 namespace LackOfNameStuff.Items.Accessories
@@ -38,6 +38,11 @@ namespace LackOfNameStuff.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            if (Main.LocalPlayer == null)
+            {
+                return;
+            }
+
             var player = Main.LocalPlayer.GetModPlayer<ChronosPlayer>();
             
             string statusText;
@@ -58,22 +63,13 @@ namespace LackOfNameStuff.Items.Accessories
                 statusText = "Ready to use";
             }
 
-            string keyName = "V"; // Default fallback
-            try
-            {
-                var keybind = ModContent.GetInstance<ChronosKeybindSystem>().BulletTimeKey;
-                if (keybind != null && keybind.GetAssignedKeys().Count > 0)
-                {
-                    keyName = keybind.GetAssignedKeys()[0].ToString();
-                }
-            }
-            catch
-            {
-                // Fallback to default if keybind not available
-            }
+            ModKeybind bulletTimeBind = LackOfNameKeybinds.BulletTime;
+            string keyDisplay = KeybindHelper.GetBindDisplay(bulletTimeBind);
+            string keyTooltipText = KeybindHelper.HasBinding(bulletTimeBind)
+                ? $"Press '{keyDisplay}' to activate bullet time"
+                : $"Bullet time key is {keyDisplay}";
 
-            TooltipLine keyLine = new TooltipLine(Mod, "BulletTimeKey", 
-                $"Press '{keyName}' to activate bullet time");
+            TooltipLine keyLine = new TooltipLine(Mod, "BulletTimeKey", keyTooltipText);
             keyLine.OverrideColor = Color.Gold;
             tooltips.Add(keyLine);
 

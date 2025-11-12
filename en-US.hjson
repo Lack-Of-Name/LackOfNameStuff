@@ -215,6 +215,15 @@ Mods: {
 					Boosts jump speed and run acceleration
 					'''
 			}
+
+			SwarmPotion: {
+				DisplayName: Swarm Potion
+				Tooltip:
+					'''
+					Will cause a lot of enemies to swarm your location
+					'This is bait.'
+					'''
+			}
 		}
 
 		TemporalOrb: {
@@ -256,6 +265,11 @@ Mods: {
 			PresenceShattererCooldown: {
 				DisplayName: Presence Shatterer Cooldown
 				Description: Mods.LackOfNameStuff.Buffs.PresenceShattererCooldown.Description
+			}
+
+			SwarmPotionBuff: {
+				DisplayName: Swarm Potion Buff
+				Description: Mods.LackOfNameStuff.Buffs.SwarmPotionBuff.Description
 			}
 		}
 

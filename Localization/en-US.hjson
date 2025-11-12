@@ -1,8 +1,12 @@
 Mods: {
 	LackOfNameStuff: {
 		Keybinds: {
+			BulletTime.DisplayName: Bullet Time
 			HammerDash.DisplayName: Hammer Dash
 			HammerParry.DisplayName: Hammer Parry
+			Unbound: Unbound
+			UnboundWithDefault: "Unbound (default: {0})"
+			BindReminder: "{0} is unbound! Configure it in Controls > Keybindings."
 		}
 
 		Items: {
@@ -238,6 +242,35 @@ Mods: {
 		}
 
 		NPCs: {
+			StorageSpecialist: {
+				DisplayName: Storage Specialist
+
+				Names: {
+					0: Cache
+					1: Nora
+					2: Remus
+				}
+
+				Chat: {
+					Standard1: I've catalogued every component Magic Storage produces. Need some?
+					Standard2: Proper calibration keeps storage containers from exploding. Buy them from me.
+					PostMech: Those mechanical troublemakers made me reinforce every storage container twice.
+					PostMoonLord: Lunar fragments make exquisite storage conduits. Try the luminite upgrades!
+				}
+
+				Bestiary: A tinkerer obsessed with spatial compression, selling spares for the Magic Storage network once you've proven yourself.
+
+				TownNPCMood: {
+					Content: I am content.
+					NoHome: I hate not having a home.
+					FarFromHome: I am too far from home.
+					LoveSpace: I love having so much space.
+					DislikeCrowded: I dislike how crowded I am.
+					HateCrowded: I hate how crowded I am.
+					LikeNPC_Princess: I like {NPCName}.
+					Princess_LovesNPC: I like {NPCName}.
+				}
+			}
 		}
 
 		// Common text used throughout the mod

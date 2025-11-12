@@ -85,15 +85,19 @@ namespace LackOfNameStuff.Players
                 return;
             }
 
-            ChronosKeybindSystem keybindSystem = ModContent.GetInstance<ChronosKeybindSystem>();
+            var dashKey = LackOfNameKeybinds.HammerDash;
+            var parryKey = LackOfNameKeybinds.HammerParry;
 
-            if (Player.whoAmI == Main.myPlayer && keybindSystem.HammerDashKey?.JustPressed == true)
+            KeybindHelper.EnsureBound(dashKey, Player);
+            KeybindHelper.EnsureBound(parryKey, Player);
+
+            if (Player.whoAmI == Main.myPlayer && KeybindHelper.JustPressed(dashKey))
             {
                 Vector2 direction = Main.MouseWorld - Player.Center;
                 AttemptDash(direction);
             }
 
-            if (Player.whoAmI == Main.myPlayer && keybindSystem.HammerParryKey?.JustPressed == true)
+            if (Player.whoAmI == Main.myPlayer && KeybindHelper.JustPressed(parryKey))
             {
                 AttemptParry();
             }

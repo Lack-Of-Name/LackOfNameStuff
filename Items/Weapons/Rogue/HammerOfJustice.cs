@@ -121,10 +121,9 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             }
 
             HammerOfJusticePlayer hammerPlayer = Main.LocalPlayer.GetModPlayer<HammerOfJusticePlayer>();
-            ChronosKeybindSystem keybinds = ModContent.GetInstance<ChronosKeybindSystem>();
 
-            string dashBind = GetKeybindName(keybinds.HammerDashKey, "G");
-            string parryBind = GetKeybindName(keybinds.HammerParryKey, "H");
+            string dashBind = KeybindHelper.GetBindDisplay(LackOfNameKeybinds.HammerDash);
+            string parryBind = KeybindHelper.GetBindDisplay(LackOfNameKeybinds.HammerParry);
 
             TooltipLine dashLine = new TooltipLine(Mod, "HammerDash", $"Press '{dashBind}' to unleash an omnidirectional justice dash");
             dashLine.OverrideColor = new Color(255, 198, 92);
@@ -205,23 +204,6 @@ namespace LackOfNameStuff.Items.Weapons.Rogue
             }
 
             SoundEngine.PlaySound(SoundID.Item71 with { Pitch = -0.32f, Volume = 0.75f }, player.Center);
-        }
-
-        private static string GetKeybindName(ModKeybind keybind, string fallback)
-        {
-            try
-            {
-                if (keybind != null && keybind.GetAssignedKeys().Count > 0)
-                {
-                    return keybind.GetAssignedKeys()[0].ToString();
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-
-            return fallback;
         }
 
         public override void AddRecipes()
