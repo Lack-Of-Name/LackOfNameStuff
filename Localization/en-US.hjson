@@ -4,6 +4,7 @@ Mods: {
 			BulletTime.DisplayName: Bullet Time
 			HammerDash.DisplayName: Hammer Dash
 			HammerParry.DisplayName: Hammer Parry
+			Veinmine.DisplayName: Veinmine
 			Unbound: Unbound
 			UnboundWithDefault: "Unbound (default: {0})"
 			BindReminder: "{0} is unbound! Configure it in Controls > Keybindings."
@@ -11,6 +12,16 @@ Mods: {
 
 		Items: {
 			ChronosWatch: {
+			}
+
+			WulfrumVeinminer: {
+				DisplayName: Wulfrum Veinminer
+				Tooltip:
+					'''
+					A disposable Wulfrum mining tool
+					Hold the veinmine key while breaking ore to excavate the vein
+					Each unit provides three charges before breaking
+					'''
 			}
 
 			ExplosiveArrow: {
