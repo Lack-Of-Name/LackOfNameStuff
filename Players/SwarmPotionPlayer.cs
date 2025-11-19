@@ -5,7 +5,7 @@ namespace LackOfNameStuff.Players
 {
     public class SwarmPotionPlayer : ModPlayer
     {
-        internal const int SpawnRateMultiplier = 5;
+        internal const int SpawnRateMultiplier = 12;
         internal const int MaxSpawnOverride = short.MaxValue;
 
         public bool SwarmPotionActive { get; set; }

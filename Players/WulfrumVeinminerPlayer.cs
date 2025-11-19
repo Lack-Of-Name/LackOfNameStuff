@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using LackOfNameStuff.Common;
@@ -34,6 +35,9 @@ namespace LackOfNameStuff.Players
         };
 
     private bool _veinMining;
+    private bool _veinmineKeyHeld;
+    private bool _veinmineKeyJustPressed;
+    private bool _suppressActivation;
     private int _outOfChargesTimer;
     private int _veinmineTileTimer;
     private readonly Queue<Point> _pendingVeinmineTiles = new();
@@ -57,6 +61,35 @@ namespace LackOfNameStuff.Players
             {
                 return null;
             }
+        }
+
+        public override void ResetEffects()
+        {
+            _veinmineKeyHeld = false;
+            _veinmineKeyJustPressed = false;
+        }
+
+        public override void ProcessTriggers(TriggersSet triggersSet)
+        {
+            if (Player.whoAmI != Main.myPlayer)
+            {
+                return;
+            }
+
+            ModKeybind keybind = LackOfNameKeybinds.Veinmine;
+            if (keybind == null)
+            {
+                return;
+            }
+
+            bool hasBinding = KeybindHelper.HasBinding(keybind);
+            if (!hasBinding)
+            {
+                return;
+            }
+
+            _veinmineKeyHeld = keybind.Current;
+            _veinmineKeyJustPressed = keybind.JustPressed;
         }
 
         public override void PostUpdate()
@@ -86,7 +119,7 @@ namespace LackOfNameStuff.Players
 
         public void HandleOreTileMined(int i, int j, int tileType)
         {
-            if (_veinMining || Player == null || Player.whoAmI != Main.myPlayer)
+            if (_suppressActivation || Player == null || Player.whoAmI != Main.myPlayer)
             {
                 return;
             }
@@ -97,12 +130,19 @@ namespace LackOfNameStuff.Players
             }
 
             ModKeybind keybind = LackOfNameKeybinds.Veinmine;
-            if (keybind == null || !keybind.Current)
+            if (keybind == null)
             {
                 return;
             }
 
-            if (!KeybindHelper.EnsureBound(keybind, Player))
+            if (!KeybindHelper.HasBinding(keybind))
+            {
+                KeybindHelper.EnsureBound(keybind, Player);
+                return;
+            }
+
+            bool keyActive = _veinmineKeyHeld || _veinmineKeyJustPressed || keybind.Current || keybind.JustPressed;
+            if (!keyActive)
             {
                 return;
             }
@@ -124,16 +164,13 @@ namespace LackOfNameStuff.Players
             }
 
             _veinMining = true;
-            try
-            {
-                int minedTiles = PerformVeinmine(i, j, tileType);
+            int minedTiles = PerformVeinmine(i, j, tileType);
 
-                if (minedTiles > 0)
-                {
-                    SoundEngine.PlaySound(SoundID.Item23 with { Volume = 0.6f, Pitch = -0.25f }, Player.Center);
-                }
+            if (minedTiles > 0)
+            {
+                SoundEngine.PlaySound(SoundID.Item23 with { Volume = 0.6f, Pitch = -0.25f }, Player.Center);
             }
-            finally
+            else
             {
                 _veinMining = false;
             }
@@ -206,11 +243,6 @@ namespace LackOfNameStuff.Players
 
                     Tile tile = Framing.GetTileSafely(candidate.X, candidate.Y);
                     if (!tile.HasTile || tile.TileType != oreType)
-                    {
-                        continue;
-                    }
-
-                    if (!WorldGen.CanKillTile(candidate.X, candidate.Y))
                     {
                         continue;
                     }
@@ -299,6 +331,7 @@ namespace LackOfNameStuff.Players
         {
             if (_pendingVeinmineTiles.Count == 0)
             {
+                FinalizeVeinmineIfComplete();
                 return;
             }
 
@@ -306,20 +339,31 @@ namespace LackOfNameStuff.Players
 
             if (!WorldGen.InWorld(tilePos.X, tilePos.Y, 1))
             {
+                FinalizeVeinmineIfComplete();
                 return;
             }
 
             Tile tile = Framing.GetTileSafely(tilePos.X, tilePos.Y);
-            if (!tile.HasTile || !IsOre(tile.TileType) || !WorldGen.CanKillTile(tilePos.X, tilePos.Y))
+            if (!tile.HasTile || !IsOre(tile.TileType))
             {
+                FinalizeVeinmineIfComplete();
                 return;
             }
 
             List<Item> drops = CollectDrops(tilePos.X, tilePos.Y, tile);
-            WorldGen.KillTile(tilePos.X, tilePos.Y, false, false, true);
+            _suppressActivation = true;
+            try
+            {
+                WorldGen.KillTile(tilePos.X, tilePos.Y, false, false, true);
+            }
+            finally
+            {
+                _suppressActivation = false;
+            }
 
             if (Framing.GetTileSafely(tilePos.X, tilePos.Y).HasTile)
             {
+                FinalizeVeinmineIfComplete();
                 return;
             }
 
@@ -337,6 +381,16 @@ namespace LackOfNameStuff.Players
             if (_pendingVeinmineTiles.Count == 0)
             {
                 _pendingDropSource = null;
+                _veinMining = false;
+            }
+        }
+
+        private void FinalizeVeinmineIfComplete()
+        {
+            if (_pendingVeinmineTiles.Count == 0)
+            {
+                _pendingDropSource = null;
+                _veinMining = false;
             }
         }
 

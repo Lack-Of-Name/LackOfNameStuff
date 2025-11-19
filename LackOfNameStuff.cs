@@ -143,6 +143,12 @@ namespace LackOfNameStuff
             return Math.Max(0, totalRequirement - BlocksMinedWithTemporalPickaxe);
         }
 
+        public void SetBlocksMined(int value)
+        {
+            BlocksMinedWithTemporalPickaxe = Math.Max(0, value);
+            _lastDisplayedBonus = GetSpeedBonus();
+        }
+
         public bool IsBossGateHoldingProgress()
         {
             int unlocked = GetUnlockedMilestoneCount();

@@ -5,6 +5,9 @@ Mods: {
 			BulletTime.DisplayName: Bullet Time
 			"Hammer Dash.DisplayName": Hammer  Dash
 			"Hammer Parry.DisplayName": Hammer  Parry
+			Veinmine.DisplayName: Veinmine
+			HammerParry.DisplayName: Hammer Parry
+			HammerDash.DisplayName: Hammer Dash
 		}
 
 		Items: {
@@ -30,7 +33,11 @@ Mods: {
 
 			StickGun: {
 				DisplayName: StickGun
-				Tooltip: A gun... Made of a stick... Stick Gun!
+				Tooltip:
+					'''
+					A gun... Made of a stick... Stick Gun!
+					'An overall highly ineffective weapon when used without special bullets'
+					'''
 			}
 
 			RewindPotion: {
@@ -221,8 +228,54 @@ Mods: {
 				Tooltip:
 					'''
 					Will cause a lot of enemies to swarm your location
+					[c/FF4040:Warning: removes spawn cap – use with caution]
 					'This is bait.'
 					'''
+			}
+
+			LittleSponge: {
+				Tooltip: ""
+				DisplayName: Little Sponge
+			}
+
+			HammerOfJustice: {
+				Tooltip: ""
+				DisplayName: Hammer Of Justice
+			}
+
+			BlackShard: {
+				Tooltip: ""
+				DisplayName: Black Shard
+			}
+
+			WulfrumVeinminer: {
+				Tooltip: ""
+				DisplayName: Wulfrum Veinminer
+			}
+
+			DefiledMirror: {
+				Tooltip: ""
+				DisplayName: Defiled Mirror
+			}
+
+			TimeGem: {
+				Tooltip: ""
+				DisplayName: Time Gem
+			}
+
+			EternalShard: {
+				Tooltip: ""
+				DisplayName: Eternal Shard
+			}
+
+			EternalGem: {
+				Tooltip: ""
+				DisplayName: Eternal Gem
+			}
+
+			ButterscotchCinnamonPie: {
+				Tooltip: ""
+				DisplayName: Butterscotch Cinnamon Pie
 			}
 		}
 
@@ -244,6 +297,11 @@ Mods: {
 			BlackShardRift.DisplayName: Black Shard Rift
 			AstralMeldComet.DisplayName: Astral Meld Comet
 			AstralMeldSatellite.DisplayName: Astral Meld Satellite
+			TemporalSubMissile.DisplayName: Temporal Sub Missile
+			TemporalMissile.DisplayName: Temporal Missile
+			HammerOfJusticeUltimateShockwave.DisplayName: Hammer Of Justice Ultimate Shockwave
+			HammerOfJusticeDashProjectile.DisplayName: Hammer Of Justice Dash Projectile
+			BlackShardProjectile.DisplayName: Black Shard Projectile
 		}
 
 		Buffs: {
@@ -270,6 +328,36 @@ Mods: {
 			SwarmPotionBuff: {
 				DisplayName: Swarm Potion Buff
 				Description: Mods.LackOfNameStuff.Buffs.SwarmPotionBuff.Description
+			}
+
+			TemporalShock: {
+				Description: Mods.LackOfNameStuff.Buffs.TemporalShock.Description
+				DisplayName: Temporal Shock
+			}
+
+			TemporalMinions: {
+				Description: Mods.LackOfNameStuff.Buffs.TemporalMinions.Description
+				DisplayName: Temporal Minions
+			}
+
+			TemporalCasting: {
+				Description: Mods.LackOfNameStuff.Buffs.TemporalCasting.Description
+				DisplayName: Temporal Casting
+			}
+
+			HammerOfJusticeParryCooldown: {
+				Description: Mods.LackOfNameStuff.Buffs.HammerOfJusticeParryCooldown.Description
+				DisplayName: Hammer Of Justice Parry Cooldown
+			}
+
+			HammerOfJusticeDashCooldown: {
+				Description: Mods.LackOfNameStuff.Buffs.HammerOfJusticeDashCooldown.Description
+				DisplayName: Hammer Of Justice Dash Cooldown
+			}
+
+			ButterscotchCinnamonBuff: {
+				Description: Mods.LackOfNameStuff.Buffs.ButterscotchCinnamonBuff.Description
+				DisplayName: Butterscotch Cinnamon Buff
 			}
 		}
 
@@ -309,6 +397,20 @@ Mods: {
 		}
 
 		NPCs: {
+			StorageSpecialist: {
+				TownNPCMood: {
+					Princess_LovesNPC: I like {NPCName}.
+					LikeNPC_Princess: I like {NPCName}.
+					HateCrowded: I hate how crowded I am.
+					DislikeCrowded: I dislike how crowded I am.
+					LoveSpace: I love having so much space.
+					FarFromHome: I am too far from home.
+					NoHome: I hate not having a home.
+					Content: I am content.
+				}
+
+				DisplayName: Storage Specialist
+			}
 		}
 
 		// Config options if you have any

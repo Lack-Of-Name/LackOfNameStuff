@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using LackOfNameStuff.Players;
 
@@ -38,6 +40,36 @@ namespace LackOfNameStuff.Items.Misc
             PerformTeleport(player, destination);
             deathTracker.InvalidateDeathPosition();
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (tooltips == null)
+            {
+                return;
+            }
+
+            Player localPlayer = Main.LocalPlayer;
+            DefiledMirrorPlayer mirrorPlayer = localPlayer?.GetModPlayer<DefiledMirrorPlayer>();
+            bool hasStoredDeath = mirrorPlayer != null && mirrorPlayer.TryGetLastDeathPosition(out _);
+
+            string statusKey = hasStoredDeath
+                ? "Mods.LackOfNameStuff.Items.DefiledMirror.StatusReady"
+                : "Mods.LackOfNameStuff.Items.DefiledMirror.StatusDormant";
+
+            string statusText = Language.GetTextValue(statusKey);
+            if (string.IsNullOrWhiteSpace(statusText))
+            {
+                return;
+            }
+
+            Color statusColor = hasStoredDeath ? new Color(120, 200, 255) : new Color(180, 180, 200);
+            TooltipLine statusLine = new TooltipLine(Mod, "DefiledMirrorStatus", statusText)
+            {
+                OverrideColor = statusColor
+            };
+
+            tooltips.Add(statusLine);
         }
 
         private static void PerformTeleport(Player player, Vector2 destination)
