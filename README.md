@@ -13,15 +13,8 @@ This mod adds unique weapons, tools, and progression systems to Terraria, with a
 - Custom projectiles, VFX, and synergy between weapon classes
 - Vanilla and Calamity recipe support for all major items
 - Hammer of Justice rogue weapon featuring cursor dash, chained parries, cooldown visuals, and a combo-triggered Hammerfall ultimate
-
-## Item Creation
-See `DirectivesForItemCreation.txt` for standards and best practices when adding new items.
-
+  
 ## Current Progress & TODOs
-
-## Easter Egg Ideas
-- Players named 'Gerson' or 'Gerson Boom' get ...
-- 1/x chance for the 'gyaa ha ha' sound effect to be played on hammer of justice dash
 
 ### Materials & Progression
 - [ ] Verify acquisition/progression for: Time Shard, Eternal Shard, Time Gem, Eternal Gem
@@ -80,12 +73,3 @@ See `DirectivesForItemCreation.txt` for standards and best practices when adding
 	- Magic: mana cost reduction, chance to not consume mana
 	- Summon: minion damage, +1 slot at tier 3+
 - Temporal missile system spawns more missiles per tier (2/3/4/5); cooldown scales with tier
-
-## Future Plans
-- Collab weapons from Undertale & Deltarune
-- Upgrades to time shard weapons/tools
-- Full crafting trees and unlock feedback
-- Visual tier accents on armor VFX
-
----
-For more details, see code comments and `DirectivesForItemCreation.txt`.
